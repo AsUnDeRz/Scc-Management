@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="260dp"
+    android:background="@android:color/white">
+
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ประวัติซื้อ / ขาย สินค้า"
+        android:textColor="@color/colorDark"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/textView10"
+            android:layout_width="80dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_round_table"
+            android:gravity="center"
+            android:text="สินค้า"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_weight="2">
+
+                <asunder.toche.sccmanagement.custom.textview.TxtMedium
+                    android:id="@+id/textView20"
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/bg_round_table"
+                    android:gravity="center"
+                    android:text="ราคาลูกค้า"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/textView20"
+                    android:orientation="horizontal">
+
+                    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+                        android:id="@+id/textView22"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentStart="false"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_round_table"
+                        android:gravity="center"
+                        android:text="ราคา"
+                        android:textSize="12sp" />
+
+                    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+                        android:id="@+id/textView23"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_toEndOf="@+id/textView22"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_round_table"
+                        android:gravity="center"
+                        android:text="VAT"
+                        android:textSize="12sp" />
+
+                    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+                        android:id="@+id/textView24"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_toEndOf="@+id/textView23"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_round_table"
+                        android:gravity="center"
+                        android:text="จำนวน"
+                        android:textSize="12sp" />
+
+                    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+                        android:id="@+id/textView25"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_round_table"
+                        android:gravity="center"
+                        android:text="วันที่"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_weight="3">
+
+                <asunder.toche.sccmanagement.custom.textview.TxtMedium
+                    android:id="@+id/textView21"
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/bg_round_table"
+                    android:gravity="center"
+                    android:text="ราคากลาง"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/textView21"
+                    android:orientation="horizontal">
+
+                    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentStart="false"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_round_table"
+                        android:gravity="center"
+                        android:text="ราคา"
+                        android:textSize="12sp" />
+
+                    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_toEndOf="@+id/textView22"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_round_table"
+                        android:gravity="center"
+                        android:text="VAT"
+                        android:textSize="12sp" />
+
+                    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_round_table"
+                        android:gravity="center"
+                        android:text="วันที่"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+            </RelativeLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvHistoryTransaction"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+</android.support.constraint.ConstraintLayout>

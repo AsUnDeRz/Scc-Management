@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="240dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:layout_marginTop="48dp"
+    android:background="#ffffff"
+    android:orientation="vertical">
+
+    <asunder.toche.sccmanagement.custom.textview.TxtBold
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:text="@string/menu"
+        android:textColor="@color/colorPrimary"
+        android:textSize="30sp" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnThin
+        android:id="@+id/btnContact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:text="@string/contact"
+        android:textAllCaps="false"
+        android:textSize="16sp" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnThin
+        android:id="@+id/btnIssue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:text="@string/issue"
+        android:textAllCaps="false"
+        android:textSize="16sp" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnThin
+        android:id="@+id/btnProduct"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:text="@string/product"
+        android:textAllCaps="false"
+        android:textSize="16sp" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnThin
+        android:id="@+id/btnTransaction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:text="@string/transaction"
+        android:textAllCaps="false"
+        android:textSize="16sp" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnThin
+        android:id="@+id/btnSetting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:text="@string/settings"
+        android:textAllCaps="false"
+        android:textSize="16sp" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnThin
+        android:id="@+id/btnAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:text="@string/admin"
+        android:textAllCaps="false"
+        android:textSize="16sp" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnThin
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:text="@string/logout"
+        android:textAllCaps="false"
+        android:textSize="16sp" />
+</LinearLayout>

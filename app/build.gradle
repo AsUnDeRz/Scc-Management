@@ -4,15 +4,18 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'io.fabric'
+
 android {
-    compileSdkVersion 26
+    compileSdkVersion build_versions.target_sdk
+    buildToolsVersion build_versions.build_tools
     defaultConfig {
-        applicationId "asunder.toche.scc_management"
-        minSdkVersion 19
-        targetSdkVersion 26
+        applicationId "asunder.toche.sccmanagement"
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.menu_drawer.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -22,18 +25,85 @@ android {
     }
     sourceSets {
         main {
+            res.srcDirs =
+                    [
+                            'src/main/res/layouts/setting',
+                            'src/main/res/layouts/main',
+                            'src/main/res/layouts/transactions',
+                            'src/main/res/layouts/products',
+                            'src/main/res/layouts/issue',
+                            'src/main/res/layouts/hover',
+                            'src/main/res/layouts/contact',
+                            'src/main/res/layouts/auth',
+                            'src/main/res/layouts',
+                            'src/main/res'
+                    ]
             java.srcDirs += 'src/main/kotlin'
         }
+    }
 
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/library_release.kotlin_module'
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation deps.support.app_compat
+    implementation deps.support.recyclerview
+    implementation deps.support.cardview
+    implementation deps.support.constraint_layout
+    implementation deps.kotlin.stdlib
+    implementation deps.support.multidex
+    implementation deps.support.design
+    //implementation('com.crashlytics.sdk.android:crashlytics:2.9.0@aar') {
+    //transitive = true
+    //}
+    implementation('com.twitter.sdk.android:twitter:3.2.0@aar') {
+        transitive = true
+    }
+    implementation 'com.facebook.android:facebook-login:4.30.0'
+    implementation deps.firebase.core
+    implementation deps.firebase.auth
+    implementation deps.firebase.db
+    implementation deps.firebase.storage
+    implementation deps.ggplay.auth
+    implementation deps.ggplay.map
+    implementation deps.ggplay.location
+    implementation deps.lifecycle.runtime
+    implementation deps.lifecycle.extensions
+    implementation 'com.facebook.conceal:conceal:2.0.1@aar'
+    implementation 'com.firebaseui:firebase-ui-storage:0.6.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.21'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.21'
+    implementation 'com.github.Tunous:SwipeActionView:1.1.0'
+    implementation project(path: ':AdapterX')
+    implementation 'org.dizitart:nitrite:2.1.1'
+    implementation 'io.paperdb:paperdb:2.6'
+    implementation 'com.github.arimorty:floatingsearchview:2.1.1'
+    implementation 'com.karumi:dexter:4.2.0'
+    implementation project(':ContactPicker')
+    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'io.fotoapparat.fotoapparat:library:2.2.0'
+
 }
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
+
+apply plugin: 'com.google.gms.google-services'

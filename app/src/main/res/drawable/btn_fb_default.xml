@@ -1,0 +1,8 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/com_facebook_button_background_color"/>
+    <corners android:bottomRightRadius="@dimen/login_btn_radius"
+        android:bottomLeftRadius="@dimen/login_btn_radius"
+        android:topLeftRadius="@dimen/login_btn_radius"
+        android:topRightRadius="@dimen/login_btn_radius"/>
+    <size android:height="@dimen/login_btn_height"/>
+</shape>

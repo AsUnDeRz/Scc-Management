@@ -8,6 +8,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/AdapterX" />
+            <option value="$PROJECT_DIR$/ContactPicker" />
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>

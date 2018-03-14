@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<me.thanel.swipeactionview.SwipeActionView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipe_view"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:background="?colorPrimary">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="@android:color/white"
+        android:orientation="horizontal">
+
+        <asunder.toche.sccmanagement.custom.button.BtnMedium
+            android:id="@+id/btnLeft"
+            android:layout_width="72dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorTwitter"
+            android:text="Approve"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
+
+        <asunder.toche.sccmanagement.custom.button.BtnMedium
+            android:id="@+id/btnRight"
+            android:layout_width="72dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorGoogle"
+            android:text="Reject"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/iconUser"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="24dp"
+            app:srcCompat="@mipmap/app_icon" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_toRightOf="@+id/iconUser"
+            android:lines="1"
+            android:text="Email address auth"
+            android:textColor="@android:color/black" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtThin
+            android:id="@+id/txtCompany"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/txtEmail"
+            android:layout_alignStart="@+id/txtEmail"
+            android:layout_below="@+id/txtEmail"
+            android:lines="1"
+            android:text="บริษัทสงวนชัย" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtThin
+            android:id="@+id/txtStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/txtCompany"
+            android:layout_alignStart="@+id/txtCompany"
+            android:layout_below="@+id/txtCompany"
+            android:lines="1"
+            android:text="สถานะ :" />
+
+    </RelativeLayout>
+</me.thanel.swipeactionview.SwipeActionView>

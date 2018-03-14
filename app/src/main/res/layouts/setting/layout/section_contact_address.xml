@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/vFactory"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtContactName"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imgStateFactory"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_circle_input"
+            app:srcCompat="@drawable/ic_add_white_24dp" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtFactory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@+id/imgStateFactory"
+            android:text="โรงงาน"
+            android:textColor="@color/colorDark"
+            android:textSize="16sp" />
+
+
+    </RelativeLayout>
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtTypeAddress"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_round_table"
+        android:ems="10"
+        android:hint="กรอกข้อมูลประเภทที่อยู่ ..."
+        android:inputType="textPersonName"
+        android:paddingStart="8dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/vFactory"
+        app:layout_constraintStart_toStartOf="@+id/vFactory"
+        app:layout_constraintTop_toBottomOf="@+id/vFactory" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtFactoryAddress"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_round_table"
+        android:ems="10"
+        android:gravity="left"
+        android:hint="กรอกข้อมูลที่อยู่ ..."
+        android:inputType="textPersonName"
+        android:padding="8dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/edtTypeAddress"
+        app:layout_constraintStart_toStartOf="@+id/edtTypeAddress"
+        app:layout_constraintTop_toBottomOf="@+id/edtTypeAddress" />
+
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="รูปแผนที่"
+        android:textColor="@color/colorDark"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/edtFactoryAddress"
+        app:layout_constraintTop_toBottomOf="@+id/edtFactoryAddress" />
+
+    <ImageView
+        android:background="@drawable/bg_round_table"
+        android:scaleType="fitXY"
+        android:id="@+id/imgMap"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/edtFactoryAddress"
+        app:layout_constraintStart_toStartOf="@+id/edtFactoryAddress"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+        android:id="@+id/txtMedium3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="แผนที่"
+        android:textColor="@color/colorDark"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/imgMap"
+        app:layout_constraintTop_toBottomOf="@+id/imgMap" />
+
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtMedium3" />
+
+
+    <fragment
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:id="@+id/mapView"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+    <!--
+    <View
+        android:id="@+id/onTopMapView"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+        -->
+
+</android.support.constraint.ConstraintLayout>

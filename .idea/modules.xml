@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AdapterX/AdapterX.iml" filepath="$PROJECT_DIR$/AdapterX/AdapterX.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ContactPicker/ContactPicker.iml" filepath="$PROJECT_DIR$/ContactPicker/ContactPicker.iml" />
       <module fileurl="file://$PROJECT_DIR$/Scc-Management.iml" filepath="$PROJECT_DIR$/Scc-Management.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

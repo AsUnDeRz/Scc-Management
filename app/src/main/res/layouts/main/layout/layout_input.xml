@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootInput"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white">
+
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+        android:id="@+id/titleForm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="16dp"
+        android:text="title"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtInput"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_round_table"
+        android:ems="10"
+        android:gravity="left"
+        android:inputType="textMultiLine|textPersonName"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/titleForm"
+        app:layout_constraintTop_toBottomOf="@+id/titleForm" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnSave"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/btn_confirm"
+        android:text="@string/save"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="@+id/edtInput"
+        app:layout_constraintStart_toStartOf="@+id/edtInput"
+        app:layout_constraintTop_toBottomOf="@+id/edtInput" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnCancel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/btn_cancel"
+        android:text="@string/cancel"
+        android:textColor="@color/colorDark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btnSave"
+        app:layout_constraintStart_toStartOf="@+id/btnSave"
+        app:layout_constraintTop_toBottomOf="@+id/btnSave" />
+</android.support.constraint.ConstraintLayout>

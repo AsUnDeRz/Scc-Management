@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/btn_confirm"
+        android:text="บันทึก"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtCompany"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_round_table"
+        android:ems="10"
+        android:hint="กรอกข้อมูลบริษัท ..."
+        android:inputType="textPersonName"
+        android:paddingStart="8dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/btnInput"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/btnInput"
+        app:layout_constraintTop_toBottomOf="@+id/btnInput" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtBill"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_round_table"
+        android:ems="10"
+        android:hint="กรอกข้อมูลกำหนดวางบิล ..."
+        android:inputType="textPersonName"
+        android:paddingStart="8dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/edtCompany"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/edtCompany"
+        app:layout_constraintTop_toBottomOf="@+id/edtCompany" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtContactName"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_round_table"
+        android:ems="10"
+        android:gravity="left"
+        android:hint="กรอกข้อมูลผู้ติดต่อ ..."
+        android:inputType="textPersonName"
+        android:padding="8dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/edtBill"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/edtBill"
+        app:layout_constraintTop_toBottomOf="@+id/edtBill" />
+
+    <RelativeLayout
+        android:id="@+id/vMobile"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtContactName">
+
+        <ImageView
+            android:id="@+id/imgStateMobile"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_circle_input"
+            app:srcCompat="@drawable/ic_add_white_24dp" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtMobile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@+id/imgStateMobile"
+            android:text="มือถือ"
+            android:textColor="@color/colorDark"
+            android:textSize="16sp" />
+
+
+        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+            android:id="@+id/edtMobile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="24dp"
+            android:layout_toEndOf="@+id/txtMobile"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/vTelephone"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vMobile">
+
+        <ImageView
+            android:id="@+id/imgTelePhone"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="false"
+            android:layout_centerHorizontal="false"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_circle_input"
+            app:srcCompat="@drawable/ic_add_white_24dp" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtTelephone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@+id/imgTelePhone"
+            android:text="โทรสาร"
+            android:textColor="@color/colorDark"
+            android:textSize="16sp" />
+
+
+        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+            android:id="@+id/edtTelephone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="24dp"
+            android:layout_toEndOf="@+id/txtTelephone"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/vPhone"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vTelephone">
+
+        <ImageView
+            android:id="@+id/imgPhone"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_circle_input"
+            app:srcCompat="@drawable/ic_add_white_24dp" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@+id/imgPhone"
+            android:text="เบอร์โทรศัพท์"
+            android:textColor="@color/colorDark"
+            android:textSize="16sp" />
+
+
+        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+            android:id="@+id/edtPhone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="24dp"
+            android:layout_toEndOf="@+id/txtPhone"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/vEmail"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vPhone">
+
+        <ImageView
+            android:id="@+id/imgEmail"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_circle_input"
+            app:srcCompat="@drawable/ic_add_white_24dp" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@+id/imgEmail"
+            android:text="อีเมล"
+            android:textColor="@color/colorDark"
+            android:textSize="16sp" />
+
+
+        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+            android:id="@+id/edtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="24dp"
+            android:layout_toEndOf="@+id/txtEmail"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/vWebsite"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vEmail">
+
+        <ImageView
+            android:id="@+id/imgWeb"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_circle_input"
+            app:srcCompat="@drawable/ic_add_white_24dp" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtWeb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@+id/imgWeb"
+            android:text="เว็ปไซด์"
+            android:textColor="@color/colorDark"
+            android:textSize="16sp" />
+
+
+        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+            android:id="@+id/edtWeb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="24dp"
+            android:layout_toEndOf="@+id/txtWeb"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+
+</android.support.constraint.ConstraintLayout>

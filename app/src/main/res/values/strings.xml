@@ -1,3 +1,41 @@
 <resources>
+    <!-- debug-->
+    <string name="map">AIzaSyDAhLz4Jqex9tTJFuNGcmHFniOQRNWQ55U</string>
+
     <string name="app_name">Scc-Management</string>
+    <string name="twitter_consumer_key">4Wx9Zc2Rk1zSBy2mj4CJdXRrU</string>
+    <string name="twitter_consumer_secret">YMwUlbZxcEHyr1mhSXdrlauPrHaK7rWcFnYbRUutig1nTKw7F0</string>
+    <string name="facebook_app_id">1471129742927460</string>
+    <string name="fb_login_protocol_scheme">fb1471129742927460</string>
+
+    <string name="login_facebook">Log in with Facebook</string>
+    <string name="login_twitter">Log in with Twitter</string>
+    <string name="login_google">Log in with Google+</string>
+    <string name="signup_facebook">Sign up using Facebook</string>
+    <string name="signup_twitter">Sign up using Twitter</string>
+    <string name="signup_google">Sign up using Google+</string>
+
+
+    <string name="open_drawer">open</string>
+    <string name="close_drawer">close</string>
+
+    <string name="scc_company">บริษัท สงวนชัยเคมีอิมปอร์ด จำกัด</string>
+    <string name="menu">เมนู</string>
+    <string name="contact">ผู้ติดต่อ</string>
+    <string name="issue">ประเด็น</string>
+    <string name="product">สินค้า</string>
+    <string name="transaction">ซื้อ/ขาย</string>
+    <string name="settings">ตั้งค่า</string>
+    <string name="admin">ผู้ดูแลระบบ</string>
+    <string name="logout">ออกจากระบบ</string>
+    <string name="company">บริษัท</string>
+    <string name="search">ค้นหา</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="edit">แก้ไข</string>
+    <string name="delete">ลบ</string>
+    <string name="save">บันทึก</string>
+    <string name="history">ประวัติ</string>
+    <string name="history_transaction">ประวัติซื้อ / ขายสินค้า</string>
+    <string name="history_issue">ประวัติการติดต่อ</string>
+    <string name="history_product">ขายให้ใครบ้าง</string>
 </resources>

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "254726189759",
+    "firebase_url": "https://fir-scc.firebaseio.com",
+    "project_id": "fir-scc",
+    "storage_bucket": "fir-scc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:254726189759:android:e8e87112f9a3264e",
+        "android_client_info": {
+          "package_name": "asunder.toche.sccmanagement"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "254726189759-76qimrplikl729dl4csokc8glss0s083.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxS8xXxHiygOBFaaw_dhy0hHkIvXPjfpc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
