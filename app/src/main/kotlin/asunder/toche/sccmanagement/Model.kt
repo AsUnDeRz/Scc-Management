@@ -76,5 +76,6 @@ object Model{
     data class ManagementUser(val users:MutableList<UserAuth> = ArrayList())
     data class ContactUser(val contacts:MutableList<Contact> = ArrayList())
     data class IssueUser(val issues:MutableList<Issue> = mutableListOf())
+    data class ProductUser(val products: MutableList<Product> = mutableListOf())
 
 }

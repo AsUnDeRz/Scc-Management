@@ -29,7 +29,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+                    <asunder.toche.sccmanagement.custom.edittext.EdtBold
                         android:id="@+id/txtSearch"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"

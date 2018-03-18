@@ -65,7 +65,7 @@
     <ViewStub
         android:id="@+id/stubMediumRate"
         android:inflatedId="@+id/layout_medium_rate"
-        android:layout="@layout/layout_medium_rate"
+        android:layout="@layout/layout_price_rate"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

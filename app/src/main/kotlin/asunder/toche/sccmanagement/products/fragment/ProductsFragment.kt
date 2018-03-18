@@ -5,19 +5,23 @@ import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ScrollView
+import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
+import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.products.ProductViewModel
+import asunder.toche.sccmanagement.products.adapter.MediumRateAdapter
 import asunder.toche.sccmanagement.products.pager.ProductsPager
 import kotlinx.android.synthetic.main.fragment_product_add.*
 import kotlinx.android.synthetic.main.fragment_products.*
 import kotlinx.android.synthetic.main.layout_input.*
-import kotlinx.android.synthetic.main.layout_medium_rate.*
+import kotlinx.android.synthetic.main.layout_price_rate.*
 import kotlinx.android.synthetic.main.section_product_confirm.*
 import kotlinx.android.synthetic.main.section_product_info.*
 
@@ -102,6 +106,18 @@ class ProductsFragment : Fragment(){
 
         btnSaveProductOnBottom.setOnClickListener {
             showProductList()
+        }
+
+        rvMediumPrice.apply {
+            val data : MutableList<Model.MediumRate> = mutableListOf()
+            for(i in 0 until 10){
+                data.add(Model.MediumRate("1000$i",true,"10$i",
+                        Utils.getCurrentDateShort(),"",false))
+            }
+            data.sortByDescending { it.date }
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true)
+            adapter = MediumRateAdapter(data)
         }
 
     }

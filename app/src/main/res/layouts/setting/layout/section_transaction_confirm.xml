@@ -15,7 +15,7 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:gravity="left"
-        android:hint="กรอกข้อมูล รายละเอียด ..."
+        android:hint="กรอกข้อมูล รายละเอียด ซื้อ/ขาย ..."
         android:padding="8dp"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnSaveProductOnBottom"
+        android:id="@+id/btnSaveTransactionOnBottom"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="48dp"
@@ -37,7 +37,7 @@
         app:layout_constraintTop_toBottomOf="@+id/edtDesc" />
 
     <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnCancelProduct"
+        android:id="@+id/btnCancelTransaction"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -45,7 +45,7 @@
         android:background="@drawable/btn_cancel"
         android:text="@string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/btnSaveProductOnBottom"
-        app:layout_constraintStart_toStartOf="@+id/btnSaveProductOnBottom"
-        app:layout_constraintTop_toBottomOf="@+id/btnSaveProductOnBottom" />
+        app:layout_constraintEnd_toEndOf="@+id/btnSaveTransactionOnBottom"
+        app:layout_constraintStart_toStartOf="@+id/btnSaveTransactionOnBottom"
+        app:layout_constraintTop_toBottomOf="@+id/btnSaveTransactionOnBottom" />
 </android.support.constraint.ConstraintLayout>

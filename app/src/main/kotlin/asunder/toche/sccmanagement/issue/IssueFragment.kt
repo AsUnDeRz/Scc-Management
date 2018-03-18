@@ -26,16 +26,13 @@ import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.adapter.CompanyAdapter
 import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
-import asunder.toche.sccmanagement.custom.textview.TxtMedium
-import asunder.toche.sccmanagement.issue.adapter.IssueFilterViewPager
-import asunder.toche.sccmanagement.issue.adapter.SectionIssueAdapter
+import asunder.toche.sccmanagement.main.FilterViewPager
 import asunder.toche.sccmanagement.preference.Utils
 import com.bumptech.glide.Glide
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter
-import kotlinx.android.synthetic.main.bottom_sheet_company.*
 import kotlinx.android.synthetic.main.fragment_issue.*
 import kotlinx.android.synthetic.main.fragment_issue_add.*
 import kotlinx.android.synthetic.main.layout_input.*
@@ -120,7 +117,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
 
     fun observerTabFilterIssue(){
         val viewPager = ViewPager(context!!)
-        viewPager.adapter = IssueFilterViewPager(fragmentManager)
+        viewPager.adapter = FilterViewPager(fragmentManager,true)
         tabLayoutFilterIssue.setupWithViewPager(viewPager)
         tabLayoutFilterIssue.addOnTabSelectedListener(object :TabLayout.OnTabSelectedListener{
             override fun onTabReselected(tab: TabLayout.Tab?) {

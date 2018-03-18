@@ -13,7 +13,7 @@
     android:background="@android:color/white">
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
-        android:id="@+id/txtMedium7"
+        android:id="@+id/txtTitlePrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="48dp"
@@ -32,8 +32,8 @@
         android:hint="XXXX.XX"
         android:paddingStart="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/txtMedium7"
-        app:layout_constraintTop_toBottomOf="@+id/txtMedium7" />
+        app:layout_constraintStart_toStartOf="@+id/txtTitlePrice"
+        app:layout_constraintTop_toBottomOf="@+id/txtTitlePrice" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
         android:id="@+id/txtMedium8"

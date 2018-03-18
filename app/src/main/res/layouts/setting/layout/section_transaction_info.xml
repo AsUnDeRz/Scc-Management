@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnSaveProductOnTop"
+        android:id="@+id/btnSaveTransactionOnTop"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="48dp"
@@ -26,26 +26,12 @@
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_round_table"
-        android:hint="กรอกข้อมูล ชื่อสินค้า ..."
+        android:hint="เลือก บริษัท ..."
         android:paddingStart="8dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/btnSaveProductOnTop"
-        app:layout_constraintStart_toStartOf="@+id/btnSaveProductOnTop"
-        app:layout_constraintTop_toBottomOf="@+id/btnSaveProductOnTop" />
-
-    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-        android:id="@+id/edtProductDetail"
-        android:layout_width="0dp"
-        android:layout_height="96dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/bg_round_table"
-        android:gravity="left"
-        android:hint="กรอกข้อมูล รายละเอียดสินค้า ..."
-        android:padding="8dp"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/edtProductName"
-        app:layout_constraintStart_toStartOf="@+id/edtProductName"
-        app:layout_constraintTop_toBottomOf="@+id/edtProductName" />
+        app:layout_constraintEnd_toEndOf="@+id/btnSaveTransactionOnTop"
+        app:layout_constraintStart_toStartOf="@+id/btnSaveTransactionOnTop"
+        app:layout_constraintTop_toBottomOf="@+id/btnSaveTransactionOnTop" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtImportFrom"
@@ -53,12 +39,12 @@
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
-        android:hint="เลือก นำเข้าจาก ..."
+        android:hint="เลือก สินค้า ..."
         android:paddingStart="8dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/edtProductDetail"
-        app:layout_constraintStart_toStartOf="@+id/edtProductDetail"
-        app:layout_constraintTop_toBottomOf="@+id/edtProductDetail" />
+        app:layout_constraintEnd_toEndOf="@+id/edtProductName"
+        app:layout_constraintStart_toStartOf="@+id/edtProductName"
+        app:layout_constraintTop_toBottomOf="@+id/edtProductName" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtPackSize"
@@ -66,7 +52,7 @@
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
-        android:hint="กรอกข้อมูล Pack Size ..."
+        android:hint="ราคากลาง"
         android:paddingStart="8dp"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@+id/edtImportFrom"
@@ -79,12 +65,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="48dp"
         android:layout_marginTop="16dp"
-        android:text="ราคากลาง"
+        android:text="ราคาลูกค้า"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtPackSize" />
 
     <ImageView
-        android:id="@+id/imgNewMediumRate"
+        android:id="@+id/imgNewSaleRate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="48dp"
@@ -111,7 +97,7 @@
             android:layout_weight="2"
             android:background="@drawable/bg_round_table"
             android:gravity="center"
-            android:text="ราคา" />
+            android:text="  ราคา  " />
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:layout_width="wrap_content"
@@ -120,6 +106,15 @@
             android:background="@drawable/bg_round_table"
             android:gravity="center"
             android:text="VAT" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtMedium12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_round_table"
+            android:gravity="center"
+            android:text="จำนวน" />
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:id="@+id/txtMedium6"
@@ -132,7 +127,7 @@
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvMediumPrice"
+        android:id="@+id/rvSalePrice"
         android:layout_width="0dp"
         android:layout_height="200dp"
         android:layout_marginEnd="48dp"
