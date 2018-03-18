@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnAddIssueInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/btn_confirm"
+        android:text="@string/save"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtProcess"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_round_table"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:hint="In process"
+        android:maxLines="1"
+        android:paddingStart="8dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/btnAddIssueInfo"
+        app:layout_constraintStart_toStartOf="@+id/btnAddIssueInfo"
+        app:layout_constraintTop_toBottomOf="@+id/btnAddIssueInfo" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtCompany"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_round_table"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:hint="เลือก บริษัท ..."
+        android:maxLines="1"
+        android:paddingStart="8dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/edtProcess"
+        app:layout_constraintStart_toStartOf="@+id/edtProcess"
+        app:layout_constraintTop_toBottomOf="@+id/edtProcess" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtIssue"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_round_table"
+        android:hint="กรอกข้อมูล ประเด็น..."
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        android:maxLines="1"
+        android:nextFocusDown="@id/edtIssueDetail"
+        android:paddingStart="8dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/edtCompany"
+        app:layout_constraintStart_toStartOf="@+id/edtCompany"
+        app:layout_constraintTop_toBottomOf="@+id/edtCompany" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtIssueDetail"
+        android:layout_width="0dp"
+        android:layout_height="144dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_round_table"
+        android:gravity="left"
+        android:hint="กรอกข้อมูล รายละเอียดประเด็น..."
+        android:imeOptions="actionDone"
+        android:padding="8dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/edtIssue"
+        app:layout_constraintStart_toStartOf="@+id/edtIssue"
+        app:layout_constraintTop_toBottomOf="@+id/edtIssue" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtIssueDate"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_round_table"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:hint="วันที่"
+        android:maxLines="1"
+        android:paddingStart="8dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/edtIssueDetail"
+        app:layout_constraintStart_toStartOf="@+id/edtIssueDetail"
+        app:layout_constraintTop_toBottomOf="@+id/edtIssueDetail" />
+
+    <ImageView
+        android:id="@+id/imgIssue"
+        android:layout_width="0dp"
+        android:layout_height="144dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_round_table"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/edtIssueDate"
+        app:layout_constraintStart_toStartOf="@+id/edtIssueDate"
+        app:layout_constraintTop_toBottomOf="@+id/edtIssueDate" />
+</android.support.constraint.ConstraintLayout>

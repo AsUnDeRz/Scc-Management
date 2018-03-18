@@ -30,6 +30,7 @@ import kotlin.experimental.or
  *Created by ToCHe on 6/3/2018 AD.
  */
 
+/*
 class SecurePreferences private constructor(context: Context,
                                             keyChain: KeyChain,
                                             private val entity: Entity,
@@ -351,3 +352,4 @@ class SecurePreferences private constructor(context: Context,
 
 
 }
+        */

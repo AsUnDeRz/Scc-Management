@@ -15,24 +15,29 @@ object Model{
                        val email:String = "",
                        val website:String = "",
                        val address_type:String = "",
+                       val address_factory:String = "",
                        val address:String = "",
-                       val map_url:String = "",
+                       var url_img_map:String = "",
+                       var path_img_map:String ="",
                        val map_latitude:String = "",
                        val map_longitude:String = "")
     data class Issue(var id:String = "",
                      val status:String = "",
-                     val company_id:String = "",
+                     var company_id:String = "",
                      val issue_name:String = "",
                      val issue_desc:String = "",
                      val date:String = "",
-                     val image_url:String = "",
-                     val file_url:String = "")
+                     var image_url:String = "",
+                     var image_path:String = "",
+                     var file_url:String = "",
+                     var file_path:String = "")
     data class Product(var id:String = "",
                        val product_name:String = "",
                        val product_desc:String = "",
                        val import_from:String = "",
                        val pack_size:String = "",
                        val desc:String = "",
+                       val date:String ="",
                        val medium_rate:MutableList<MediumRate> = ArrayList())
     data class MediumRate(val price:String = "",
                           val vat:Boolean = false,
@@ -70,5 +75,6 @@ object Model{
                         val auth_with:String = "")
     data class ManagementUser(val users:MutableList<UserAuth> = ArrayList())
     data class ContactUser(val contacts:MutableList<Contact> = ArrayList())
+    data class IssueUser(val issues:MutableList<Issue> = mutableListOf())
 
 }

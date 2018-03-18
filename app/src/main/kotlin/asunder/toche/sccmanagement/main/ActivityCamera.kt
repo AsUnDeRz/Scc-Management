@@ -21,6 +21,7 @@ import java.io.File
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import com.fasterxml.jackson.databind.AnnotationIntrospector.ReferenceProperty.back
 import org.h2.store.fs.FilePath
 import java.util.*
 
@@ -37,9 +38,6 @@ class ActivityCamera : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camare)
         checkPermission()
-        if (isGrantedCamera) {
-            setupCamera()
-        }
     }
 
 
@@ -70,27 +68,17 @@ class ActivityCamera : AppCompatActivity(){
             takePicture()
         }
        fotoapparat = Fotoapparat(
-                context = this,
-                view = camera_view,                   // view which will draw the camera preview
-                scaleType = ScaleType.CenterCrop,    // (optional) we want the preview to fill the view
-                lensPosition = back()               // (optional) we want back camera
-        )
+               context = this,
+               view = camera_view,                   // view which will draw the camera preview
+               scaleType = ScaleType.CenterCrop,    // (optional) we want the preview to fill the view
+               lensPosition = back()               // (optional) we want back camera
+       )
         fotoapparat.start()
     }
 
-    override fun onStart() {
-        super.onStart()
-        if(isGrantedCamera) {
-            fotoapparat.start()
-        }
-
-    }
-
     override fun onStop() {
+        fotoapparat.stop()
         super.onStop()
-        if(isGrantedCamera) {
-            fotoapparat.stop()
-        }
     }
 
     private fun takePicture(){
@@ -106,20 +94,11 @@ class ActivityCamera : AppCompatActivity(){
         photoResult
                 .saveToFile(file)
         updateImage(file)
-
         photoResult
                 .toBitmap(scaled(scaleFactor = 0.25f))
                 .whenAvailable { photo ->
                     photo
                             ?.let {
-                                Log.i("", "New photo captured. Bitmap length: ${it.bitmap.byteCount}")
-
-                                /*
-                                val imageView = findViewById<ImageView>(R.id.result)
-
-                                imageView.setImageBitmap(it.bitmap)
-                                imageView.rotation = (-it.rotationDegrees).toFloat()
-                                */
                                 val resultIntent = Intent()
                                 resultIntent.putExtra("IMAGE",
                                         file.path)

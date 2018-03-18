@@ -1,6 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imgNewTransaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:tint="@color/colorDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_edit_black_24dp" />
+
+    <asunder.toche.sccmanagement.custom.pager.CustomViewPager
+        android:id="@+id/vpTransaction"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabTransaction" />
+
+    <asunder.toche.sccmanagement.custom.tablayout.CustomTabLayout
+        android:id="@+id/tabTransaction"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="32dp"
+        android:background="@drawable/tab_round"
+        app:layout_constraintEnd_toStartOf="@+id/imgNewTransaction"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tabBackground="@drawable/tab_round"
+        app:tabIndicatorColor="@android:color/transparent"
+        app:tabMinWidth="110dp"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="@android:color/white">
+
+    </asunder.toche.sccmanagement.custom.tablayout.CustomTabLayout>
+
+    <ViewStub
+        android:id="@+id/stubProductAdd"
+        android:inflatedId="@+id/layout_product_add"
+        android:layout="@layout/fragment_product_add"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabTransaction"  />
+    <ViewStub
+        android:id="@+id/stubLayoutInput"
+        android:inflatedId="@+id/layout_input_add"
+        android:layout="@layout/layout_input"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabTransaction"  />
+    <ViewStub
+        android:id="@+id/stubMediumRate"
+        android:inflatedId="@+id/layout_medium_rate"
+        android:layout="@layout/layout_medium_rate"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabTransaction"  />
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <asunder.toche.sccmanagement.custom.tablayout.CustomTabLayout
+            android:id="@+id/tabLayoutFilterIssue"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            app:tabBackground="@drawable/tab_bg_filter"
+            app:tabContentStart="0dp"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@color/colorPrimary"
+            app:tabIndicatorHeight="0dp"
+            app:tabMode="fixed"
+            app:tabPadding="0dp"
+            app:tabPaddingEnd="0dp"
+            app:tabPaddingStart="0dp"
+            app:tabSelectedTextColor="@android:color/white"
+            app:tabTextColor="@color/colorPrimary">
+
+            <android.support.design.widget.TabItem
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="TAB1" />
+
+            <android.support.design.widget.TabItem
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="TAB2" />
+
+            <android.support.design.widget.TabItem
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="TAB3" />
+
+
+        </asunder.toche.sccmanagement.custom.tablayout.CustomTabLayout>
+
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

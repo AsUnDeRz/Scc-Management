@@ -1,5 +1,9 @@
 package asunder.toche.sccmanagement.main
 
+import android.arch.lifecycle.Lifecycle
+import android.arch.lifecycle.LifecycleOwner
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
@@ -7,14 +11,20 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.View
+import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.auth.ActivityLogin
 import asunder.toche.sccmanagement.auth.ActivityManagement
+import asunder.toche.sccmanagement.contact.ContactState
+import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.TriggerUpdate
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.preference.KEY
+import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.service.ManageUserService
 import asunder.toche.sccmanagement.settings.ActivitySetting
 import kotlinx.android.synthetic.main.activity_main.*
@@ -22,18 +32,33 @@ import kotlinx.android.synthetic.main.menu_drawer.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
-class ActivityMain : AppCompatActivity() {
+class ActivityMain : AppCompatActivity(), LifecycleOwner {
+
+
+    override fun getLifecycle(): Lifecycle {
+        return lifecycleRegistry
+    }
+
 
     lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
     lateinit var actionBar: Toolbar
     lateinit var drawerLayout: DrawerLayout
+    lateinit var contactVM : ContactViewModel
+    private val lifecycleRegistry by lazy {
+        android.arch.lifecycle.LifecycleRegistry(this)
+    }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        contactVM = ViewModelProviders.of(this).get(ContactViewModel::class.java)
         setContentView(R.layout.activity_main)
         setUpPager()
         setUpTablayout()
         setHumburgerButton()
+        observerContacts()
+        searchTextChanged()
 
     }
 
@@ -131,6 +156,57 @@ class ActivityMain : AppCompatActivity() {
     @Subscribe
     fun triggerUpdate(){
         EventBus.getDefault().postSticky(TriggerUpdate(true))
+    }
+
+    fun observerContacts(){
+        contactVM.isSaveContactComplete.observe(this, Observer {
+            when(it){
+                ContactState.ALLCONTACT ->{
+                }
+                ContactState.NEWCONTACT ->{
+
+                }
+                ContactState.EDITCONTACT ->{
+                }
+                ContactState.SELECTCONTACT ->{
+                }
+            }
+        })
+        contactVM.contact.observe(this, Observer {
+            txtSearch.setText(it?.company)
+        })
+
+    }
+
+    fun searchTextChanged(){
+        txtSearch.addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                when(pager.currentItem){
+                    0 ->{
+                        Utils.findCompany(s.toString(),object :Utils.OnFindCompanyListener{
+                            override fun onResults(results: MutableList<Model.Contact>) {
+                                contactVM.updateContacts(results)
+                            }
+                        },contactVM.service.getContactInDb())
+                    }
+                    1 ->{
+
+                    }
+                    2 ->{
+
+                    }
+                    3 ->{
+
+                    }
+                }
+            }
+        })
     }
 
 }

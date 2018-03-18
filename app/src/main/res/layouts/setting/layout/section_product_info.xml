@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnSaveProductOnTop"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/btn_confirm"
+        android:text="@string/save"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtMedium"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_round_table"
+        android:hint="กรอกข้อมูล ชื่อสินค้า ..."
+        android:paddingStart="8dp"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/btnSaveProductOnTop"
+        app:layout_constraintStart_toStartOf="@+id/btnSaveProductOnTop"
+        app:layout_constraintTop_toBottomOf="@+id/btnSaveProductOnTop" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtMedium2"
+        android:layout_width="0dp"
+        android:layout_height="96dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_round_table"
+        android:gravity="left"
+        android:hint="กรอกข้อมูล รายละเอียดสินค้า ..."
+        android:padding="8dp"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/edtMedium"
+        app:layout_constraintStart_toStartOf="@+id/edtMedium"
+        app:layout_constraintTop_toBottomOf="@+id/edtMedium" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtMedium3"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_round_table"
+        android:hint="เลือก นำเข้าจาก ..."
+        android:paddingStart="8dp"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/edtMedium2"
+        app:layout_constraintStart_toStartOf="@+id/edtMedium2"
+        app:layout_constraintTop_toBottomOf="@+id/edtMedium2" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtMedium4"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_round_table"
+        android:hint="กรอกข้อมูล Pack Size ..."
+        android:paddingStart="8dp"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/edtMedium3"
+        app:layout_constraintStart_toStartOf="@+id/edtMedium3"
+        app:layout_constraintTop_toBottomOf="@+id/edtMedium3" />
+
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+        android:id="@+id/txtMedium2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="16dp"
+        android:text="ราคากลาง"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtMedium4" />
+
+    <ImageView
+        android:id="@+id/imgNewMediumRate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="48dp"
+        android:tint="@color/colorDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtMedium2"
+        app:srcCompat="@drawable/ic_edit_black_24dp" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtMedium2">
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:background="@drawable/bg_round_table"
+            android:gravity="center"
+            android:text="ราคา" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_round_table"
+            android:gravity="center"
+            android:text="VAT" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtMedium6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_round_table"
+            android:gravity="center"
+            android:text="วันที่" />
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvMediumPrice"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+</android.support.constraint.ConstraintLayout>

@@ -10,8 +10,8 @@ import asunder.toche.sccmanagement.R
  */
 class HistoryTransactionAdapter : RecyclerView.Adapter<HistoryTransactionHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): HistoryTransactionHolder {
-        val view = LayoutInflater.from(parent?.context).inflate(R.layout.item_history_transaction
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryTransactionHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_history_transaction
                 ,parent,false)
         return HistoryTransactionHolder(view)
     }
@@ -20,8 +20,8 @@ class HistoryTransactionAdapter : RecyclerView.Adapter<HistoryTransactionHolder>
         return  10
     }
 
-    override fun onBindViewHolder(holder: HistoryTransactionHolder?, position: Int) {
-        holder?.bind()
+    override fun onBindViewHolder(holder: HistoryTransactionHolder, position: Int) {
+        holder.bind()
     }
 
 

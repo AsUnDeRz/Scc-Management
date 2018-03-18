@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -34,7 +39,7 @@
         app:layout_constraintTop_toBottomOf="@+id/titleForm" />
 
     <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnSave"
+        android:id="@+id/btnSaveInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -46,7 +51,7 @@
         app:layout_constraintTop_toBottomOf="@+id/edtInput" />
 
     <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnCancel"
+        android:id="@+id/btnCancelInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -55,7 +60,8 @@
         android:text="@string/cancel"
         android:textColor="@color/colorDark"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/btnSave"
-        app:layout_constraintStart_toStartOf="@+id/btnSave"
-        app:layout_constraintTop_toBottomOf="@+id/btnSave" />
+        app:layout_constraintEnd_toEndOf="@+id/btnSaveInput"
+        app:layout_constraintStart_toStartOf="@+id/btnSaveInput"
+        app:layout_constraintTop_toBottomOf="@+id/btnSaveInput" />
 </android.support.constraint.ConstraintLayout>
+</ScrollView>

@@ -1,22 +1,29 @@
 package asunder.toche.sccmanagement.contact.fragment
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
+import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
+import android.text.Editable
 import android.text.TextUtils
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.SearchView
-import android.widget.TextView
+import android.widget.*
+import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.pager.ContactPager
+import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
+import asunder.toche.sccmanagement.custom.TriggerHistory
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
@@ -25,16 +32,28 @@ import asunder.toche.sccmanagement.main.ActivityCamera
 import asunder.toche.sccmanagement.preference.Utils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import kotlinx.android.synthetic.main.fragment_contact.*
+import kotlinx.android.synthetic.main.fragment_contact_add.*
 import kotlinx.android.synthetic.main.section_contact_address.*
 import kotlinx.android.synthetic.main.section_contact_confirm.*
 import kotlinx.android.synthetic.main.section_contact_info.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import java.io.File
 
 
@@ -49,14 +68,29 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
         fun newInstance(): ContactFragment = ContactFragment()
     }
 
-    lateinit var map: GoogleMap
-    lateinit var rootInput : ConstraintLayout
+    enum class CurrentInputState{
+        Company,
+        Bill,
+        ContactName,
+        Address
+    }
+    private lateinit var map: GoogleMap
+    private lateinit var rootInput : ScrollView
     lateinit var root : ConstraintLayout
-    lateinit var titleInput : TxtMedium
-    lateinit var edtInput : EdtMedium
-    var stateInput : CurrentInputState = CurrentInputState.Company
+    private lateinit var titleInput : TxtMedium
+    private lateinit var edtInput : EdtMedium
+    var location: Location? = null
+    private lateinit var mLocationRequest: LocationRequest
+    private lateinit var locationCallback: LocationCallback
+    private var stateInput : CurrentInputState = CurrentInputState.Company
+    lateinit var contactVM : ContactViewModel
 
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        contactVM = ViewModelProviders.of(activity!!).get(ContactViewModel::class.java)
+        enableMyLocation()
+        setupGoogleClient()
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = LayoutInflater.from(context).inflate(R.layout.fragment_contact,container,false)
         Log.d(TAG,"CreateView")
@@ -71,11 +105,12 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
         setEditAction()
         setUpStub1()
         setUpStub2()
+        observerContacts()
     }
 
 
     fun setUpStub1(){
-        stub.setOnInflateListener { viewStub, v ->
+        stubContactAdd.setOnInflateListener { _, v ->
             root = v as ConstraintLayout
             root.visibility = View.GONE
             Log.d(TAG,"Stub1 onInflate")
@@ -84,16 +119,17 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
             val btnCancel = v.findViewById<Button>(R.id.btnCancel)
             btnCancel.setOnClickListener {
                 showContactList()
+                contactScrollView.fullScroll(ScrollView.FOCUS_UP)
             }
 
             val btnInput = v.findViewById<Button>(R.id.btnInput)
             btnInput.setOnClickListener {
-               showFormInput()
+                if(validateInput()) saveContact()
             }
 
             initViewAdd(v)
         }
-        stub.inflate()
+        stubContactAdd.inflate()
     }
 
     fun initViewAdd(v:View){
@@ -103,7 +139,9 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
         }
         val mapFragment : SupportMapFragment? =
                 fragmentManager?.findFragmentById(R.id.mapView) as? SupportMapFragment
-        mapFragment?.getMapAsync(this@ContactFragment)
+        if(contactVM.isGranted) {
+            mapFragment?.getMapAsync(this@ContactFragment)
+        }
 
         val searchView = v.findViewById<SearchView>(R.id.searchView)
         val id = searchView.context.resources.getIdentifier("android:id/search_src_text", null, null)
@@ -150,27 +188,33 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
 
         }
 
+        btnSave.setOnClickListener {
+            if (validateInput()) saveContact()
+        }
+
+        observeStateInput()
     }
 
     fun setUpStub2(){
-        stub2.setOnInflateListener { viewStub, v ->
-            rootInput = v as ConstraintLayout
+        stupLayoutInput.setOnInflateListener { viewStub, v ->
+            rootInput = v as ScrollView
             Log.d(TAG,"Stup2 onInflate")
             rootInput.visibility = View.GONE
-            val btnSave = v.findViewById<Button>(R.id.btnSave)
+            val btnSave = v.findViewById<Button>(R.id.btnSaveInput)
             btnSave.setOnClickListener {
                 showFormContact()
                 updateCurrentInput()
             }
-            val btnCancel = v.findViewById<Button>(R.id.btnCancel)
+            val btnCancel = v.findViewById<Button>(R.id.btnCancelInput)
             btnCancel.setOnClickListener {
                 showFormContact()
+                clearEdtInput()
             }
 
             titleInput = v.findViewById(R.id.titleForm)
             edtInput = v.findViewById(R.id.edtInput)
         }
-        stub2.inflate()
+        stupLayoutInput.inflate()
     }
 
 
@@ -188,12 +232,27 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
         Log.d(TAG,"SetupTablayoutr")
         tabContact.setCustomSize(resources.getDimensionPixelSize(R.dimen.txt20).toFloat())
         tabContact.setupWithViewPager(vpContact)
+        tabContact.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                if (tab?.position == 1){
+                    imgEdit.visibility = View.GONE
+                }else{
+                    imgEdit.visibility = View.VISIBLE
+                }
+            }
+        })
     }
+
+
 
     fun setEditAction(){
         imgEdit.setOnClickListener {
-            root.visibility = View.VISIBLE
-            imgEdit.visibility = View.GONE
+            showFormContact()
+            clearModelContact()
         }
     }
 
@@ -202,17 +261,9 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
         if(requestCode == 666 && data?.getStringExtra("IMAGE") != null) {
                 val path = data.getStringExtra("IMAGE")
                 val image = File(path)
-                //val bmOptions = BitmapFactory.Options()
-                //var bitmap = BitmapFactory.decodeFile(image.absolutePath, bmOptions)
-                //bitmap = Bitmap.createScaledBitmap(bitmap, imgMap.width, imgMap.height, true)
-                //imgMap.setImageBitmap(bitmap)
-            Log.d(TAG,"Path $path")
-
-
+                contactVM.updatePathPicture(path)
             Glide.with(this@ContactFragment)
                     .load(image)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .override(imgMap.width,imgMap.height)
                     .into(imgMap)
             }
         }
@@ -224,12 +275,28 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
         if(googlemap != null){
             map = googlemap
             map.isMyLocationEnabled = true
+
+            val task = LocationServices.getFusedLocationProviderClient(activity!!).lastLocation
+            task.addOnCompleteListener {
+                if(it.isComplete){
+                    location = it.result
+                }
+            }
+            if (location == null) {
+                val taskUpdate = LocationServices.
+                        getFusedLocationProviderClient(activity!!)
+                        .requestLocationUpdates(mLocationRequest,locationCallback,null)
+                if(taskUpdate.isComplete){
+                    taskUpdate.result
+                }
+            }
         }
     }
 
-    fun handleNewLocation(location: Location?) {
+    fun handleNewLocation(location: Location) {
+        this.location = location
         val zoomLevel = 14f
-        val latLng = LatLng(location!!.latitude, location.longitude)
+        val latLng = LatLng(location.latitude, location.longitude)
         map.clear()
         val current = MarkerOptions()
                 .position(latLng)
@@ -238,14 +305,18 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
     }
 
     fun saveContact(){
+        val data = Model.Contact("",edtCompany.text.toString().capitalize(),edtBill.text.toString()
+                ,edtContactName.text.toString(),edtMobile.text.toString(), edtFax.text.toString(),
+                edtPhone.text.toString(),edtEmail.text.toString(),edtWeb.text.toString(),
+                edtTypeAddress.text.toString(),edtFactoryAddress.text.toString(),
+                edtAddress.text.toString(), "", "",
+                "${location?.latitude}","${location?.longitude}")
 
 
+        contactVM.saveContact(data)
     }
 
-    fun cancelContact(){
 
-
-    }
 
     fun validateInput() : Boolean{
         if(TextUtils.isEmpty(edtCompany.text)){
@@ -262,9 +333,61 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
         return true
     }
 
+    fun showFormContactWithData(contact :Model.Contact){
+        showFormContact()
+        contactVM.updateContactId(contact.id)
+        edtCompany.setText(contact.company)
+        edtBill.setText(contact.bill)
+        edtContactName.setText(contact.contact_name)
+        edtMobile.setText(contact.mobile)
+        edtFax.setText(contact.fax)
+        edtPhone.setText(contact.telephone)
+        edtEmail.setText(contact.email)
+        edtWeb.setText(contact.website)
+        edtTypeAddress.setText(contact.address_type)
+        edtFactoryAddress.setText(contact.address_factory)
+        edtAddress.setText(contact.address)
+
+        val image = File(contact.path_img_map)
+        Glide.with(this@ContactFragment)
+                .load(image)
+                .into(imgMap)
+        if(contact.map_latitude != "" && contact.map_longitude != "") {
+            location = Location("")
+            location?.latitude = contact.map_latitude.toDouble()
+            location?.longitude = contact.map_longitude.toDouble()
+            handleNewLocation(location!!)
+        }
+
+    }
+
     fun showFormContact(){
         root.visibility = View.VISIBLE
         rootInput.visibility = View.GONE
+        imgEdit.visibility = View.GONE
+    }
+
+    fun clearModelContact(){
+        val contact = Model.Contact()
+        contactVM.updateContactId("")
+        contactVM.updatePathPicture("")
+
+        edtCompany.setText(contact.company)
+        edtBill.setText(contact.bill)
+        edtContactName.setText(contact.contact_name)
+        edtMobile.setText(contact.mobile)
+        edtFax.setText(contact.fax)
+        edtPhone.setText(contact.telephone)
+        edtEmail.setText(contact.email)
+        edtWeb.setText(contact.website)
+        edtTypeAddress.setText(contact.address_type)
+        edtFactoryAddress.setText(contact.address_factory)
+        edtAddress.setText(contact.address)
+
+        Glide.with(this@ContactFragment)
+                .load("")
+                .into(imgMap)
+
     }
 
     fun showFormInput(){
@@ -281,16 +404,16 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
     fun checkState(){
         when (stateInput){
             CurrentInputState.Company ->{
-                updateInputForm("บริษัท")
+                updateInputForm("บริษัท",edtCompany.text.toString())
             }
             CurrentInputState.Address ->{
-                updateInputForm("ที่อยู่")
+                updateInputForm("ที่อยู่",edtAddress.text.toString())
             }
             CurrentInputState.Bill ->{
-                updateInputForm("กำหนดวางบิล")
+                updateInputForm("กำหนดวางบิล",edtBill.text.toString())
             }
             CurrentInputState.ContactName ->{
-                updateInputForm("ข้อมูลผู้ติดต่อ")
+                updateInputForm("ข้อมูลผู้ติดต่อ",edtContactName.text.toString())
             }
         }
     }
@@ -316,21 +439,102 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
         edtInput.text.clear()
     }
 
-    fun updateInputForm(title:String){
+    fun updateInputForm(title:String,content:String){
         titleInput.text = title
+        edtInput.setText(content)
     }
 
     fun updateState(current : CurrentInputState) {
         stateInput = current
     }
 
+    fun observeStateInput(){
+        val circleState = arrayListOf(imgCircleMobile,imgFax,imgPhone,imgEmail,imgWeb,imgStateAdd)
+        val edtObserver = arrayListOf(edtMobile,edtFax,edtPhone,edtEmail,edtWeb,edtAddress)
+        for (i in 0 until edtObserver.size){
+            edtObserver[i].addTextChangedListener(object : TextWatcher{
+                override fun afterTextChanged(text: Editable?) {
+                    if(!text.isNullOrEmpty()) {
+                        circleState[i].isSelected = true
+                        Glide.with(this@ContactFragment)
+                                .load(R.drawable.ic_remove_white_24dp)
+                                .into(circleState[i])
+                    }else{
+                        circleState[i].isSelected = false
+                        Glide.with(this@ContactFragment)
+                                .load(R.drawable.ic_add_white_24dp)
+                                .into(circleState[i])
+                    }
+                }
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
+            })
 
-
-
-    enum class CurrentInputState{
-        Company,
-        Bill,
-        ContactName,
-        Address
+        }
     }
+
+
+    fun setupGoogleClient(){
+        mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(10 * 1000)        // 10 seconds, in milliseconds
+                .setFastestInterval(1 * 1000)
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
+                for (location in locationResult.locations){
+                    this@ContactFragment.location = location
+
+                }
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun enableMyLocation() {
+        Dexter.withActivity(activity)
+                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                .withListener(object : MultiplePermissionsListener {
+                    override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
+                        contactVM.updateGranted(!report!!.isAnyPermissionPermanentlyDenied)
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?,
+                                                                    token: PermissionToken?) {
+                    }
+                }).check()
+    }
+
+
+
+    fun observerContacts(){
+        contactVM.isSaveContactComplete.observe(this, Observer {
+            when(it){
+                ContactState.ALLCONTACT ->{
+                    showContactList()
+                }
+                ContactState.NEWCONTACT ->{
+
+                }
+                ContactState.EDITCONTACT ->{
+                    showFormContactWithData(contactVM.contact.value!!)
+                }
+                ContactState.SELECTCONTACT ->{
+                    tabContact.setScrollPosition(1,0f,true)
+                    vpContact.currentItem = 1
+                    triggerHistory(contactVM.contact.value!!)
+                }
+            }
+        })
+    }
+
+
+    @Subscribe
+    fun triggerHistory(contact: Model.Contact){
+        EventBus.getDefault().postSticky(TriggerHistory(contact))
+    }
+
 }

@@ -2,6 +2,7 @@ package asunder.toche.sccmanagement.contact.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtBold
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
@@ -21,12 +22,16 @@ class HistoryIssueHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         txtIssue = itemView.findViewById(R.id.txtIssue)
     }
 
-    fun bind(position :Int){
-
-        if(position < 3){
+    fun bind(issue: Model.Issue){
+        if(issue.status == "ทำแล้ว"){
             txtCircleState.isSelected = true
             txtCircleState.text = "C"
+        }else{
+            txtCircleState.isSelected = false
+            txtCircleState.text = "P"
         }
+        txtDate.text = issue.date.substring(0,10)
+        txtIssue.text = issue.issue_name
 
     }
 

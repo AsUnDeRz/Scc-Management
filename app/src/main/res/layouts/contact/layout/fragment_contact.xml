@@ -42,7 +42,7 @@
     </asunder.toche.sccmanagement.custom.tablayout.CustomTabLayout>
 
     <ViewStub
-        android:id="@+id/stub"
+        android:id="@+id/stubContactAdd"
         android:inflatedId="@+id/layout_contact_add"
         android:layout="@layout/fragment_contact_add"
         android:layout_width="0dp"
@@ -52,7 +52,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tabContact"  />
     <ViewStub
-        android:id="@+id/stub2"
+        android:id="@+id/stupLayoutInput"
         android:inflatedId="@+id/layout_contact_add"
         android:layout="@layout/layout_input"
         android:layout_width="0dp"

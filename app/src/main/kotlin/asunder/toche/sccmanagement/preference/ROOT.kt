@@ -14,6 +14,7 @@ object ROOT{
     const val REJECT = "reject"
     const val TERMINATE = "terminate"
     const val REQUEST = "request"
+    const val IMAGES = "images"
 
     const val GOOGLE ="google"
     const val FACEBOOK = "facebook"

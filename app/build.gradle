@@ -7,8 +7,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion build_versions.target_sdk
-    buildToolsVersion build_versions.build_tools
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "asunder.toche.sccmanagement"
         minSdkVersion build_versions.min_sdk
@@ -16,6 +16,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.menu_drawer.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -43,8 +44,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     packagingOptions {
@@ -97,8 +98,11 @@ dependencies {
     implementation 'com.karumi:dexter:4.2.0'
     implementation project(':ContactPicker')
     implementation 'org.greenrobot:eventbus:3.1.1'
-    implementation 'io.fotoapparat.fotoapparat:library:2.2.0'
-
+    //implementation 'io.fotoapparat.fotoapparat:library:2.2.0'
+    implementation 'io.github.luizgrp.sectionedrecyclerviewadapter:sectionedrecyclerviewadapter:1.2.0'
+    implementation project(path: ':fotoapparat')
+    implementation project(':SpinnerDatePicker')
+    implementation project(':FilePicker')
 }
 kotlin {
     experimental {

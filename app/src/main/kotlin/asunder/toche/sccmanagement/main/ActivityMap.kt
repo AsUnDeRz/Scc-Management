@@ -154,7 +154,8 @@ class ActivityMap : AppCompatActivity(),
                         }
                     }
 
-                    override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?, token: PermissionToken?) {
+                    override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?,
+                                                                    token: PermissionToken?) {
                     }
                 }).check()
     }

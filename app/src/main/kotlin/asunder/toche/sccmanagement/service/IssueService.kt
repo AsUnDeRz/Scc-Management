@@ -5,40 +5,51 @@ import android.util.Log
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
+import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import io.paperdb.Paper
 import java.util.HashMap
 
 /**
  *Created by ToCHe on 9/3/2018 AD.
  */
-class IssueService{
+class IssueService(var listener : IssueCallBack){
 
 
     private var firebase : DatabaseReference = FirebaseDatabase.getInstance().reference
     private val TAG = this::class.java.simpleName
+    private val context = FirebaseApp.getInstance()?.applicationContext
+    interface IssueCallBack{
+        fun onIssueSuccess()
+        fun onIssueFail()
+    }
 
 
-    fun pushNewIssue(Issue: Model.Issue, context: Context){
-        val keyAuth = firebase.child("${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.ISSUE}").push().key
-        Issue.id = keyAuth
-        Log.d(TAG,"PushNewIssue with $Issue")
+
+    fun pushNewIssue(issue: Model.Issue){
+        val keyAuth = firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.ISSUE}").push().key
+        issue.id = keyAuth
+        Log.d(TAG,"PushNewIssue with $issue")
         val childUpdates = HashMap<String,Any>()
-        childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.ISSUE}/$keyAuth"] = Issue
+        childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.ISSUE}/$keyAuth"] = issue
         firebase.updateChildren(childUpdates,{databaseError, _ ->
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
+                listener.onIssueFail()
             } else {
                 System.out.println("Data Issue,Managemnt saved successfully.")
+                listener.onIssueSuccess()
             }
         })
+        pushNewIssueToDb(updateIssueFromDb(issue,getIssueInDb()))
 
     }
 
-    fun updateIssue(Issue: Model.Issue, context: Context){
+    fun updateIssue(Issue: Model.Issue){
         val childUpdates = HashMap<String,Any>()
-        childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.ISSUE}/${Issue.id}"] = Issue
+        childUpdates["${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.ISSUE}/${Issue.id}"] = Issue
         firebase.updateChildren(childUpdates,{ databaseError, _ ->
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
@@ -50,8 +61,8 @@ class IssueService{
 
     }
 
-    fun deleteIssue(Issue : Model.Issue, context: Context){
-        firebase.child("${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.ISSUE}/${Issue.id}")
+    fun deleteIssue(Issue : Model.Issue){
+        firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.ISSUE}/${Issue.id}")
                 .removeValue({ databaseError, _ ->
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
@@ -60,6 +71,62 @@ class IssueService{
                 System.out.println("Data deleted successfully.")
             }
         })
+    }
+
+    fun getIssueInDb() : MutableList<Model.Issue>{
+        val contact = Paper.book().read<Model.IssueUser>(ROOT.ISSUE)
+        return if(contact != null) {
+            contact.issues
+        }else{
+            Log.d(TAG,"Not Found Contact in DB")
+            mutableListOf()
+        }
+    }
+
+    fun pushNewIssueToDb(issues:MutableList<Model.Issue>) {
+        Paper.book().write(ROOT.ISSUE,Model.IssueUser(issues))
+        Log.d(TAG,"Paper write $issues")
+    }
+
+    fun deleteIssueInDb(uid:String){
+        val currentIssue = getIssueInDb()
+        currentIssue
+                .filter { it.id == uid }
+                .forEach {
+                    currentIssue.remove(it)
+                }
+
+        pushNewIssueToDb(currentIssue)
+        //Paper.book().delete(ROOT.CONTACTS)
+    }
+
+    fun syncIssue(issueFromPhone:MutableList<Model.Issue>,issueFromDb:MutableList<Model.Issue>)
+            : MutableList<Model.Issue>{
+        val rawData = issueFromDb
+        val newData = issueFromPhone
+
+        return if(rawData.size > 0){
+            for(raw in rawData){
+                newData.filter { it.id == raw.id }
+                        .forEach {
+                            newData.remove(it)
+                        }
+            }
+            rawData.addAll(newData)
+            rawData
+        }else{
+            newData
+        }
+    }
+
+    fun updateIssueFromDb(issue:Model.Issue,issueFromDb: MutableList<Model.Issue>)
+            : MutableList<Model.Issue>{
+        issueFromDb.filter { it.id == issue.id }
+                .forEach {
+                    issueFromDb.remove(it)
+                }
+        issueFromDb.add(issue)
+        return issueFromDb
     }
 
 

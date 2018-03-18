@@ -40,7 +40,8 @@ import java.io.IOException
 /**
  *Created by ToCHe on 11/3/2018 AD.
  */
-class ActivitySetting: AppCompatActivity(){
+class ActivitySetting: AppCompatActivity(),ContactService.ContactCallBack{
+
 
     private val TAG = this::class.java.simpleName
     lateinit var service:ContactService
@@ -52,8 +53,8 @@ class ActivitySetting: AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         checkPermission()
-        service = ContactService()
-        contactUser = service.getContactInDb(uid)
+        service = ContactService(this)
+        contactUser = service.getContactInDb()
 
     }
 
@@ -79,7 +80,7 @@ class ActivitySetting: AppCompatActivity(){
 
     fun setUpOnClickListener(){
         btnSync.setOnClickListener {
-            contactUser = service.getContactInDb(uid)
+            contactUser = service.getContactInDb()
             contactUser.forEach {
                 Log.d(TAG,"Contact in DB $it")
             }
@@ -114,61 +115,16 @@ class ActivitySetting: AppCompatActivity(){
 
             }
 
-            service.pushNewContactToDb(uid, syncContact(contact,service.getContactInDb(uid)))
+            service.pushNewContactToDb(service.syncContact(contact,service.getContactInDb()))
 
         }
     }
 
 
-    private fun getContact() {
-        val phones = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
-        while (phones!!.moveToNext()) {
-            val name = phones.getString(phones.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
-            val phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-
-            var photo: Bitmap? = null
-
-            try {
-                val inputStream = ContactsContract.Contacts.openContactPhotoInputStream(contentResolver,
-                        ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI,
-                                java.lang.Long.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.Contacts._ID)))!!))
-
-                if (inputStream != null) {
-                    photo = BitmapFactory.decodeStream(inputStream)
-                    //val imageView = findViewById<ImageView>(R.id.imgContact)
-                    //imageView.setImageBitmap(photo)
-                }
-
-                assert(inputStream != null)
-                inputStream!!.close()
-
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-
-        }
-        phones.close()
+    override fun onSuccess() {
     }
 
-    fun syncContact(contactFromPhone:MutableList<Model.Contact>,contactFromDb:MutableList<Model.Contact>)
-    : MutableList<Model.Contact>{
-        val rawData = contactFromDb
-        val newData = contactFromPhone
-
-        return if(rawData.size > 0){
-            for(raw in rawData){
-                newData.filter { it.mobile == raw.mobile }
-                        .forEach {
-                            newData.remove(it)
-                        }
-            }
-            rawData.addAll(newData)
-            rawData
-        }else{
-            newData
-        }
-
-
+    override fun onFail() {
     }
 
 }

@@ -10,7 +10,10 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/AdapterX" />
             <option value="$PROJECT_DIR$/ContactPicker" />
+            <option value="$PROJECT_DIR$/FilePicker" />
+            <option value="$PROJECT_DIR$/SpinnerDatePicker" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/fotoapparat" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

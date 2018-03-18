@@ -33,7 +33,7 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
             android:layout_toEndOf="@+id/imgStateAdd"
-            android:text="เพิ่มที่อยู่"
+            android:text="ที่อยู่"
             android:textColor="@color/colorDark"
             android:textSize="16sp" />
 
@@ -52,7 +52,7 @@
     </RelativeLayout>
 
     <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnInput"
+        android:id="@+id/btnSave"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="48dp"
@@ -81,5 +81,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnInput" />
+        app:layout_constraintTop_toBottomOf="@+id/btnSave" />
 </android.support.constraint.ConstraintLayout>

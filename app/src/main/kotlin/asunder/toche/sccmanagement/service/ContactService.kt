@@ -5,22 +5,28 @@ import android.util.Log
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
+import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import io.paperdb.Paper
+import kotlinx.coroutines.experimental.async
 import java.util.*
 
 /**
  *Created by ToCHe on 9/3/2018 AD.
  */
-class ContactService{
+class ContactService(var listener:ContactCallBack){
 
     private var firebase : DatabaseReference = FirebaseDatabase.getInstance().reference
     private val TAG = this::class.java.simpleName
+    private val context = FirebaseApp.getInstance()?.applicationContext
+    interface ContactCallBack{
+        fun onSuccess()
+        fun onFail()
+    }
 
-
-    fun pushNewContact(contact: Model.Contact,context: Context){
-        val keyAuth = firebase.child("${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.CONTACTS}").push().key
+    fun pushNewContact(contact: Model.Contact)  {
+        val keyAuth = firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.CONTACTS}").push().key
         contact.id = keyAuth
         Log.d(TAG,"PushNewContact with $contact")
         val childUpdates = HashMap<String,Any>()
@@ -29,45 +35,49 @@ class ContactService{
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
+                listener.onFail()
             } else {
                 System.out.println("Data Contact,Managemnt saved successfully.")
+                listener.onSuccess()
             }
         })
-
+        pushNewContactToDb(updateContactFromDb(contact,getContactInDb()))
     }
 
-    fun updateContact(contact: Model.Contact,context: Context){
+    fun updateContact(contact: Model.Contact){
         val childUpdates = HashMap<String,Any>()
-        childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.CONTACTS}/${contact.id}"] = contact
+        childUpdates["${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.CONTACTS}/${contact.id}"] = contact
 
         firebase.updateChildren(childUpdates,{ databaseError, _ ->
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
+                listener.onFail()
             } else {
                 System.out.println("Data Update Contact successfully.")
+                listener.onSuccess()
             }
         })
+        pushNewContactToDb(updateContactFromDb(contact,getContactInDb()))
 
     }
 
-    fun deleteContact(contact : Model.Contact,context: Context){
-        firebase.child("${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.CONTACTS}/${contact.id}").removeValue({ databaseError, _ ->
+    fun deleteContact(contact : Model.Contact){
+        firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.CONTACTS}/${contact.id}").removeValue({ databaseError, _ ->
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
+                listener.onFail()
             } else {
                 System.out.println("Data deleted successfully.")
+                listener.onSuccess()
             }
         })
     }
 
-    fun getContactInDb(uid: String) : MutableList<Model.Contact>{
+    fun getContactInDb() : MutableList<Model.Contact>{
         val contact = Paper.book().read<Model.ContactUser>(ROOT.CONTACTS)
         return if(contact != null) {
-            contact.contacts.forEach {
-                Log.d(TAG, it.toString())
-            }
             contact.contacts
         }else{
             Log.d(TAG,"Not Found Contact in DB")
@@ -75,13 +85,49 @@ class ContactService{
         }
     }
 
-    fun pushNewContactToDb(uid: String,contacts:MutableList<Model.Contact>){
+    fun pushNewContactToDb(contacts:MutableList<Model.Contact>) {
         Paper.book().write(ROOT.CONTACTS,Model.ContactUser(contacts))
     }
 
     fun deleteContactInDb(uid:String){
-        Paper.book().delete(ROOT.CONTACTS)
+        val currentContact = getContactInDb()
+        currentContact
+                .filter { it.id == uid }
+                .forEach {
+                    currentContact.remove(it)
+                }
 
+        pushNewContactToDb(currentContact)
+        //Paper.book().delete(ROOT.CONTACTS)
+    }
+
+    fun syncContact(contactFromPhone:MutableList<Model.Contact>,contactFromDb:MutableList<Model.Contact>)
+            : MutableList<Model.Contact>{
+        val rawData = contactFromDb
+        val newData = contactFromPhone
+
+        return if(rawData.size > 0){
+            for(raw in rawData){
+                newData.filter { it.mobile == raw.mobile }
+                        .forEach {
+                            newData.remove(it)
+                        }
+            }
+            rawData.addAll(newData)
+            rawData
+        }else{
+            newData
+        }
+    }
+
+    fun updateContactFromDb(contact:Model.Contact,contactFromDb: MutableList<Model.Contact>)
+    : MutableList<Model.Contact>{
+        contactFromDb.filter { it.mobile ==contact.mobile }
+                .forEach {
+                    contactFromDb.remove(it)
+                }
+        contactFromDb.add(contact)
+        return contactFromDb
     }
 
 

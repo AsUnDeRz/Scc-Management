@@ -21,8 +21,8 @@ class ManageAdapter : RecyclerView.Adapter<UserHolder>() {
     private var mLastAnimatedItemPosition = -1
 
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): UserHolder {
-        val view = LayoutInflater.from(parent?.context).inflate(R.layout.item_manage_user,parent,false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_manage_user,parent,false)
         return UserHolder(view)
     }
 
@@ -30,11 +30,11 @@ class ManageAdapter : RecyclerView.Adapter<UserHolder>() {
         return usersAuth.size
     }
 
-    override fun onBindViewHolder(holder: UserHolder?, position: Int) {
-        holder?.bind(usersAuth[holder.adapterPosition],listener)
+    override fun onBindViewHolder(holder: UserHolder, position: Int) {
+        holder.bind(usersAuth[holder.adapterPosition],listener)
 
         if (mLastAnimatedItemPosition < position) {
-            animateItem(holder?.itemView)
+            animateItem(holder.itemView)
             mLastAnimatedItemPosition = position
         }
     }

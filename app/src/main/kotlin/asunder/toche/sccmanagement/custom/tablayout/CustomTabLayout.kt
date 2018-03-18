@@ -17,6 +17,8 @@ class CustomTabLayout(context: Context?, attrs: AttributeSet?) : TabLayout(conte
 
     private var customSize :Float? = null
 
+
+
     override fun setupWithViewPager(viewPager: ViewPager?) {
         super.setupWithViewPager(viewPager)
 

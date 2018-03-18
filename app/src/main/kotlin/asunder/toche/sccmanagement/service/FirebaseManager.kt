@@ -4,6 +4,8 @@ import android.net.Uri
 import android.util.Log
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.preference.Prefer
+import asunder.toche.sccmanagement.preference.ROOT
+import asunder.toche.sccmanagement.preference.Utils
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -11,6 +13,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.StorageMetadata
 import com.google.gson.internal.bind.util.ISO8601Utils
+import io.paperdb.Paper
 import java.io.File
 import java.util.*
 import kotlin.collections.HashMap
@@ -23,7 +26,7 @@ class FirebaseManager{
 
     private var firebase : DatabaseReference = FirebaseDatabase.getInstance().reference
     private var storage = FirebaseStorage.getInstance()
-    private val context = FirebaseApp.getInstance()?.applicationContext
+    val context = FirebaseApp.getInstance()?.applicationContext
 
     private val TAG = " FIREBASEMANAGER"
 
@@ -83,12 +86,10 @@ class FirebaseManager{
     }
 
     fun pushFileToFirebase(path:String,session: String){
-        System.out.println("Session $session")
-        System.out.println("File ${Prefer.getFile(context!!)}")
         storage.maxUploadRetryTimeMillis = 2000L
         val storageRef = storage.reference
         val file = Uri.fromFile(File(path))
-        val riversRef = storageRef.child("images/" + file.lastPathSegment)
+        val riversRef = storageRef.child("images/${Prefer.getUUID(this.context!!)}/" + file.lastPathSegment)
         val uploadTask = if(session != ""){
             riversRef.putFile(Uri.parse(Prefer.getFile(context)), StorageMetadata.Builder().build(),Uri.parse(session))
         }else{
@@ -96,13 +97,14 @@ class FirebaseManager{
         }
         uploadTask.addOnFailureListener({
             val filePath = Uri.fromFile(File(path))
-            val uploadsession = uploadTask.snapshot.uploadSessionUri
-            uploadsession?.let { it1 -> Prefer.saveSession(it1,filePath, context) }
+            //val uploadsession = uploadTask.snapshot.uploadSessionUri
+            //uploadsession?.let { it1 -> Prefer.saveSession(it1,filePath, context) }
             System.out.println("Upload fail cause "+it.cause)
             System.out.println("Upload fail message"+it.message)
             System.out.println("Upload Fail")
         }).addOnSuccessListener({
-            System.out.println("Upload Success")
+            System.out.println("Upload Success ${file.lastPathSegment}")
+            pushPathImageToDb(path)
         }).addOnProgressListener({
             val progress = (100.0 * it.bytesTransferred) / it.totalByteCount
             System.out.println("Upload is $progress% done")
@@ -111,9 +113,14 @@ class FirebaseManager{
         })
     }
 
-    fun deleteFile(){
+    fun pushPathImageToDb(path: String){
+        Paper.book().write(ROOT.IMAGES,path)
+        System.out.println("Upload Success $path")
+    }
+
+    fun deleteFile(path: String){
         val storageRef = storage.reference
-        val desertRef = storageRef.child("image/user1/35257090.jpeg")
+        val desertRef = storageRef.child(path)
         desertRef
                 .delete()
                 .addOnCompleteListener {

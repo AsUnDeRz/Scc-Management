@@ -2,12 +2,11 @@ package asunder.toche.sccmanagement.main
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.app.FragmentStatePagerAdapter
 import asunder.toche.sccmanagement.contact.fragment.ContactFragment
 import asunder.toche.sccmanagement.issue.IssueFragment
-import asunder.toche.sccmanagement.products.ProductsFragment
-import asunder.toche.sccmanagement.transactions.TransactionsFragment
+import asunder.toche.sccmanagement.products.fragment.ProductsFragment
+import asunder.toche.sccmanagement.transactions.fragment.TransactionsFragment
 
 /**
  *Created by ToCHe on 25/2/2018 AD.

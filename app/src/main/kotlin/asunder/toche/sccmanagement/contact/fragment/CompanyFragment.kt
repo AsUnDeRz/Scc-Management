@@ -1,5 +1,7 @@
 package asunder.toche.sccmanagement.contact.fragment
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -7,10 +9,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.adapter.CompanyAdapter
+import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.TriggerUpdate
-import asunder.toche.sccmanagement.service.ContactService
 import kotlinx.android.synthetic.main.fragment_contact_company.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -19,11 +23,12 @@ import org.greenrobot.eventbus.ThreadMode
 /**
  *Created by ToCHe on 26/2/2018 AD.
  */
-class CompanyFragment : Fragment() {
+class CompanyFragment : Fragment(),CompanyAdapter.CompanyListener {
+
 
     private val TAG = this::class.java.simpleName
-    lateinit var service : ContactService
     lateinit var adapter: CompanyAdapter
+    lateinit var contactVM : ContactViewModel
     val uid = "155434134123"
 
     companion object {
@@ -34,7 +39,7 @@ class CompanyFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG,"OnCreate")
-        service = ContactService()
+        contactVM = ViewModelProviders.of(activity!!).get(ContactViewModel::class.java)
         EventBus.getDefault().register(this)
     }
 
@@ -54,11 +59,14 @@ class CompanyFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = this@CompanyFragment.adapter
         }
+
+        contactVM.loadContacts()
+        observerContacts()
     }
 
     fun setUpAdapter(){
-        adapter = CompanyAdapter()
-        adapter.setContact(service.getContactInDb(uid))
+        adapter = CompanyAdapter(true)
+        adapter.setUpListener(this)
     }
 
 
@@ -73,9 +81,29 @@ class CompanyFragment : Fragment() {
         if (stickyEvent != null) {
             EventBus.getDefault().removeStickyEvent(stickyEvent)
         }
+        contactVM.loadContacts()
+    }
 
-        if(trigger.update){
-            adapter.setContact(service.getContactInDb(uid))
-        }
+    fun observerContacts(){
+        contactVM.contacts.observe(this, Observer {
+            if(it != null) {
+                adapter.setContact(it)
+            }
+        })
+    }
+
+    override fun onSelectContact(contact: Model.Contact) {
+        contactVM.updateContact(contact)
+        contactVM.updateViewState(ContactState.SELECTCONTACT)
+    }
+
+    override fun onClickEdit(contact: Model.Contact) {
+        contactVM.updateContact(contact)
+        contactVM.updateViewState(ContactState.EDITCONTACT)
+
+    }
+
+    override fun onClickDelete(contact: Model.Contact) {
+        contactVM.deleteContact(contact)
     }
 }

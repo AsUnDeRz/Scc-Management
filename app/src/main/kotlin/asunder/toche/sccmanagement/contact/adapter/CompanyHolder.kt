@@ -3,12 +3,14 @@ package asunder.toche.sccmanagement.contact.adapter
 import android.provider.UserDictionary
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.widget.RelativeLayout
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.custom.textview.TxtThin
 import me.thanel.swipeactionview.SwipeActionView
+import me.thanel.swipeactionview.SwipeDirection
 import me.thanel.swipeactionview.SwipeGestureListener
 
 /**
@@ -19,37 +21,61 @@ class CompanyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val txtCompany: TxtMedium
     private val txtContact: TxtThin
     private val swipeView : SwipeActionView
+    private val rootContent :RelativeLayout
 
     init {
         txtContact = itemView.findViewById(R.id.txtContact)
         txtCompany = itemView.findViewById(R.id.txtCompany)
         swipeView = itemView.findViewById(R.id.swipeCompany)
+        rootContent = itemView.findViewById(R.id.rootContentCompany)
     }
-    fun bind(contact: Model.Contact){
+    fun bindWithEditable(contact: Model.Contact,listener: CompanyAdapter.CompanyListener){
         txtCompany.text = validateCompany(contact)
         txtContact.text = validateContact(contact)
-
         val btnEdt = swipeView.findViewById<BtnMedium>(R.id.btnEdit)
         val btnDelete = swipeView.findViewById<BtnMedium>(R.id.btnDelete)
 
         swipeView.swipeGestureListener = object : SwipeGestureListener {
             override fun onSwipedLeft(swipeActionView: SwipeActionView): Boolean {
                 btnDelete.setOnClickListener {
-
+                    listener.onClickDelete(contact)
                 }
                 btnEdt.setOnClickListener {
-
+                    listener.onClickEdit(contact)
                 }
-
                 return false
             }
 
             override fun onSwipedRight(swipeActionView: SwipeActionView): Boolean {
-                //swipeActionView.moveToOriginalPosition(2000)
                 return true
             }
         }
 
+        rootContent.setOnClickListener {
+            listener.onSelectContact(contact)
+        }
+        txtContact.setOnClickListener {
+            listener.onSelectContact(contact)
+        }
+        txtCompany.setOnClickListener {
+            listener.onSelectContact(contact)
+        }
+    }
+
+    fun bind(contact: Model.Contact,listener: CompanyAdapter.CompanyOnClickListener){
+        txtCompany.text = validateCompany(contact)
+        txtContact.text = validateContact(contact)
+        swipeView.setDirectionEnabled(SwipeDirection.Left, false)
+
+        rootContent.setOnClickListener {
+            listener.onClickCompany(contact)
+        }
+        txtCompany.setOnClickListener {
+            listener.onClickCompany(contact)
+        }
+        txtContact.setOnClickListener {
+            listener.onClickCompany(contact)
+        }
     }
 
     fun validateCompany(contact: Model.Contact) :String{
