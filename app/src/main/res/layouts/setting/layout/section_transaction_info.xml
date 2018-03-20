@@ -27,6 +27,8 @@
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_round_table"
         android:hint="เลือก บริษัท ..."
+        android:inputType="text"
+        android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@+id/btnSaveTransactionOnTop"
@@ -40,6 +42,8 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:hint="เลือก สินค้า ..."
+        android:inputType="text"
+        android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@+id/edtProductName"
@@ -53,6 +57,8 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:hint="ราคากลาง"
+        android:inputType="text"
+        android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@+id/edtImportFrom"
@@ -92,35 +98,35 @@
         app:layout_constraintTop_toBottomOf="@+id/txtMedium2">
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="4"
             android:background="@drawable/bg_round_table"
             android:gravity="center"
             android:text="  ราคา  " />
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="6"
             android:background="@drawable/bg_round_table"
             android:gravity="center"
             android:text="VAT" />
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:id="@+id/txtMedium12"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="5"
             android:background="@drawable/bg_round_table"
             android:gravity="center"
             android:text="จำนวน" />
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:id="@+id/txtMedium6"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="5"
             android:background="@drawable/bg_round_table"
             android:gravity="center"
             android:text="      วันที่      " />

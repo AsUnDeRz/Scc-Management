@@ -1,14 +1,12 @@
-package asunder.toche.sccmanagement.products
+package asunder.toche.sccmanagement.products.viewmodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.net.Uri
+import android.util.Log
 import asunder.toche.sccmanagement.Model
-import asunder.toche.sccmanagement.preference.Prefer
-import asunder.toche.sccmanagement.preference.ROOT
+import asunder.toche.sccmanagement.products.ProductState
 import asunder.toche.sccmanagement.service.FirebaseManager
 import asunder.toche.sccmanagement.service.ProductService
-import java.io.File
 
 /**
  *Created by ToCHe on 18/3/2018 AD.
@@ -18,13 +16,16 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
 
     val service = ProductService(this)
     val firebase = FirebaseManager()
+    val product : MutableLiveData<Model.Product> = MutableLiveData()
     val products : MutableLiveData<MutableList<Model.Product>> = MutableLiveData()
+    val mediumRateLists : MutableLiveData<MutableList<Model.MediumRate>> = MutableLiveData()
     val stateView : MutableLiveData<ProductState> = MutableLiveData()
     var productId  =""
 
 
 
     fun saveProduct(data:Model.Product){
+        System.out.println("SaveProduct   $data")
         if(productId == "") {
             service.pushNewProduct(data)
         }else{
@@ -49,7 +50,21 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
         products.value = data
     }
 
+    fun updateMediumRateList(data : MutableList<Model.MediumRate>){
+        mediumRateLists.value = data
+    }
+
+    fun updateProduct(product: Model.Product){
+        this.product.value = product
+    }
+
+    fun addMediumRate(mediumRate: Model.MediumRate){
+        mediumRateLists.value?.add(mediumRate)
+    }
+
     override fun onSuccess() {
+        updateStateView(ProductState.SHOWLIST)
+        loadProduct()
     }
 
     override fun onFail() {

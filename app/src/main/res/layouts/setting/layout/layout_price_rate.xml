@@ -1,171 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/priceRateScrollView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@android:color/white">
 
-    <asunder.toche.sccmanagement.custom.textview.TxtMedium
-        android:id="@+id/txtTitlePrice"
-        android:layout_width="wrap_content"
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="8dp"
-        android:text="ราคากลาง"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:background="@android:color/white">
 
-    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-        android:id="@+id/edtMedium6"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/bg_round_table"
-        android:hint="XXXX.XX"
-        android:paddingStart="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/txtTitlePrice"
-        app:layout_constraintTop_toBottomOf="@+id/txtTitlePrice" />
-
-    <asunder.toche.sccmanagement.custom.textview.TxtMedium
-        android:id="@+id/txtMedium8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="VAT / NO VAT"
-        app:layout_constraintStart_toStartOf="@+id/edtMedium6"
-        app:layout_constraintTop_toBottomOf="@+id/edtMedium6" />
-
-    <RadioGroup
-        android:id="@+id/radioGroup"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="48dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="48dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtMedium6">
-
-        <android.support.v7.widget.AppCompatRadioButton
-            android:id="@+id/rdbVat"
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtTitlePrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:buttonTint="@color/colorPrimary"
-            android:checked="true"
-            android:paddingStart="16dp"
-            android:text="VAT"
-            android:textColor="@color/colorDark" />
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="8dp"
+            android:text="ราคากลาง"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <android.support.v7.widget.AppCompatRadioButton
-            android:id="@+id/rdbNoVat"
+        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+            android:id="@+id/edtPrice"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="48dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_round_table"
+            android:hint="XXXX.XX"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingStart="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/txtTitlePrice"
+            app:layout_constraintTop_toBottomOf="@+id/txtTitlePrice" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtMedium8"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:buttonTint="@color/colorPrimary"
-            android:paddingStart="16dp"
-            android:text="NO VAT"
-            android:textColor="@color/colorDark" />
-    </RadioGroup>
+            android:layout_marginTop="16dp"
+            android:text="VAT / NO VAT"
+            app:layout_constraintStart_toStartOf="@+id/edtPrice"
+            app:layout_constraintTop_toBottomOf="@+id/edtPrice" />
 
-    <asunder.toche.sccmanagement.custom.textview.TxtMedium
-        android:id="@+id/txtMedium9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="16dp"
-        android:text="จำนวน"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="48dp"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="48dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edtPrice">
 
-    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-        android:id="@+id/edtMedium7"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/bg_round_table"
-        android:hint="XXXX"
-        android:paddingStart="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/radioGroup"
-        app:layout_constraintStart_toStartOf="@+id/txtMedium9"
-        app:layout_constraintTop_toBottomOf="@+id/txtMedium9" />
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/rdbVat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:buttonTint="@color/colorPrimary"
+                android:checked="true"
+                android:paddingStart="16dp"
+                android:text="VAT"
+                android:textColor="@color/colorDark" />
 
-    <asunder.toche.sccmanagement.custom.textview.TxtMedium
-        android:id="@+id/txtMedium10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="วันที่"
-        app:layout_constraintStart_toStartOf="@+id/edtMedium7"
-        app:layout_constraintTop_toBottomOf="@+id/edtMedium7" />
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/rdbNoVat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:buttonTint="@color/colorPrimary"
+                android:paddingStart="16dp"
+                android:text="NO VAT"
+                android:textColor="@color/colorDark" />
+        </RadioGroup>
 
-    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-        android:id="@+id/edtMedium8"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/bg_round_table"
-        android:paddingStart="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/edtMedium7"
-        app:layout_constraintStart_toStartOf="@+id/edtMedium7"
-        app:layout_constraintTop_toBottomOf="@+id/txtMedium10" />
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtMedium9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="16dp"
+            android:text="จำนวน"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
-    <asunder.toche.sccmanagement.custom.textview.TxtMedium
-        android:id="@+id/txtMedium11"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Note"
-        app:layout_constraintStart_toStartOf="@+id/edtMedium8"
-        app:layout_constraintTop_toBottomOf="@+id/edtMedium8" />
+        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+            android:id="@+id/edtPriceValues"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_round_table"
+            android:hint="XXXX"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingStart="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/radioGroup"
+            app:layout_constraintStart_toStartOf="@+id/txtMedium9"
+            app:layout_constraintTop_toBottomOf="@+id/txtMedium9" />
 
-    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-        android:id="@+id/edtMedium9"
-        android:layout_width="0dp"
-        android:layout_height="144dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/bg_round_table"
-        android:gravity="left"
-        android:padding="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/txtMedium11"
-        app:layout_constraintTop_toBottomOf="@+id/txtMedium11" />
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtMedium10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="วันที่"
+            app:layout_constraintStart_toStartOf="@+id/edtPriceValues"
+            app:layout_constraintTop_toBottomOf="@+id/edtPriceValues" />
 
-    <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnSaveRate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/btn_confirm"
-        android:text="@string/save"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="@+id/edtMedium9"
-        app:layout_constraintStart_toStartOf="@+id/edtMedium9"
-        app:layout_constraintTop_toBottomOf="@+id/edtMedium9" />
+        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+            android:id="@+id/edtPriceDate"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_round_table"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingStart="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/edtPriceValues"
+            app:layout_constraintStart_toStartOf="@+id/edtPriceValues"
+            app:layout_constraintTop_toBottomOf="@+id/txtMedium10" />
 
-    <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnCancelRate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/btn_cancel"
-        android:text="@string/cancel"
-        android:textColor="@color/colorDark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/btnSaveRate"
-        app:layout_constraintStart_toStartOf="@+id/btnSaveRate"
-        app:layout_constraintTop_toBottomOf="@+id/btnSaveRate" />
-</android.support.constraint.ConstraintLayout>
-    </ScrollView>
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtMedium11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Note"
+            app:layout_constraintStart_toStartOf="@+id/edtPriceDate"
+            app:layout_constraintTop_toBottomOf="@+id/edtPriceDate" />
+
+        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+            android:id="@+id/edtPriceNote"
+            android:layout_width="0dp"
+            android:layout_height="144dp"
+            android:layout_marginEnd="48dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_round_table"
+            android:gravity="left"
+            android:inputType="text"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/txtMedium11"
+            app:layout_constraintTop_toBottomOf="@+id/txtMedium11" />
+
+        <asunder.toche.sccmanagement.custom.button.BtnMedium
+            android:id="@+id/btnSaveRate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/btn_confirm"
+            android:text="@string/save"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="@+id/edtPriceNote"
+            app:layout_constraintStart_toStartOf="@+id/edtPriceNote"
+            app:layout_constraintTop_toBottomOf="@+id/edtPriceNote" />
+
+        <asunder.toche.sccmanagement.custom.button.BtnMedium
+            android:id="@+id/btnCancelRate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/btn_cancel"
+            android:text="@string/cancel"
+            android:textColor="@color/colorDark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/btnSaveRate"
+            app:layout_constraintStart_toStartOf="@+id/btnSaveRate"
+            app:layout_constraintTop_toBottomOf="@+id/btnSaveRate" />
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

@@ -25,8 +25,11 @@ import asunder.toche.sccmanagement.custom.TriggerUpdate
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.preference.KEY
 import asunder.toche.sccmanagement.preference.Utils
+import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
 import asunder.toche.sccmanagement.service.ManageUserService
 import asunder.toche.sccmanagement.settings.ActivitySetting
+import asunder.toche.sccmanagement.transactions.TransactionState
+import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.menu_drawer.*
 import org.greenrobot.eventbus.EventBus
@@ -44,6 +47,8 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
     lateinit var actionBar: Toolbar
     lateinit var drawerLayout: DrawerLayout
     lateinit var contactVM : ContactViewModel
+    lateinit var productVM : ProductViewModel
+    lateinit var transactionVM : TransactionViewModel
     private val lifecycleRegistry by lazy {
         android.arch.lifecycle.LifecycleRegistry(this)
     }
@@ -53,6 +58,8 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         contactVM = ViewModelProviders.of(this).get(ContactViewModel::class.java)
+        productVM = ViewModelProviders.of(this).get(ProductViewModel::class.java)
+        transactionVM = ViewModelProviders.of(this).get(TransactionViewModel::class.java)
         setContentView(R.layout.activity_main)
         setUpPager()
         setUpTablayout()
@@ -175,6 +182,19 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
         contactVM.contact.observe(this, Observer {
             txtSearch.setText(it?.company)
         })
+        productVM.product.observe(this, Observer {
+            txtSearch.setText(it?.product_name)
+        })
+
+        transactionVM.stateView.observe(this, Observer {
+            System.out.println("Observer TransactionVM stateView $it")
+            if (it == TransactionState.SHOWTRANSACTION && pager.currentItem == 2){
+                //tabLayout.setScrollPosition(3,0f,true)
+                pager.currentItem = 3
+                //transactionVM.updateStateView(TransactionState.SHOWTRANSACTION)
+            }
+        })
+
 
     }
 
@@ -199,7 +219,11 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
 
                     }
                     2 ->{
-
+                        Utils.findProduct(s.toString(),object : Utils.OnFindProductListener{
+                            override fun onResults(results: MutableList<Model.Product>) {
+                                productVM.updateProducts(results)
+                            }
+                        },productVM.service.getProductsInDb())
                     }
                     3 ->{
 

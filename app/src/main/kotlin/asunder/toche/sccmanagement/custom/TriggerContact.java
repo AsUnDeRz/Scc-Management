@@ -6,13 +6,14 @@ import asunder.toche.sccmanagement.Model;
  * Created by ToCHe on 17/3/2018 AD.
  */
 
-public class TriggerHistory {
+public class TriggerContact {
 
-    public TriggerHistory(Model.Contact contact) {
+    public TriggerContact(Model.Contact contact) {
         this.contact = contact;
     }
 
     private Model.Contact contact;
+
 
     public Model.Contact getContact() {
         return contact;

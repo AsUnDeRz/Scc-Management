@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
@@ -12,7 +13,9 @@ import kotlinx.android.synthetic.main.item_product_history.view.*
 /**
  *Created by ToCHe on 18/3/2018 AD.
  */
-class ProductHistoryAdapter(var transactions:MutableList<Model.Transaction>) : RecyclerView.Adapter<ProductHistoryAdapter.ProductHistoryHolder>() {
+class ProductHistoryAdapter(var transactions:MutableList<Model.Transaction>,var listener :
+ProductHistoryOnClickListener)
+    : RecyclerView.Adapter<ProductHistoryAdapter.ProductHistoryHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductHistoryHolder {
@@ -25,7 +28,7 @@ class ProductHistoryAdapter(var transactions:MutableList<Model.Transaction>) : R
     }
 
     override fun onBindViewHolder(holder: ProductHistoryHolder, position: Int) {
-        holder.bind(transactions[position])
+        holder.bind(transactions[position],listener)
     }
 
 
@@ -37,7 +40,7 @@ class ProductHistoryAdapter(var transactions:MutableList<Model.Transaction>) : R
         val txtValues = itemView?.findViewById<TxtMedium>(R.id.txtValues)
         val txtDate = itemView?.findViewById<TxtMedium>(R.id.txtDate)
 
-        fun bind(transaction : Model.Transaction){
+        fun bind(transaction : Model.Transaction,listener: ProductHistoryOnClickListener){
             txtCompany?.text = findCompany()
             txtPriceSale?.text = transaction.sale_price[0].price
             if(transaction.sale_price[0].vat) {
@@ -48,12 +51,34 @@ class ProductHistoryAdapter(var transactions:MutableList<Model.Transaction>) : R
             txtValues?.text = transaction.sale_price[0].values
             txtDate?.text = transaction.date
 
+            txtCompany?.setOnClickListener {
+                listener.OnClickHistoryProduct(transaction)
+            }
+            txtPriceSale?.setOnClickListener {
+                listener.OnClickHistoryProduct(transaction)
+            }
+            txtVat?.setOnClickListener {
+                listener.OnClickHistoryProduct(transaction)
+            }
+            txtValues?.setOnClickListener {
+                listener.OnClickHistoryProduct(transaction)
+            }
+            txtDate?.setOnClickListener {
+                listener.OnClickHistoryProduct(transaction)
+            }
+
+
+
         }
 
         fun findCompany() : String{
             return "Company"
         }
-
-
     }
+
+    interface ProductHistoryOnClickListener{
+        fun OnClickHistoryProduct(transaction: Model.Transaction)
+    }
+
+
 }

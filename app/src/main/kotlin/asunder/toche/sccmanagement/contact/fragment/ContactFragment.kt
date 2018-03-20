@@ -23,7 +23,7 @@ import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.pager.ContactPager
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
-import asunder.toche.sccmanagement.custom.TriggerHistory
+import asunder.toche.sccmanagement.custom.TriggerContact
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
@@ -525,7 +525,7 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
                 ContactState.SELECTCONTACT ->{
                     tabContact.setScrollPosition(1,0f,true)
                     vpContact.currentItem = 1
-                    triggerHistory(contactVM.contact.value!!)
+                    triggerContact(contactVM.contact.value!!)
                 }
             }
         })
@@ -533,8 +533,8 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
 
 
     @Subscribe
-    fun triggerHistory(contact: Model.Contact){
-        EventBus.getDefault().postSticky(TriggerHistory(contact))
+    fun triggerContact(contact: Model.Contact){
+        EventBus.getDefault().postSticky(TriggerContact(contact))
     }
 
 }

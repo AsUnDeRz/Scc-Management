@@ -44,7 +44,7 @@ object Model{
                           val values:String = "",
                           val date:String = "",
                           val note:String = "",
-                          val default:Boolean = false)
+                          var default:Boolean = false)
     data class Transaction(var id:String = "",
                            val company_id:String = "",
                            val product_id:String = "",

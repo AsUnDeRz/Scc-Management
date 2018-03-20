@@ -1,5 +1,7 @@
 package asunder.toche.sccmanagement.transactions.fragment
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.TabLayout
@@ -16,8 +18,10 @@ import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.main.FilterViewPager
 import asunder.toche.sccmanagement.preference.Utils
+import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.adapter.SaleRateAdapter
 import asunder.toche.sccmanagement.transactions.pager.TransactionPager
+import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
 import kotlinx.android.synthetic.main.fragment_transactions.*
 import kotlinx.android.synthetic.main.fragment_transactions_add.*
 import kotlinx.android.synthetic.main.layout_price_rate.*
@@ -35,10 +39,12 @@ class TransactionsFragment : Fragment(){
     }
     private lateinit var rootLayoutPriceRate : ScrollView
     private lateinit var rootTransactionForm : ConstraintLayout
+    private lateinit var transactionVM: TransactionViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        transactionVM = ViewModelProviders.of(activity!!).get(TransactionViewModel::class.java)
     }
 
 
@@ -55,6 +61,7 @@ class TransactionsFragment : Fragment(){
         observerTabFilterTransactions()
         inflateStubTransactionAdd()
         inflateStubLayoutPriceRate()
+        observeTransaction()
     }
 
 
@@ -165,7 +172,7 @@ class TransactionsFragment : Fragment(){
         rvSalePrice.apply {
             val data : MutableList<Model.SalePrice> = mutableListOf()
             for(i in 0 until 10){
-                data.add(Model.SalePrice("1000$i",true,"10$i",
+                data.add(Model.SalePrice("1000$i",true,"1000$i",
                                 Utils.getCurrentDateShort(),""))
             }
             data.sortByDescending { it.date }
@@ -206,5 +213,33 @@ class TransactionsFragment : Fragment(){
         rootTransactionForm.visibility = View.GONE
         rootLayoutPriceRate.visibility = View.VISIBLE
 
+    }
+
+    fun observeTransaction(){
+        transactionVM.transaction.observe(this, Observer {
+            if (transactionVM.stateView.value == TransactionState.SHOWTRANSACTION){
+                System.out.println("Transaction $it")
+                vpTransaction.currentItem = 1
+            }
+        })
+        transactionVM.stateView.observe(this, Observer {
+            when(it){
+                TransactionState.SHOWTRANSACTION ->{
+                    showTransactionForm()
+                }
+                TransactionState.SHOWFORM ->{
+
+                }
+                TransactionState.SHOWINPUT ->{
+
+                }
+                TransactionState.SHOWLIST ->{
+
+                }
+                TransactionState.SHOWSALEFORM ->{
+
+                }
+            }
+        })
     }
 }

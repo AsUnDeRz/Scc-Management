@@ -7,5 +7,6 @@ enum class ProductState{
     SHOWLIST,
     SHOWFORM,
     SHOWINPUT,
-    SHOWMEDIUMFORM
+    SHOWMEDIUMFORM,
+    SHOWPRODUCT
 }

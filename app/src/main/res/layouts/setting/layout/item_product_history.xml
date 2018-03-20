@@ -16,6 +16,7 @@
         android:layout_height="match_parent"
         android:layout_weight="4"
         android:gravity="center"
+        android:maxLines="1"
         android:textSize="12sp" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
@@ -24,6 +25,7 @@
         android:layout_height="match_parent"
         android:layout_weight="5"
         android:gravity="center"
+        android:maxLines="1"
         android:textSize="12sp" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
@@ -32,6 +34,7 @@
         android:layout_height="match_parent"
         android:layout_weight="5"
         android:gravity="center"
+        android:maxLines="1"
         android:textSize="12sp" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
@@ -40,6 +43,7 @@
         android:layout_height="match_parent"
         android:layout_weight="5"
         android:gravity="center"
+        android:maxLines="1"
         android:textSize="12sp" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
@@ -48,5 +52,6 @@
         android:layout_height="match_parent"
         android:layout_weight="5"
         android:gravity="center"
+        android:maxLines="1"
         android:textSize="12sp" />
 </LinearLayout>

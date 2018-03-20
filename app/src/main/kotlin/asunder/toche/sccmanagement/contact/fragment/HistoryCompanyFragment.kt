@@ -13,7 +13,7 @@ import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.adapter.HistoryIssueAdapter
 import asunder.toche.sccmanagement.contact.adapter.HistoryTransactionAdapter
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
-import asunder.toche.sccmanagement.custom.TriggerHistory
+import asunder.toche.sccmanagement.custom.TriggerContact
 import asunder.toche.sccmanagement.service.IssueService
 import kotlinx.android.synthetic.main.fragment_contact_history.*
 import kotlinx.android.synthetic.main.layout_history_issue.*
@@ -91,8 +91,8 @@ class HistoryCompanyFragment : Fragment() {
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public fun onTriggerHistory(trigger : TriggerHistory) {
-        val stickyEvent = EventBus.getDefault().getStickyEvent(TriggerHistory::class.java)
+    public fun onTriggerContact(trigger : TriggerContact) {
+        val stickyEvent = EventBus.getDefault().getStickyEvent(TriggerContact::class.java)
         if (stickyEvent != null) {
             EventBus.getDefault().removeStickyEvent(stickyEvent)
         }

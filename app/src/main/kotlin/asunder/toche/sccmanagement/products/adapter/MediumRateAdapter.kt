@@ -11,8 +11,26 @@ import asunder.toche.sccmanagement.custom.textview.TxtMedium
 /**
  *Created by ToCHe on 18/3/2018 AD.
  */
-class MediumRateAdapter(private var mediumList: MutableList<Model.MediumRate>) :
+class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>) :
         RecyclerView.Adapter<MediumRateAdapter.MediumRateHolder>() {
+
+
+
+    fun updateMediumList(newData : MutableList<Model.MediumRate>){
+        mediumList = newData
+        notifyDataSetChanged()
+    }
+
+    fun addMediumList(mediumRate: Model.MediumRate){
+        if(mediumList.size > 0) {
+            mediumList.forEach {
+                it.default = false
+            }
+        }
+        mediumList.add(mediumRate)
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediumRateHolder {
         val view = LayoutInflater.from(parent.context).
                 inflate(R.layout.item_medium_rate,parent,false)
@@ -36,7 +54,7 @@ class MediumRateAdapter(private var mediumList: MutableList<Model.MediumRate>) :
 
         fun bind(mediumRate: Model.MediumRate){
             txtMediumPrice?.text = mediumRate.price
-            txtMediumDate?.text = mediumRate.date
+            txtMediumDate?.text = mediumRate.date.substring(0,10)
             txtMediumVat?.text = if(mediumRate.vat) "A" else "B"
 
         }
