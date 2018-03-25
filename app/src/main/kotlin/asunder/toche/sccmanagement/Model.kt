@@ -1,5 +1,7 @@
 package asunder.toche.sccmanagement
 
+import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter
+
 /**
  *Created by ToCHe on 27/2/2018 AD.
  */
@@ -77,5 +79,9 @@ object Model{
     data class ContactUser(val contacts:MutableList<Contact> = ArrayList())
     data class IssueUser(val issues:MutableList<Issue> = mutableListOf())
     data class ProductUser(val products: MutableList<Product> = mutableListOf())
+    data class TransactionUser(val transactions: MutableList<Transaction> = mutableListOf())
+    data class MasterGroup(var groupDate:MutableList<String> = mutableListOf(),
+                           var groupCompany:MutableList<String> = mutableListOf(),
+                           var resultMap:MutableMap<String,SectionedRecyclerViewAdapter> = mutableMapOf())
 
 }

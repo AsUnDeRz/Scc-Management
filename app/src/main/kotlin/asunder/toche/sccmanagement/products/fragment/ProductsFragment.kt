@@ -17,6 +17,7 @@ import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.TriggerProduct
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
+import asunder.toche.sccmanagement.custom.extension.ShowKeyboard
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.preference.Utils
@@ -131,6 +132,7 @@ class ProductsFragment : Fragment(){
 
         btnCancelProduct.setOnClickListener {
             showProductList()
+            setupForm(Model.Product())
         }
 
         btnSaveProductOnBottom.setOnClickListener {
@@ -214,12 +216,14 @@ class ProductsFragment : Fragment(){
         rootLayoutMediumRate.visibility = View.GONE
         imgNewProduct.visibility = View.GONE
 
+
     }
     fun showLayoutInput(){
         rootLayoutInput.visibility = View.VISIBLE
         rootProductForm.visibility = View.GONE
         rootLayoutMediumRate.visibility = View.GONE
         checkState()
+        edtInput.ShowKeyboard()
     }
 
     fun showMediumPriceForm(){
@@ -287,6 +291,7 @@ class ProductsFragment : Fragment(){
     fun setEditAction(){
         imgNewProduct.setOnClickListener {
             showProductForm()
+            setupForm(Model.Product())
         }
     }
 
@@ -370,6 +375,17 @@ class ProductsFragment : Fragment(){
         return true
     }
 
+    fun setupForm(product: Model.Product){
+        edtProductName.setText(product.product_name)
+        edtProductDetail.setText(product.product_desc)
+        edtImportFrom.setText(product.import_from)
+        edtPackSize.setText(product.pack_size)
+        edtDesc.setText(product.desc)
+        mediumRateAdapter.updateMediumList(product.medium_rate)
+        productViewModel.productId = product.id
+
+    }
+
     fun validateProduct():Boolean{
         if(TextUtils.isEmpty(edtProductName.text)){
             edtProductName.error = "กรุณากรอกชื่อสินค้า"
@@ -380,7 +396,7 @@ class ProductsFragment : Fragment(){
 
     fun saveProduct(){
         if(validateProduct()){
-            val product = Model.Product("",edtProductName.text.toString(),
+            val product = Model.Product(productViewModel.productId,edtProductName.text.toString(),
                     edtProductDetail.text.toString(),edtImportFrom.text.toString(),
                     edtPackSize.text.toString(), edtDesc.text.toString(),
                     Utils.getDateStringWithDate(selectedDate),mediumRateAdapter.mediumList)
@@ -401,7 +417,8 @@ class ProductsFragment : Fragment(){
                     showProductList()
                 }
                 ProductState.SHOWFORM ->{
-
+                    showProductForm()
+                    setupForm(productViewModel.product.value!!)
                 }
                 ProductState.SHOWINPUT ->{
 

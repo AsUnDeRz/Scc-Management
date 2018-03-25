@@ -1,5 +1,7 @@
 package asunder.toche.sccmanagement.transactions
 
+import asunder.toche.sccmanagement.Model
+
 /**
  *Created by ToCHe on 20/3/2018 AD.
  */
@@ -9,5 +11,13 @@ enum class TransactionState{
     SHOWINPUT,
     SHOWSALEFORM,
     SHOWTRANSACTION,
-    TRIGGERTOMAIN
+    TRIGGERTOMAIN,
+    SORTALL,
+    SORTYESTERDAY,
+    SORTTOMORROW,
+    NEWFROMCONTACT
+}
+
+interface TransactionListener{
+    fun onClickTransaction(transaction: Model.Transaction)
 }

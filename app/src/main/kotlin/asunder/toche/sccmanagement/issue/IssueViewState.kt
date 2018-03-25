@@ -5,5 +5,6 @@ package asunder.toche.sccmanagement.issue
  */
 enum class IssueState{
     ALLISSUE,
-    NEWISSUE
+    NEWISSUE,
+    NEWFROMCONTACT
 }

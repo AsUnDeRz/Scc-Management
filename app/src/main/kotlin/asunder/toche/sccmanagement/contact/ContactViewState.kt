@@ -7,5 +7,7 @@ enum class ContactState{
     ALLCONTACT,
     NEWCONTACT,
     EDITCONTACT,
-    SELECTCONTACT
+    SELECTCONTACT,
+    NEWISSUE,
+    NEWTRANSACTION
 }

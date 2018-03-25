@@ -25,7 +25,7 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
 
 
     fun saveProduct(data:Model.Product){
-        System.out.println("SaveProduct   $data")
+        System.out.println("SaveProduct  $data")
         if(productId == "") {
             service.pushNewProduct(data)
         }else{
@@ -60,6 +60,11 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
 
     fun addMediumRate(mediumRate: Model.MediumRate){
         mediumRateLists.value?.add(mediumRate)
+    }
+
+    fun deleteProduct(product: Model.Product){
+        service.deleteProductInDb(product.id)
+        service.deleteProduct(product)
     }
 
     override fun onSuccess() {

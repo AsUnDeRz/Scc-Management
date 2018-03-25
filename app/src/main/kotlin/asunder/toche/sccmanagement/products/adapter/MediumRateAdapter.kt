@@ -18,6 +18,7 @@ class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>) :
 
     fun updateMediumList(newData : MutableList<Model.MediumRate>){
         mediumList = newData
+        mediumList.sortByDescending { it.date }
         notifyDataSetChanged()
     }
 
@@ -28,6 +29,7 @@ class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>) :
             }
         }
         mediumList.add(mediumRate)
+        mediumList.sortByDescending { it.date }
         notifyDataSetChanged()
     }
 

@@ -9,6 +9,7 @@
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:text="ประวัติการติดต่อ"
         android:textColor="@color/colorDark"
         app:layout_constraintStart_toStartOf="parent"

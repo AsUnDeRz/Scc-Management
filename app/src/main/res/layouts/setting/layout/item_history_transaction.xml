@@ -9,11 +9,10 @@
     android:foreground="?attr/selectableItemBackgroundBorderless">
 
     <asunder.toche.sccmanagement.custom.textview.TxtThin
-        android:id="@+id/textView10"
+        android:id="@+id/txtProdName"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="สินค้า"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView8" />
@@ -37,44 +36,40 @@
                 android:orientation="horizontal">
 
                 <asunder.toche.sccmanagement.custom.textview.TxtThin
-                    android:id="@+id/textView22"
+                    android:id="@+id/txtSalePrice"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_alignParentStart="false"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="ราคา"
+                    android:layout_weight="4"
+                    android:gravity="right|center_vertical"
                     android:textSize="14sp" />
 
                 <asunder.toche.sccmanagement.custom.textview.TxtThin
-                    android:id="@+id/textView23"
+                    android:id="@+id/txtSaleVat"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_toEndOf="@+id/textView22"
-                    android:layout_weight="1"
+                    android:layout_weight="5"
                     android:gravity="center"
-                    android:text="VAT"
                     android:textSize="14sp" />
 
                 <asunder.toche.sccmanagement.custom.textview.TxtThin
-                    android:id="@+id/textView24"
+                    android:id="@+id/txtSaleValues"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_toEndOf="@+id/textView23"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="จำนวน"
+                    android:layout_weight="4"
+                    android:gravity="right|center_vertical"
                     android:textSize="14sp" />
 
                 <asunder.toche.sccmanagement.custom.textview.TxtThin
-                    android:id="@+id/textView25"
+                    android:id="@+id/txtSaleDate"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
-                    android:layout_weight="1"
+                    android:layout_weight="4"
                     android:gravity="center"
-                    android:text="วันที่"
-                    android:textSize="14sp" />
+                    android:textSize="8sp" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -92,31 +87,31 @@
                 android:orientation="horizontal">
 
                 <asunder.toche.sccmanagement.custom.textview.TxtThin
+                    android:id="@+id/txtMediumPrice"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_alignParentStart="false"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="ราคา"
+                    android:layout_weight="3"
+                    android:gravity="right|center_vertical"
                     android:textSize="14sp" />
 
                 <asunder.toche.sccmanagement.custom.textview.TxtThin
+                    android:id="@+id/txtMediumVat"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_toEndOf="@+id/textView22"
-                    android:layout_weight="1"
+                    android:layout_weight="4"
                     android:gravity="center"
-                    android:text="VAT"
                     android:textSize="14sp" />
 
                 <asunder.toche.sccmanagement.custom.textview.TxtThin
+                    android:id="@+id/txtMediumDate"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
-                    android:layout_weight="1"
+                    android:layout_weight="3"
                     android:gravity="center"
-                    android:text="วันที่"
-                    android:textSize="14sp" />
+                    android:textSize="8sp" />
             </LinearLayout>
 
         </RelativeLayout>

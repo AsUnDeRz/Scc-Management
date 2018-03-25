@@ -47,7 +47,8 @@ class ProductListFragment : Fragment(),ProductAdapter.ProductListener{
 
     fun setupAdapter(){
         val data = mutableListOf<Model.Product>()
-        productAdapter = ProductAdapter(data,this)
+        productAdapter = ProductAdapter(data,true)
+        productAdapter.setUpListener(this)
         rvProduct.apply {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
@@ -60,6 +61,7 @@ class ProductListFragment : Fragment(),ProductAdapter.ProductListener{
     fun observProductViewModel(){
 
         productViewModel.products.observe(this, Observer {
+
             it?.let {
                 productAdapter.updateProduct(it)
             }
@@ -95,9 +97,13 @@ class ProductListFragment : Fragment(),ProductAdapter.ProductListener{
     }
 
     override fun onClickEdit(product: Model.Product) {
+        productViewModel.updateProduct(product)
+        productViewModel.updateStateView(ProductState.SHOWFORM)
+
     }
 
     override fun onClickDelete(product: Model.Product) {
+        productViewModel.deleteProduct(product)
     }
 
 }

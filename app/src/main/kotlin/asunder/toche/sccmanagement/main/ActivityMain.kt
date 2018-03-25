@@ -23,6 +23,8 @@ import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.TriggerUpdate
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
+import asunder.toche.sccmanagement.issue.IssueState
+import asunder.toche.sccmanagement.issue.IssueViewModel
 import asunder.toche.sccmanagement.preference.KEY
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
@@ -48,6 +50,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
     lateinit var drawerLayout: DrawerLayout
     lateinit var contactVM : ContactViewModel
     lateinit var productVM : ProductViewModel
+    lateinit var issueVM : IssueViewModel
     lateinit var transactionVM : TransactionViewModel
     private val lifecycleRegistry by lazy {
         android.arch.lifecycle.LifecycleRegistry(this)
@@ -59,6 +62,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
         super.onCreate(savedInstanceState)
         contactVM = ViewModelProviders.of(this).get(ContactViewModel::class.java)
         productVM = ViewModelProviders.of(this).get(ProductViewModel::class.java)
+        issueVM = ViewModelProviders.of(this).get(IssueViewModel::class.java)
         transactionVM = ViewModelProviders.of(this).get(TransactionViewModel::class.java)
         setContentView(R.layout.activity_main)
         setUpPager()
@@ -171,11 +175,18 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
                 ContactState.ALLCONTACT ->{
                 }
                 ContactState.NEWCONTACT ->{
-
                 }
                 ContactState.EDITCONTACT ->{
                 }
                 ContactState.SELECTCONTACT ->{
+                }
+                ContactState.NEWISSUE ->{
+                    pager.currentItem = 1
+                    issueVM.updateViewState(IssueState.NEWFROMCONTACT)
+                }
+                ContactState.NEWTRANSACTION ->{
+                    pager.currentItem = 3
+                    transactionVM.updateStateView(TransactionState.NEWFROMCONTACT)
                 }
             }
         })

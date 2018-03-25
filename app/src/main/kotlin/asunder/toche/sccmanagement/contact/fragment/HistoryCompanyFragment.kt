@@ -10,11 +10,20 @@ import android.view.View
 import android.view.ViewGroup
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.adapter.HistoryIssueAdapter
 import asunder.toche.sccmanagement.contact.adapter.HistoryTransactionAdapter
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.TriggerContact
+import asunder.toche.sccmanagement.issue.IssueState
+import asunder.toche.sccmanagement.issue.IssueViewModel
+import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.service.IssueService
+import asunder.toche.sccmanagement.service.ProductService
+import asunder.toche.sccmanagement.service.TransactionService
+import asunder.toche.sccmanagement.transactions.TransactionListener
+import asunder.toche.sccmanagement.transactions.TransactionState
+import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
 import kotlinx.android.synthetic.main.fragment_contact_history.*
 import kotlinx.android.synthetic.main.layout_history_issue.*
 import kotlinx.android.synthetic.main.layout_history_transaction.*
@@ -25,11 +34,11 @@ import org.greenrobot.eventbus.ThreadMode
 /**
  *Created by ToCHe on 26/2/2018 AD.
  */
-class HistoryCompanyFragment : Fragment() {
-
-
+class HistoryCompanyFragment : Fragment(),TransactionListener {
 
     lateinit var contactVM : ContactViewModel
+    lateinit var transactionVM : TransactionViewModel
+    lateinit var issueVM : IssueViewModel
     lateinit var historyIssueAdapter: HistoryIssueAdapter
     lateinit var historyTransactionAdapter: HistoryTransactionAdapter
 
@@ -40,7 +49,9 @@ class HistoryCompanyFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        contactVM = ViewModelProviders.of(this).get(ContactViewModel::class.java)
+        contactVM = ViewModelProviders.of(activity!!).get(ContactViewModel::class.java)
+        transactionVM = ViewModelProviders.of(activity!!).get(TransactionViewModel::class.java)
+        issueVM = ViewModelProviders.of(activity!!).get(IssueViewModel::class.java)
         EventBus.getDefault().register(this)
     }
 
@@ -65,13 +76,16 @@ class HistoryCompanyFragment : Fragment() {
 
     fun initUI(){
         btnAddIssueWithCompany.setOnClickListener {
-            Snackbar.make(root_history_company,"Add Issue",Snackbar.LENGTH_SHORT).show()
+            contactVM.updateViewState(ContactState.NEWISSUE)
         }
 
         btnAddTransactionWithCompany.setOnClickListener {
-            Snackbar.make(root_history_company,"Add Transaction",Snackbar.LENGTH_SHORT).show()
+            transactionVM.updateContact(contactVM.contact.value!!)
+            contactVM.updateViewState(ContactState.NEWTRANSACTION)
         }
     }
+
+
 
     fun updateIssueAdapter(contact: Model.Contact?){
             val result = IssueService(object : IssueService.IssueCallBack{
@@ -82,6 +96,38 @@ class HistoryCompanyFragment : Fragment() {
             }).getIssueInDb()
             historyIssueAdapter = HistoryIssueAdapter(result.filter { it.company_id == contact?.id } as MutableList<Model.Issue>)
             rvHistoryIssue.adapter = historyIssueAdapter
+    }
+
+    fun updateTransactionAdapter(contact: Model.Contact?){
+        historyTransactionAdapter = HistoryTransactionAdapter()
+        rvHistoryTransaction.adapter = historyTransactionAdapter
+        Utils.findTransaction(contact?.id!!,object : Utils.OnFindTransactionsListener{
+            override fun onResults(results: MutableList<Model.Transaction>) {
+                val products = ProductService(object : ProductService.ProductCallback{
+                    override fun onSuccess() {
+                    }
+
+                    override fun onFail() {
+                    }
+                }).getProductsInDb()
+                val mapTransaction : MutableMap<Model.Transaction,Model.Product> = mutableMapOf()
+                results.forEach {item ->
+                    val product = products.first { it.id == item.product_id}
+                    mapTransaction[item] = product
+                }
+                historyTransactionAdapter.updateMapTransaction(
+                        mapTransaction
+                        ,results
+                        ,this@HistoryCompanyFragment)
+            }
+        },TransactionService(object : TransactionService.TransactionCallback{
+            override fun onFail() {
+            }
+
+            override fun onSuccess() {
+            }
+
+        }).getTransactionInDb())
 
     }
 
@@ -97,6 +143,10 @@ class HistoryCompanyFragment : Fragment() {
             EventBus.getDefault().removeStickyEvent(stickyEvent)
         }
         updateIssueAdapter(trigger.contact)
+        updateTransactionAdapter(trigger.contact)
+    }
+
+    override fun onClickTransaction(transaction: Model.Transaction) {
     }
 
 }

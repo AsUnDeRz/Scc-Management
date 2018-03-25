@@ -24,6 +24,7 @@ import android.widget.ScrollView
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.adapter.CompanyAdapter
+import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.main.FilterViewPager
@@ -58,6 +59,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
     private lateinit var sheetDisableCard: BottomSheetBehavior<View>
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var issueVM: IssueViewModel
+    private lateinit var contactVm : ContactViewModel
     val selectedFile = arrayListOf<String>()
     val selectedPhoto = arrayListOf<String>()
     var selectedDate : Date = Date()
@@ -67,6 +69,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         issueVM = ViewModelProviders.of(activity!!).get(IssueViewModel::class.java)
+        contactVm = ViewModelProviders.of(activity!!).get(ContactViewModel::class.java)
     }
 
 
@@ -333,7 +336,6 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
         adapter = CompanyAdapter(false)
         adapter.setUpOnClickListener(this)
         adapter.setContact(issueVM.getContact())
-
     }
 
     fun showSpinner(){
@@ -429,9 +431,14 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
             when (it){
                 IssueState.ALLISSUE ->{
                     showIssueList()
-
                 }
                 IssueState.NEWISSUE ->{
+
+                }
+                IssueState.NEWFROMCONTACT ->{
+                    showIssueForm()
+                    issueVM.updateCompany(contactVm.contact.value!!)
+
 
                 }
 

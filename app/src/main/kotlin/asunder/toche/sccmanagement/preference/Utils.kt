@@ -135,13 +135,14 @@ object Utils{
         }.filter(query)
     }
 
-    fun findTransaction(query: String, listener : OnFindTransactionsListener, masterDate:MutableList<Model.Transaction>){
+    fun findTransaction(query: String, listener : OnFindTransactionsListener, masterData:MutableList<Model.Transaction>){
         object :Filter(){
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val suggestionList = mutableListOf<Model.Transaction>()
                 if(!(constraint == null || constraint.isEmpty())){
-                    masterDate.filterTo(suggestionList){
-                        it.company_id.contains(constraint.toString())
+                    masterData.filterTo(suggestionList){
+                        it.company_id.contains(constraint.toString()) ||
+                        it.product_id.contains(constraint.toString())
                     }
                 }
                 val result = FilterResults()
@@ -154,11 +155,11 @@ object Utils{
                 if(results?.count != 0){
                     listener.onResults(results?.values as MutableList<Model.Transaction>)
                 }else{
-                    listener.onResults(masterDate)
+                    listener.onResults(masterData)
                 }
             }
 
-        }
+        }.filter(query)
     }
 
 

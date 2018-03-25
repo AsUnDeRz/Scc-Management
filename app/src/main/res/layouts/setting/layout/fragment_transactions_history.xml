@@ -1,6 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+        android:id="@+id/txtMedium7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="24dp"
+        android:text="สินค้า"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtSelectProduct"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_round_table"
+        android:hint="เลือกสินค้า"
+        android:paddingStart="24dp"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/txtMedium7"
+        app:layout_constraintTop_toBottomOf="@+id/txtMedium7" />
+
+    <LinearLayout
+        android:id="@+id/headerProductHistory"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtSelectProduct">
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:background="@drawable/bg_round_table"
+            android:gravity="center"
+            android:text="บริษัท"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:background="@drawable/bg_round_table"
+            android:gravity="center"
+            android:text="ราคาขาย"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:background="@drawable/bg_round_table"
+            android:gravity="center"
+            android:text="VAT"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtMedium4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:background="@drawable/bg_round_table"
+            android:gravity="center"
+            android:text="จำนวน"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtMedium"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:background="@drawable/bg_round_table"
+            android:gravity="center"
+            android:text="วันที่"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvTransavtionHistory"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/headerProductHistory" />
+
 
 </android.support.constraint.ConstraintLayout>

@@ -3,33 +3,160 @@ package asunder.toche.sccmanagement.transactions.viewmodel
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import asunder.toche.sccmanagement.Model
+import asunder.toche.sccmanagement.issue.adapter.SectionIssueAdapter
+import asunder.toche.sccmanagement.preference.Utils
+import asunder.toche.sccmanagement.service.ContactService
 import asunder.toche.sccmanagement.service.FirebaseManager
+import asunder.toche.sccmanagement.service.ProductService
 import asunder.toche.sccmanagement.service.TransactionService
+import asunder.toche.sccmanagement.transactions.TransactionListener
 import asunder.toche.sccmanagement.transactions.TransactionState
+import asunder.toche.sccmanagement.transactions.adapter.SectionTransactionAdapter
+import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter
 
 /**
  *Created by ToCHe on 20/3/2018 AD.
  */
-class TransactionViewModel : ViewModel() {
+class TransactionViewModel : ViewModel(),
+        TransactionService.TransactionCallback,
+        ContactService.ContactCallBack,
+        ProductService.ProductCallback{
 
-    val service = TransactionService()
+    val service = TransactionService(this)
+    val contactService = ContactService(this)
+    val productService = ProductService(this)
     val firebase = FirebaseManager()
     val transaction: MutableLiveData<Model.Transaction> = MutableLiveData()
     val transactions : MutableLiveData<MutableList<Model.Transaction>> = MutableLiveData()
     val salePriceLists : MutableLiveData<MutableList<Model.SalePrice>> = MutableLiveData()
     val stateView : MutableLiveData<TransactionState> = MutableLiveData()
+    val product: MutableLiveData<Model.Product> = MutableLiveData()
+    val contact: MutableLiveData<Model.Contact> = MutableLiveData()
     var transactionId  =""
 
 
 
+    fun getContact() : MutableList<Model.Contact>{
+        return contactService.getContactInDb()
+    }
+
+
+    fun saveTransaction(data: Model.Transaction){
+        if (transactionId == ""){
+            service.pushNewTransaction(data)
+        }else{
+            service.updateTransaction(data)
+        }
+    }
 
 
 
 
+    fun tranformFormat():Model.MasterGroup{
+        val groupDate : MutableList<String> = mutableListOf()
+        val groupCompany : MutableList<String> = mutableListOf()
+        transactions.value?.forEach {
+            groupDate.add(it.date.substring(0,10))
+            groupCompany.add(it.company_id)
+        }
+
+        return Model.MasterGroup(groupDate.distinctBy { it }.sortedDescending().toMutableList()
+                ,groupCompany.distinctBy { it }.sortedDescending().toMutableList())
+    }
+
+    fun setSectionAdapter(sectionList: List<String>, results: MutableMap<String,List<Model.Issue>?>)
+            : SectionedRecyclerViewAdapter {
+        val sectionIssueAdapter = SectionedRecyclerViewAdapter()
+        sectionList.forEach {
+            val section = SectionIssueAdapter(it, results[it] as MutableList<Model.Issue>)
+            sectionIssueAdapter.addSection(section)
+        }
+        return sectionIssueAdapter
+    }
+
+    fun separateSection(sectionList: List<String>, companyList:List<String>,
+                        listener: TransactionListener) :
+    MutableMap<String,SectionedRecyclerViewAdapter>{
+        val data = service.getTransactionInDb()
+        val products = productService.getProductsInDb()
+        val companys = contactService.getContactInDb()
+        val mapSection : MutableMap<String,SectionedRecyclerViewAdapter> = mutableMapOf()
+        sectionList.forEach { sectionDate ->
+            val sectionAdapter = SectionedRecyclerViewAdapter()
+            companyList.forEach {compId ->
+                val mapProduct : MutableMap<String,Model.Product> = mutableMapOf()
+                val transaction = data
+                        .filter { it.company_id == compId &&
+                                  sectionDate == it.date.substring(0,10)}
+                    transaction.forEach { transacModel ->
+                        val item = products.filter { it.id == transacModel.product_id }
+                        if(item.isNotEmpty()) {
+                             mapProduct[transacModel.id] = item[0]
+                        }
+                    }
+
+                if (transaction.isNotEmpty()) {
+                    val compName = companys.first { it.id == compId }
+                    sectionAdapter.addSection(
+                            SectionTransactionAdapter(compName.company,
+                                    transaction.toMutableList(),
+                                    mapProduct,
+                                    listener))
+                }
+            }
+            mapSection[sectionDate] = sectionAdapter
+        }
+
+        return mapSection
+    }
+
+    fun sortAll(listener: TransactionListener) : Model.MasterGroup{
+        val masterGroup = tranformFormat()
+        val sectionList = masterGroup.groupDate
+        val companyList = masterGroup.groupCompany
+        val result = separateSection(sectionList,companyList,listener)
+        return if(result.isNotEmpty()) {
+            masterGroup.resultMap = result
+            masterGroup
+        }else{
+            Model.MasterGroup()
+        }
+    }
+
+    fun sortTomorrow(listener: TransactionListener):Model.MasterGroup{
+        val masterGroup = tranformFormat()
+        val companyList = masterGroup.groupCompany
+        val newDate = masterGroup.groupDate.filter { it > Utils.getCurrentDateShort() }
+        val result = separateSection(newDate,companyList,listener)
+        return if(result.isNotEmpty()) {
+            masterGroup.resultMap = result
+            masterGroup.groupDate = newDate.toMutableList()
+            masterGroup
+        }else{
+            Model.MasterGroup()
+        }
+    }
 
 
+    fun sortYesterday(listener: TransactionListener):Model.MasterGroup{
+        val masterGroup = tranformFormat()
+        val companyList = masterGroup.groupCompany
+        val newDate = masterGroup.groupDate.filter { it < Utils.getCurrentDateShort() }
+        val result = separateSection(newDate
+                ,companyList,listener)
+        return if(result.isNotEmpty()) {
+            masterGroup.resultMap = result
+            masterGroup.groupDate = newDate.toMutableList()
+            masterGroup
+        }else{
+            Model.MasterGroup()
+        }
+    }
 
-
+    fun loadTransaction(){
+        val data = service.getTransactionInDb()
+        updateTransactions(data)
+    }
 
 
     fun updateSalePriceLists(data : MutableList<Model.SalePrice>){
@@ -46,10 +173,26 @@ class TransactionViewModel : ViewModel() {
 
     fun updateStateView(state:TransactionState){
         stateView.value = state
-        System.out.println("UpdateStateView $state")
     }
 
+    fun updateProduct(data: Model.Product){
+        product.value = data
+    }
 
+    fun updateContact(data:Model.Contact){
+        contact.value = data
+    }
+
+    override fun onSuccess() {
+        updateStateView(TransactionState.SHOWLIST)
+        loadTransaction()
+    }
+
+    override fun onFail() {
+        updateStateView(TransactionState.SHOWLIST)
+        loadTransaction()
+
+    }
 
 
 }

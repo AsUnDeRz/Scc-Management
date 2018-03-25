@@ -13,4 +13,5 @@
     <color name="green_pressed">#159944</color>
     <color name="colorDark">#47525E</color>
     <color name="colorWaiting">#FFCA2C</color>
+    <color name="colorBgSection">#73cfcfd9</color>
 </resources>

@@ -54,15 +54,17 @@ class ProductService(var listener:ProductCallback){
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
+                listener.onFail()
             } else {
                 System.out.println("Data Update Product successfully.")
+                listener.onSuccess()
             }
         })
-
+        pushNewProductToDb(updateProductFromDb(product,getProductsInDb()))
     }
 
-    fun deleteProduct(product : Model.Product, context: Context){
-        firebase.child("${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.PRODUCTS}/${product.id}")
+    fun deleteProduct(product : Model.Product){
+        firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.PRODUCTS}/${product.id}")
                 .removeValue({ databaseError, _ ->
                     if (databaseError != null) {
                         //Crashlytics.log(databaseError.message)

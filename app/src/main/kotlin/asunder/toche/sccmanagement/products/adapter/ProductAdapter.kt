@@ -10,19 +10,33 @@ import asunder.toche.sccmanagement.R.id.btnDelete
 import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import me.thanel.swipeactionview.SwipeActionView
+import me.thanel.swipeactionview.SwipeDirection
 import me.thanel.swipeactionview.SwipeGestureListener
 import java.util.zip.Inflater
 
 /**
  *Created by ToCHe on 18/3/2018 AD.
  */
-class ProductAdapter(var products:MutableList<Model.Product>,var listener : ProductListener)
+class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolean)
     : RecyclerView.Adapter<ProductAdapter.ProductHolder>() {
 
 
+    lateinit var listener : ProductListener
+    lateinit var onClickListener : ProductOnClickListener
+
     fun updateProduct(data:MutableList<Model.Product>){
         products = data
+        products.sortBy { it.product_name }
         notifyDataSetChanged()
+    }
+
+
+    fun setUpListener(listener: ProductListener){
+        this.listener = listener
+
+    }
+    fun setUpOnClickListener(listener: ProductOnClickListener){
+        this.onClickListener = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductHolder {
@@ -35,7 +49,11 @@ class ProductAdapter(var products:MutableList<Model.Product>,var listener : Prod
     }
 
     override fun onBindViewHolder(holder: ProductHolder, position: Int) {
-        holder.bind(products[position],listener)
+        if(editAble) {
+            holder.bind(products[position], listener)
+        }else{
+            holder.bind(products[position],onClickListener)
+        }
     }
 
 
@@ -74,9 +92,27 @@ class ProductAdapter(var products:MutableList<Model.Product>,var listener : Prod
                     return true
                 }
             }
+            swipeView?.setOnClickListener {
+                System.out.println("SwipeView OnClickListener")
+            }
+
 
             itemView.setOnClickListener {
                 listener.onSelectProduct(product)
+            }
+        }
+
+        fun bind(product: Model.Product,listener:ProductOnClickListener){
+            txtProdct?.text = product.product_name
+            txtPriceMedium?.text = product.medium_rate[0].price
+            if(product.medium_rate[0].vat) {
+                txtVat?.text = "A"
+            }else{
+                txtVat?.text = "B"
+            }
+            txtDate?.text = product.date.substring(0,10)
+            itemView.setOnClickListener {
+                listener.onClickProduct(product)
             }
         }
 

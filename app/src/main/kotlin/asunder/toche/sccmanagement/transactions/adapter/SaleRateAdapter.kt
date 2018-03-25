@@ -11,8 +11,22 @@ import asunder.toche.sccmanagement.custom.textview.TxtMedium
 /**
  *Created by ToCHe on 18/3/2018 AD.
  */
-class SaleRateAdapter(private var saleList: MutableList<Model.SalePrice>) :
+class SaleRateAdapter(var saleList: MutableList<Model.SalePrice>) :
         RecyclerView.Adapter<SaleRateAdapter.SaleHolder>(){
+
+
+    fun addSalePrice(salePrice: Model.SalePrice){
+        saleList.add(salePrice)
+        saleList.sortByDescending { it.date }
+        notifyDataSetChanged()
+
+    }
+
+    fun updateSalePrice(newData:MutableList<Model.SalePrice>){
+        saleList = newData
+        saleList.sortByDescending { it.date }
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SaleHolder {
         val view = LayoutInflater.from(parent.context).
@@ -37,7 +51,7 @@ class SaleRateAdapter(private var saleList: MutableList<Model.SalePrice>) :
         private val txtSaleDate = itemView?.findViewById<TxtMedium>(R.id.txtSaleDate)
 
         fun bind(salePrice: Model.SalePrice){
-            txtSaleDate?.text = salePrice.date
+            txtSaleDate?.text = salePrice.date.substring(0,10)
             txtSalePrice?.text = salePrice.price
             txtSaleValues?.text = salePrice.values
             txtSaleVat?.text = if(salePrice.vat) "A" else "B"

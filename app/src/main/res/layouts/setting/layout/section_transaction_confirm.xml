@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-        android:id="@+id/edtDesc"
+        android:id="@+id/edtTransactionNote"
         android:layout_width="0dp"
         android:layout_height="144dp"
         android:layout_marginEnd="48dp"
@@ -35,7 +35,7 @@
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtDesc" />
+        app:layout_constraintTop_toBottomOf="@+id/edtTransactionNote" />
 
     <asunder.toche.sccmanagement.custom.button.BtnMedium
         android:id="@+id/btnCancelTransaction"

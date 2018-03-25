@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-        android:id="@+id/edtProductName"
+        android:id="@+id/edtTransactionCompany"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
@@ -36,7 +36,7 @@
         app:layout_constraintTop_toBottomOf="@+id/btnSaveTransactionOnTop" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-        android:id="@+id/edtImportFrom"
+        android:id="@+id/edtTransactionProduct"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
@@ -46,12 +46,12 @@
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/edtProductName"
-        app:layout_constraintStart_toStartOf="@+id/edtProductName"
-        app:layout_constraintTop_toBottomOf="@+id/edtProductName" />
+        app:layout_constraintEnd_toEndOf="@+id/edtTransactionCompany"
+        app:layout_constraintStart_toStartOf="@+id/edtTransactionCompany"
+        app:layout_constraintTop_toBottomOf="@+id/edtTransactionCompany" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-        android:id="@+id/edtPackSize"
+        android:id="@+id/edtMediumPrice"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
@@ -61,9 +61,9 @@
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/edtImportFrom"
-        app:layout_constraintStart_toStartOf="@+id/edtImportFrom"
-        app:layout_constraintTop_toBottomOf="@+id/edtImportFrom" />
+        app:layout_constraintEnd_toEndOf="@+id/edtTransactionProduct"
+        app:layout_constraintStart_toStartOf="@+id/edtTransactionProduct"
+        app:layout_constraintTop_toBottomOf="@+id/edtTransactionProduct" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
         android:id="@+id/txtMedium2"
@@ -73,7 +73,7 @@
         android:layout_marginTop="16dp"
         android:text="ราคาลูกค้า"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtPackSize" />
+        app:layout_constraintTop_toBottomOf="@+id/edtMediumPrice" />
 
     <ImageView
         android:id="@+id/imgNewSaleRate"
