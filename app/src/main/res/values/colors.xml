@@ -14,4 +14,7 @@
     <color name="colorDark">#47525E</color>
     <color name="colorWaiting">#FFCA2C</color>
     <color name="colorBgSection">#73cfcfd9</color>
+
+    <color name="blackOpacity33">#33000000</color>
+
 </resources>

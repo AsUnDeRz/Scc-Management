@@ -26,8 +26,11 @@ import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.adapter.CompanyAdapter
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.button.BtnMedium
+import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
+import asunder.toche.sccmanagement.main.ControllViewModel
 import asunder.toche.sccmanagement.main.FilterViewPager
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import com.bumptech.glide.Glide
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
@@ -60,18 +63,42 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var issueVM: IssueViewModel
     private lateinit var contactVm : ContactViewModel
+    private lateinit var controllViewModel: ControllViewModel
     val selectedFile = arrayListOf<String>()
     val selectedPhoto = arrayListOf<String>()
     var selectedDate : Date = Date()
     private lateinit var adapter: CompanyAdapter
+    private var loading = LoadingDialog.newInstance()
     private lateinit var sectionIssueAdapter : SectionedRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         issueVM = ViewModelProviders.of(activity!!).get(IssueViewModel::class.java)
         contactVm = ViewModelProviders.of(activity!!).get(ContactViewModel::class.java)
+        controllViewModel = ViewModelProviders.of(activity!!).get(ControllViewModel::class.java)
+        initControllState()
     }
 
+    fun initControllState(){
+        controllViewModel.currentUI.observe(this, Observer {
+            if (it == ROOT.ISSUE){
+                initViewCreated()
+            }
+        })
+    }
+
+    fun initViewCreated(){
+        issueVM.loadIssue()
+        separateSection(issueVM.sortAll())
+        rvSectionIssue.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+        }
+        observerTabFilterIssue()
+        onClickNewIssue()
+        initFilterWithButton()
+        observerIssue()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = LayoutInflater.from(context).inflate(R.layout.fragment_issue,container,false)
@@ -80,19 +107,8 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        issueVM.loadIssue()
-        separateSection(issueVM.sortAll())
-        rvSectionIssue.apply {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(context)
-        }
-        observerTabFilterIssue()
         inflateStubIssueAdd()
         inflateStubLayoutInput()
-        onClickNewIssue()
-        initFilterWithButton()
-        observerIssue()
-
     }
 
 
@@ -298,6 +314,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
         val bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet_company, null)
         val rvFilterCompany = bottomSheetView.findViewById<RecyclerView>(R.id.rvFilterCompany)
         val txtFilter = bottomSheetView.findViewById<EdtMedium>(R.id.txtCompanyFilter)
+        val btnCancel = bottomSheetView.findViewById<BtnMedium>(R.id.btnCancel)
         bottomSheetDialog = BottomSheetDialog(context!!)
         bottomSheetDialog.setContentView(bottomSheetView)
         sheetDisableCard = BottomSheetBehavior.from(bottomSheetView.parent as View)
@@ -330,6 +347,9 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
             }
         })
 
+        btnCancel.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
     }
 
     fun setUpAdapterCompany(){
@@ -431,6 +451,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
             when (it){
                 IssueState.ALLISSUE ->{
                     showIssueList()
+                    loading.dismiss()
                 }
                 IssueState.NEWISSUE ->{
 
@@ -438,8 +459,6 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
                 IssueState.NEWFROMCONTACT ->{
                     showIssueForm()
                     issueVM.updateCompany(contactVm.contact.value!!)
-
-
                 }
 
             }
@@ -474,6 +493,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
                 ,edtIssueDetail.text.toString(),Utils.getDateStringWithDate(selectedDate),"",
                 photoPath,"",filePath)
         issueVM.saveIssue(data)
+        loading.show(fragmentManager, LoadingDialog.TAG)
     }
 
     fun validateInput() : Boolean{

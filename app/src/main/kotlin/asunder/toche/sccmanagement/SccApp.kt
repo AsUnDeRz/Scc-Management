@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.support.multidex.MultiDex
 import asunder.toche.sccmanagement.preference.SecurePreferences
+import com.google.firebase.database.FirebaseDatabase
 import io.paperdb.Paper
 
 /**
@@ -14,6 +15,7 @@ class SccApp : Application(){
         super.onCreate()
         SecurePreferences.init(this)
         Paper.init(this)
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
 
     }
 

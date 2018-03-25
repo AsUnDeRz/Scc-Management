@@ -12,6 +12,10 @@ import asunder.toche.sccmanagement.service.ContactService
 import asunder.toche.sccmanagement.service.FirebaseManager
 import asunder.toche.sccmanagement.service.IssueService
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import java.io.File
 
 /**
@@ -49,21 +53,30 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
         companyReference.value = company
     }
 
-    fun saveIssue(data:Model.Issue){
-        if(data.file_path != ""){
-            val filePath = Uri.fromFile(File(data.file_path))
-            data.file_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${filePath.lastPathSegment}"
-            firebase.pushFileToFirebase(data.file_path,"")
-
+    fun saveIssue(data:Model.Issue) = async(UI) {
+        try {
+            val job = async(CommonPool) {
+                if(data.file_path != ""){
+                    val filePath = Uri.fromFile(File(data.file_path))
+                    data.file_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${filePath.lastPathSegment}"
+                    firebase.pushFileToFirebase(data.file_path,"")
+                }
+                if(data.image_path != ""){
+                    val imgPath = Uri.fromFile(File(data.image_path))
+                    data.image_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${imgPath.lastPathSegment}"
+                    firebase.pushFileToFirebase(data.image_path,"")
+                }
+                data.company_id = companyReference.value!!.id
+                service.pushNewIssue(data)
+            }
+            job.await()
+            //We're back on the main thread here.
+            //Update UI controls such as RecyclerView adapter data.
         }
-
-        if(data.image_path != ""){
-            val imgPath = Uri.fromFile(File(data.image_path))
-            data.image_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${imgPath.lastPathSegment}"
-            firebase.pushFileToFirebase(data.image_path,"")
+        catch (e: Exception) {
         }
-        data.company_id = companyReference.value!!.id
-        service.pushNewIssue(data)
+        finally {
+        }
     }
 
     fun tranformFormat() : List<String> {

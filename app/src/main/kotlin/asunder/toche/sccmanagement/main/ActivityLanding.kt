@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Window
 import android.view.WindowManager
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.auth.ActivityLogin
+import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.preference.Prefer
 import com.google.firebase.auth.FirebaseAuth
 import com.karumi.dexter.Dexter
@@ -22,8 +24,9 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 class ActivityLanding : AppCompatActivity(){
 
 
-    lateinit var  handler: Handler
-    lateinit var runnable: Runnable
+    private lateinit var  handler: Handler
+    private lateinit var runnable: Runnable
+    private var loading = LoadingDialog.newInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +34,7 @@ class ActivityLanding : AppCompatActivity(){
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_landing)
+        loading.show(supportFragmentManager, LoadingDialog.TAG)
         requestPermission()
         setupPreference()
 
@@ -54,7 +58,14 @@ class ActivityLanding : AppCompatActivity(){
                         Manifest.permission.READ_CONTACTS)
                 .withListener(object : MultiplePermissionsListener{
                     override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                        postDelayed()
+                        if (report != null) {
+                            if(!report.isAnyPermissionPermanentlyDenied) {
+                                postDelayed()
+                            }else{
+                                finish()
+                            }
+
+                        }
                     }
 
                     override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?, token: PermissionToken?) {
@@ -67,8 +78,9 @@ class ActivityLanding : AppCompatActivity(){
         runnable = Runnable({})
         runnable = Runnable{
 
-            startActivity(Intent().setClass(this, ActivityMain::class.java))
+            startActivity(Intent().setClass(this, ActivityLogin::class.java))
             finish()
+            loading.dismiss()
             overridePendingTransition( R.anim.fade_in, R.anim.fade_out )
 
         }

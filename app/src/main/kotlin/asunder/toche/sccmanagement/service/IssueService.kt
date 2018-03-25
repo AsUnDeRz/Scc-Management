@@ -6,9 +6,14 @@ import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
 import com.google.firebase.FirebaseApp
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import io.paperdb.Paper
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import java.util.HashMap
 
 /**
@@ -45,6 +50,7 @@ class IssueService(var listener : IssueCallBack){
         })
         pushNewIssueToDb(updateIssueFromDb(issue,getIssueInDb()))
 
+
     }
 
     fun updateIssue(Issue: Model.Issue){
@@ -74,18 +80,30 @@ class IssueService(var listener : IssueCallBack){
     }
 
     fun getIssueInDb() : MutableList<Model.Issue>{
-        val contact = Paper.book().read<Model.IssueUser>(ROOT.ISSUE)
-        return if(contact != null) {
-            contact.issues
-        }else{
-            Log.d(TAG,"Not Found Contact in DB")
-            mutableListOf()
+        val data:MutableList<Model.Issue> = mutableListOf()
+        async {
+            val contact = async(CommonPool){
+                Paper.book().read<Model.IssueUser>(ROOT.ISSUE)
+            }
+            data.addAll(contact.await().issues)
         }
+        return data
     }
 
-    fun pushNewIssueToDb(issues:MutableList<Model.Issue>) {
-        Paper.book().write(ROOT.ISSUE,Model.IssueUser(issues))
-        Log.d(TAG,"Paper write $issues")
+    fun pushNewIssueToDb(issues:MutableList<Model.Issue>) = async(UI) {
+        try {
+            val job = async(CommonPool) {
+                Paper.book().write(ROOT.ISSUE,Model.IssueUser(issues))
+                Log.d(TAG,"Paper write $issues")
+            }
+            job.await()
+            //We're back on the main thread here.
+            //Update UI controls such as RecyclerView adapter data.
+        }
+        catch (e: Exception) {
+        }
+        finally {
+        }
     }
 
     fun deleteIssueInDb(uid:String){

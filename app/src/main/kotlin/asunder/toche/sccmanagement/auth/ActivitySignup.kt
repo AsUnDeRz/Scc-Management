@@ -8,6 +8,7 @@ import android.text.TextUtils
 import android.util.Log
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
+import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.extension.hideLoading
 import asunder.toche.sccmanagement.custom.extension.showLoading
 import asunder.toche.sccmanagement.service.ManageUserService
@@ -39,6 +40,7 @@ class ActivitySignup : AppCompatActivity(),
     private var mCallbackManager: CallbackManager? = null
     lateinit var authManager : ManageUserService
     private val RC_SIGN_IN = 9001
+    private val loadingDialog = LoadingDialog.newInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -174,11 +176,11 @@ class ActivitySignup : AppCompatActivity(),
     }
 
     fun showLoading(){
-        loadingSignUp.showLoading()
+        loadingDialog.show(supportFragmentManager,LoadingDialog.TAG)
     }
 
     fun hideLoading(){
-        loadingSignUp.hideLoading()
+        loadingDialog.dismiss()
     }
 
     override fun onClickConfirm() {

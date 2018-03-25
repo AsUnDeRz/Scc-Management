@@ -16,10 +16,13 @@ import android.widget.ScrollView
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.TriggerProduct
+import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.ShowKeyboard
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
+import asunder.toche.sccmanagement.main.ControllViewModel
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.products.ProductState
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
@@ -53,6 +56,8 @@ class ProductsFragment : Fragment(){
         fun newInstance(): ProductsFragment = ProductsFragment()
     }
     private lateinit var productViewModel: ProductViewModel
+    private lateinit var controllViewModel: ControllViewModel
+
     private lateinit var rootLayoutInput : ScrollView
     private lateinit var rootLayoutMediumRate : ScrollView
     private lateinit var rootProductForm : ConstraintLayout
@@ -61,14 +66,31 @@ class ProductsFragment : Fragment(){
     private lateinit var titleInput : TxtMedium
     private lateinit var edtInput : EdtMedium
     private var selectedDate : Date = Date()
-
-
+    private var loading = LoadingDialog.newInstance()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         productViewModel = ViewModelProviders.of(activity!!).get(ProductViewModel::class.java)
+        controllViewModel = ViewModelProviders.of(activity!!).get(ControllViewModel::class.java)
+        initControllState()
     }
+
+    fun initControllState(){
+        controllViewModel.currentUI.observe(this, Observer {
+            if (it == ROOT.PRODUCTS){
+                initViewCreated()
+            }
+        })
+    }
+
+    fun initViewCreated(){
+        setUpPager()
+        setUpTablayout()
+        setEditAction()
+        observProductViewModel()
+    }
+
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -78,13 +100,9 @@ class ProductsFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpPager()
-        setUpTablayout()
-        setEditAction()
         inflateStubProductAdd()
         inflateStubLayoutInput()
         inflateStubLayoutMediumRate()
-        observProductViewModel()
     }
 
 
@@ -402,19 +420,19 @@ class ProductsFragment : Fragment(){
                     Utils.getDateStringWithDate(selectedDate),mediumRateAdapter.mediumList)
 
             productViewModel.saveProduct(product)
+            loading.show(fragmentManager, LoadingDialog.TAG)
         }
     }
 
     fun observProductViewModel(){
         productViewModel.products.observe(this, Observer {
-
-
         })
 
         productViewModel.stateView.observe(this, Observer {
             when(it){
                 ProductState.SHOWLIST ->{
                     showProductList()
+                    loading.dismiss()
                 }
                 ProductState.SHOWFORM ->{
                     showProductForm()

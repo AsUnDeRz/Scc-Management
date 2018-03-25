@@ -6,6 +6,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.TabLayout
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
@@ -26,6 +27,7 @@ import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.issue.IssueState
 import asunder.toche.sccmanagement.issue.IssueViewModel
 import asunder.toche.sccmanagement.preference.KEY
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
 import asunder.toche.sccmanagement.service.ManageUserService
@@ -48,6 +50,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
     lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
     lateinit var actionBar: Toolbar
     lateinit var drawerLayout: DrawerLayout
+    lateinit var controllViewModel: ControllViewModel
     lateinit var contactVM : ContactViewModel
     lateinit var productVM : ProductViewModel
     lateinit var issueVM : IssueViewModel
@@ -60,6 +63,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        controllViewModel = ViewModelProviders.of(this).get(ControllViewModel::class.java)
         contactVM = ViewModelProviders.of(this).get(ContactViewModel::class.java)
         productVM = ViewModelProviders.of(this).get(ProductViewModel::class.java)
         issueVM = ViewModelProviders.of(this).get(IssueViewModel::class.java)
@@ -70,6 +74,8 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
         setHumburgerButton()
         observerContacts()
         searchTextChanged()
+        controllViewModel.updateCurrentUI(ROOT.CONTACTS)
+
 
     }
 
@@ -83,6 +89,33 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
 
     fun setUpTablayout(){
         tabLayout.setupWithViewPager(pager)
+        tabLayout.addOnTabSelectedListener(object :TabLayout.OnTabSelectedListener{
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when(tab?.position){
+                    0 ->{
+                        controllViewModel.updateCurrentUI(ROOT.CONTACTS)
+                        System.out.println("Tab Select ${tab.position}")
+                    }
+                    1 ->{
+                        controllViewModel.updateCurrentUI(ROOT.ISSUE)
+                        System.out.println("Tab Select ${tab.position}")
+                    }
+                    2 ->{
+                        controllViewModel.updateCurrentUI(ROOT.PRODUCTS)
+                        System.out.println("Tab Select ${tab.position}")
+                    }
+                    3 ->{
+                        controllViewModel.updateCurrentUI(ROOT.TRANSACTIONS)
+                        System.out.println("Tab Select ${tab.position}")
+                    }
+                }
+            }
+
+        })
     }
 
     fun setHumburgerButton() {
@@ -106,6 +139,12 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
 
     fun setOnClickMenu(){
         val btns = arrayOf(btnContact,btnIssue,btnProduct,btnTransaction,btnAdmin,btnLogout,btnSetting)
+        val isAdmin = intent.extras.getBoolean(ROOT.ADMIN)
+        if (isAdmin){
+            btnAdmin.visibility = View.VISIBLE
+        }else{
+            btnAdmin.visibility = View.GONE
+        }
         for (button in btns){
             button.setOnClickListener {
                 when (button) {
@@ -198,7 +237,6 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
         })
 
         transactionVM.stateView.observe(this, Observer {
-            System.out.println("Observer TransactionVM stateView $it")
             if (it == TransactionState.SHOWTRANSACTION && pager.currentItem == 2){
                 //tabLayout.setScrollPosition(3,0f,true)
                 pager.currentItem = 3

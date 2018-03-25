@@ -10,6 +10,8 @@ object ROOT{
     const val PRODUCTS = "products"
     const val TRANSACTIONS = "transactions"
     const val MANAGEMENT = "management"
+    const val ADMIN = "admin"
+    const val REGISTER ="register"
     const val APPROVE = "approve"
     const val REJECT = "reject"
     const val TERMINATE = "terminate"

@@ -23,10 +23,13 @@ import android.widget.ScrollView
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.adapter.CompanyAdapter
+import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
+import asunder.toche.sccmanagement.main.ControllViewModel
 import asunder.toche.sccmanagement.main.FilterViewPager
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.products.adapter.ProductAdapter
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
@@ -57,10 +60,11 @@ class TransactionsFragment : Fragment(){
     private lateinit var sheetDisableCard: BottomSheetBehavior<View>
     private lateinit var transactionVM: TransactionViewModel
     private lateinit var productVM: ProductViewModel
+    private lateinit var controllViewModel: ControllViewModel
     private lateinit var saleRateAdapter: SaleRateAdapter
     private lateinit var adapter: CompanyAdapter
     private lateinit var productAdapter: ProductAdapter
-
+    private var loading = LoadingDialog.newInstance()
     private var selectedDate = Date()
 
 
@@ -68,8 +72,25 @@ class TransactionsFragment : Fragment(){
         super.onCreate(savedInstanceState)
         transactionVM = ViewModelProviders.of(activity!!).get(TransactionViewModel::class.java)
         productVM = ViewModelProviders.of(activity!!).get(ProductViewModel::class.java)
+        controllViewModel = ViewModelProviders.of(activity!!).get(ControllViewModel::class.java)
+        initControllState()
     }
 
+    fun initControllState(){
+        controllViewModel.currentUI.observe(this, Observer {
+            if (it == ROOT.TRANSACTIONS){
+                initViewCreated()
+            }
+        })
+    }
+
+    fun initViewCreated(){
+        setUpPager()
+        setUpTablayout()
+        setEditAction()
+        observerTabFilterTransactions()
+        observeTransaction()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = LayoutInflater.from(context).inflate(R.layout.fragment_transactions,container,false)
@@ -78,13 +99,8 @@ class TransactionsFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpPager()
-        setUpTablayout()
-        setEditAction()
-        observerTabFilterTransactions()
         inflateStubTransactionAdd()
         inflateStubLayoutPriceRate()
-        observeTransaction()
     }
 
 
@@ -316,6 +332,7 @@ class TransactionsFragment : Fragment(){
 
 
             transactionVM.saveTransaction(data)
+            loading.show(fragmentManager, LoadingDialog.TAG)
             showTransactionList()
         }
 
@@ -354,7 +371,6 @@ class TransactionsFragment : Fragment(){
     fun observeTransaction(){
         transactionVM.transaction.observe(this, Observer {
             if (transactionVM.stateView.value == TransactionState.SHOWTRANSACTION){
-                System.out.println("Transaction $it")
                 //vpTransaction.currentItem = 1
                 setupTransaction(it!!)
             }
@@ -371,7 +387,7 @@ class TransactionsFragment : Fragment(){
 
                 }
                 TransactionState.SHOWLIST ->{
-
+                    loading.dismiss()
                 }
                 TransactionState.SHOWSALEFORM ->{
 

@@ -13,10 +13,19 @@ import kotlinx.android.synthetic.main.item_product_history.view.*
 /**
  *Created by ToCHe on 18/3/2018 AD.
  */
-class ProductHistoryAdapter(var transactions:MutableList<Model.Transaction>,var listener :
+class ProductHistoryAdapter(var listener :
 ProductHistoryOnClickListener)
     : RecyclerView.Adapter<ProductHistoryAdapter.ProductHistoryHolder>() {
 
+    var mapTransaction : MutableMap<Model.Transaction,Model.Contact> = mutableMapOf()
+    var transactions : MutableList<Model.Transaction> = mutableListOf()
+
+    fun updateTransaction(newData : MutableMap<Model.Transaction,Model.Contact>,
+                          newTransactions :MutableList<Model.Transaction>){
+        mapTransaction = newData
+        transactions = newTransactions
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductHistoryHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product_history,parent,false)
@@ -28,7 +37,7 @@ ProductHistoryOnClickListener)
     }
 
     override fun onBindViewHolder(holder: ProductHistoryHolder, position: Int) {
-        holder.bind(transactions[position],listener)
+        holder.bind(transactions[position],mapTransaction[transactions[position]]!!,listener)
     }
 
 
@@ -40,8 +49,8 @@ ProductHistoryOnClickListener)
         val txtValues = itemView?.findViewById<TxtMedium>(R.id.txtValues)
         val txtDate = itemView?.findViewById<TxtMedium>(R.id.txtDate)
 
-        fun bind(transaction : Model.Transaction,listener: ProductHistoryOnClickListener){
-            txtCompany?.text = findCompany()
+        fun bind(transaction: Model.Transaction,contact:Model.Contact,listener:ProductHistoryOnClickListener){
+            txtCompany?.text = contact.company
             txtPriceSale?.text = transaction.sale_price[0].price
             if(transaction.sale_price[0].vat) {
                 txtVat?.text = "A"
@@ -69,10 +78,6 @@ ProductHistoryOnClickListener)
 
 
 
-        }
-
-        fun findCompany() : String{
-            return "Company"
         }
     }
 

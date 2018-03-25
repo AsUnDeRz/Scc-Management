@@ -24,6 +24,7 @@ import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.pager.ContactPager
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.TriggerContact
+import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
@@ -84,6 +85,8 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
     private lateinit var locationCallback: LocationCallback
     private var stateInput : CurrentInputState = CurrentInputState.Company
     lateinit var contactVM : ContactViewModel
+    private var loading = LoadingDialog.newInstance()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -314,6 +317,7 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
 
 
         contactVM.saveContact(data)
+        loading.show(fragmentManager, LoadingDialog.TAG)
     }
 
 
@@ -362,6 +366,7 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
     }
 
     fun showFormContact(){
+        contactScrollView.fullScroll(ScrollView.FOCUS_UP)
         root.visibility = View.VISIBLE
         rootInput.visibility = View.GONE
         imgEdit.visibility = View.GONE
@@ -515,6 +520,7 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
             when(it){
                 ContactState.ALLCONTACT ->{
                     showContactList()
+                    loading.dismiss()
                 }
                 ContactState.NEWCONTACT ->{
 

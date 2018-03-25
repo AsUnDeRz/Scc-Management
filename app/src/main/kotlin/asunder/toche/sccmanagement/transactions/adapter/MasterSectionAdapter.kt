@@ -19,7 +19,6 @@ class MasterSectionAdapter(var masterGroup: Model.MasterGroup)
 
     fun updateMasterGroup(newData:Model.MasterGroup){
         masterGroup =  newData
-        System.out.println("UpdateMasterGroup ${newData.groupDate.size}")
         notifyDataSetChanged()
     }
 

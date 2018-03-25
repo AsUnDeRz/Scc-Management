@@ -1,10 +1,13 @@
 package asunder.toche.sccmanagement
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
+import asunder.toche.sccmanagement.preference.Prefer
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.service.FirebaseManager
 import asunder.toche.sccmanagement.service.ManageUserService
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -12,6 +15,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
+import java.io.File
 
 
 /**
@@ -54,6 +61,21 @@ class testFirebase : AppCompatActivity(){
                 Log.w(TAG, "Google sign in failed", e)
             }
 
+        }
+    }
+
+    fun process() = async(UI) {
+        try {
+            val job = async(CommonPool) {
+
+            }
+            job.await()
+            //We're back on the main thread here.
+            //Update UI controls such as RecyclerView adapter data.
+        }
+        catch (e: Exception) {
+        }
+        finally {
         }
     }
 }

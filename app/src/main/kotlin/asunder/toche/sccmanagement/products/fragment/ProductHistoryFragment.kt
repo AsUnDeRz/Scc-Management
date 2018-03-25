@@ -52,16 +52,7 @@ ProductHistoryAdapter.ProductHistoryOnClickListener{
 
 
     fun setupAdapter(){
-        val data = mutableListOf<Model.Transaction>()
-        val price = mutableListOf<Model.SalePrice>()
-        for (i in 0 until 3){
-            price.add(Model.SalePrice("1$i",true,"50$i", Utils.getCurrentDateShort(),""))
-        }
-        for (i in 0 until 30){
-            data.add(Model.Transaction("","","",""
-                    ,Utils.getCurrentDateShort(),"",price))
-        }
-        productHistoryAdapter = ProductHistoryAdapter(data,this)
+        productHistoryAdapter = ProductHistoryAdapter(this)
         rvCompanyPrefer.apply {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
@@ -71,17 +62,17 @@ ProductHistoryAdapter.ProductHistoryOnClickListener{
 
     fun updateProductAdapter(product: Model.Product?){
         System.out.println("History product   $product")
-        /*
-        val result = IssueService(object : IssueService.IssueCallBack{
-            override fun onIssueSuccess() {
+        Utils.findTransaction(product!!.id,object : Utils.OnFindTransactionsListener{
+            override fun onResults(results: MutableList<Model.Transaction>) {
+                val mapTransaction:MutableMap<Model.Transaction,Model.Contact> = mutableMapOf()
+                val contacts = transactionVM.getContact()
+                results.forEach {transac ->
+                    val company = contacts.first { transac.company_id == it.id  }
+                    mapTransaction[transac] = company
+                }
+                productHistoryAdapter.updateTransaction(mapTransaction,results)
             }
-            override fun onIssueFail() {
-            }
-        }).getIssueInDb()
-        historyIssueAdapter = HistoryIssueAdapter(result.filter { it.company_id == contact?.id } as MutableList<Model.Issue>)
-        rvHistoryIssue.adapter = historyIssueAdapter
-        */
-
+        },transactionVM.service.getTransactionInDb())
     }
 
     override fun onDestroy() {

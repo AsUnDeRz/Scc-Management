@@ -8,6 +8,7 @@ import android.util.Log
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
+import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.extension.hideLoading
 import asunder.toche.sccmanagement.custom.extension.showLoading
 import asunder.toche.sccmanagement.main.ActivityMain
@@ -38,6 +39,7 @@ class ActivityLogin : AppCompatActivity(),ManageUserService.Sign,
         ConfirmDialog.ConfirmDialogListener{
 
 
+    private val loadingDialog = LoadingDialog.newInstance()
 
     override fun onClickConfirm() {
     }
@@ -46,6 +48,9 @@ class ActivityLogin : AppCompatActivity(),ManageUserService.Sign,
     override fun currentStatus(userAuth: Model.UserAuth) {
         when(userAuth.status_user){
             ROOT.APPROVE ->{
+                loadingDialog.dismiss()
+                val intent = Intent()
+                intent.putExtra(ROOT.ADMIN,false)
                 startActivity(Intent().setClass(this@ActivityLogin,ActivityMain::class.java))
                 finish()
             }
@@ -54,6 +59,17 @@ class ActivityLogin : AppCompatActivity(),ManageUserService.Sign,
             }
             ROOT.REJECT ->{
                 showConfirmDialog("แจ้งเตือน","บัญชีของท่านถูกปฏิเสธการเข้าใช้งานแอฟพลิเคชั่น")
+            }
+            ROOT.REGISTER ->{
+                showConfirmDialog("แจ้งเตือน","ไม่พบบัญชีของท่านในระบบกรุณาลงทะเบียน")
+                authManager.signOut()
+            }
+            ROOT.ADMIN ->{
+                loadingDialog.dismiss()
+                val intent = Intent()
+                intent.putExtra(ROOT.ADMIN,true)
+                startActivity(intent.setClass(this@ActivityLogin,ActivityMain::class.java))
+                finish()
             }
         }
 
@@ -88,7 +104,7 @@ class ActivityLogin : AppCompatActivity(),ManageUserService.Sign,
             Log.d(TAG,"Current User /"+user.email)
             Log.d(TAG,"Current Uid /"+user.uid)
             Prefer.saveUUID(user.uid,this)
-            loading.showLoading()
+            loadingDialog.show(supportFragmentManager,LoadingDialog.TAG)
             authManager.checkLogin(user.uid,this)
         }
 
@@ -113,7 +129,7 @@ class ActivityLogin : AppCompatActivity(),ManageUserService.Sign,
     fun initTwitter(){
         btnTwitter?.callback = object : Callback<TwitterSession>(){
             override fun success(result: Result<TwitterSession>?) {
-                loading.showLoading()
+                loadingDialog.show(supportFragmentManager,LoadingDialog.TAG)
                 authManager.signWithTwitter(result!!.data,this@ActivityLogin)
             }
             override fun failure(exception: TwitterException?) {
@@ -126,7 +142,7 @@ class ActivityLogin : AppCompatActivity(),ManageUserService.Sign,
         LoginManager.getInstance().registerCallback(mCallbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult)
-                loading.showLoading()
+                loadingDialog.show(supportFragmentManager,LoadingDialog.TAG)
                 authManager.signWithFacebook(loginResult.accessToken,this@ActivityLogin)
             }
 
@@ -160,7 +176,7 @@ class ActivityLogin : AppCompatActivity(),ManageUserService.Sign,
             val name = account.displayName
             val email = account.email
             Log.d(TAG, "name: $name, email: $email")
-            loading.showLoading()
+            loadingDialog.show(supportFragmentManager,LoadingDialog.TAG)
             authManager.signWithGoogle(account,this@ActivityLogin)
         } catch (e: ApiException) {
             Log.w(TAG, "signInResult:failed code=" + e.statusCode)
@@ -188,7 +204,7 @@ class ActivityLogin : AppCompatActivity(),ManageUserService.Sign,
     }
 
     private fun showConfirmDialog(title:String,msg:String) {
-        loading.hideLoading()
+        loadingDialog.dismiss()
         val fragment = ConfirmDialog.newInstance(msg,title)
         fragment.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
         fragment.show(supportFragmentManager, fragment::class.java.simpleName)

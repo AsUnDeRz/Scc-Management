@@ -1,5 +1,6 @@
 package asunder.toche.sccmanagement.service
 
+import android.os.Handler
 import android.util.Log
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.preference.ROOT
@@ -23,6 +24,8 @@ class ManageUserService{
     var firebase : DatabaseReference = FirebaseDatabase.getInstance().reference
     private val TAG = this::class.java.simpleName
     var mAuth : FirebaseAuth = FirebaseAuth.getInstance()
+    lateinit var runnable:Runnable
+    val handler = Handler()
 
 
     fun authWithGoogle(acct: GoogleSignInAccount,listener: Auth) {
@@ -204,7 +207,6 @@ class ManageUserService{
     fun terminateUser(userAuth: Model.UserAuth){
         val childUpdates = HashMap<String,Any>()
         childUpdates["${ROOT.USERS}/${userAuth.uid}/status_user"] = ROOT.TERMINATE
-
         firebase.updateChildren(childUpdates,{databaseError, _ ->
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
@@ -256,6 +258,10 @@ class ManageUserService{
     }
 
     fun checkLogin(uid: String,listener:Sign?){
+        runnable = Runnable {
+            listener?.currentStatus(Model.UserAuth("",ROOT.REGISTER,
+                    "","","",""))
+        }
         firebase.child("${ROOT.MANAGEMENT}/$uid").addListenerForSingleValueEvent(object  : ValueEventListener{
             override fun onCancelled(data: DatabaseError?) {
                 Log.d(TAG, data?.message)
@@ -265,10 +271,12 @@ class ManageUserService{
                 val userAuth = data?.getValue(Model.UserAuth::class.java)
                 userAuth?.let {
                     listener?.currentStatus(it)
+                    handler.removeCallbacks(runnable)
                 }
 
             }
         })
+        handler.postDelayed(runnable,4000)
     }
 
     interface ServiceState{
