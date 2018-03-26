@@ -4,11 +4,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
-import kotlinx.android.synthetic.main.item_product_history.view.*
 
 /**
  *Created by ToCHe on 18/3/2018 AD.

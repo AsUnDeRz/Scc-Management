@@ -2,7 +2,6 @@ package asunder.toche.sccmanagement.contact.fragment
 
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -15,16 +14,13 @@ import asunder.toche.sccmanagement.contact.adapter.HistoryIssueAdapter
 import asunder.toche.sccmanagement.contact.adapter.HistoryTransactionAdapter
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.TriggerContact
-import asunder.toche.sccmanagement.issue.IssueState
 import asunder.toche.sccmanagement.issue.IssueViewModel
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.service.IssueService
 import asunder.toche.sccmanagement.service.ProductService
 import asunder.toche.sccmanagement.service.TransactionService
 import asunder.toche.sccmanagement.transactions.TransactionListener
-import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
-import kotlinx.android.synthetic.main.fragment_contact_history.*
 import kotlinx.android.synthetic.main.layout_history_issue.*
 import kotlinx.android.synthetic.main.layout_history_transaction.*
 import org.greenrobot.eventbus.EventBus

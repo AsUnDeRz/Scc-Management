@@ -1,6 +1,7 @@
 package asunder.toche.sccmanagement.custom.extension
 
 import android.content.Context
+import android.content.res.Resources
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import android.widget.ProgressBar
 /**
  *Created by ToCHe on 10/3/2018 AD.
  */
+
 fun ViewGroup.createView(layout: Int): View = LayoutInflater.from(
         this.context!!).inflate(layout, this, false)
 

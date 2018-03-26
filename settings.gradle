@@ -1,1 +1,1 @@
-include ':app', ':AdapterX', ':ContactPicker', ':fotoapparat', ':SpinnerDatePicker', ':FilePicker'
+include ':app', ':AdapterX', ':ContactPicker', ':fotoapparat', ':SpinnerDatePicker', ':FilePicker', ':hover'

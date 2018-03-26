@@ -1,0 +1,65 @@
+package asunder.toche.sccmanagement.hover.main
+
+import android.annotation.TargetApi
+import android.content.Context
+import android.os.Build
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.FrameLayout
+import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.hover.HoverService
+import io.mattcarroll.hover.Content
+import kotlinx.android.synthetic.main.contact_hover.view.*
+
+/**
+ *Created by ToCHe on 26/3/2018 AD.
+ */
+class ContactHover(context: Context,
+                   private val sectionId:String) : FrameLayout(context), Content {
+
+    /*
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
+            super(context, attrs, defStyleAttr, defStyleRes)
+
+*/
+    init {
+        initUI()
+    }
+
+    fun initUI(){
+        LayoutInflater.from(context).inflate(R.layout.contact_hover, this, true)
+        txtSectionId.text = sectionId
+        txtSectionId.setOnClickListener {
+            HoverService.deleteHover(sectionId)
+        }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+    }
+
+
+    override fun getView(): View {
+        return this
+    }
+
+    override fun isFullscreen(): Boolean {
+        return true
+    }
+
+    override fun onShown() {
+    }
+
+    override fun onHidden() {
+    }
+
+}

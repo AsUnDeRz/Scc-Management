@@ -103,6 +103,7 @@ dependencies {
     implementation project(path: ':fotoapparat')
     implementation project(':SpinnerDatePicker')
     implementation project(':FilePicker')
+    implementation project(':hover')
 }
 kotlin {
     experimental {

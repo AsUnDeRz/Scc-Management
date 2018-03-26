@@ -1,20 +1,15 @@
 package asunder.toche.sccmanagement.auth.adapter
 
-import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.widget.Toast
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.button.BtnMedium
-import asunder.toche.sccmanagement.custom.textview.TxtBold
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.custom.textview.TxtThin
 import asunder.toche.sccmanagement.service.ManageUserService
-import kotlinx.android.synthetic.main.item_manage_user.view.*
 import me.thanel.swipeactionview.SwipeActionView
-import me.thanel.swipeactionview.SwipeDirection
 import me.thanel.swipeactionview.SwipeGestureListener
 
 

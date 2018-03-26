@@ -4,6 +4,7 @@ package asunder.toche.sccmanagement.preference
  *Created by ToCHe on 7/3/2018 AD.
  */
 object ROOT{
+    const val HOVER = "hover"
     const val USERS = "users"
     const val CONTACTS = "contacts"
     const val ISSUE = "issues"

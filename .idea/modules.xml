@@ -9,6 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/SpinnerDatePicker/SpinnerDatePicker.iml" filepath="$PROJECT_DIR$/SpinnerDatePicker/SpinnerDatePicker.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/fotoapparat/fotoapparat.iml" filepath="$PROJECT_DIR$/fotoapparat/fotoapparat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hover/hover.iml" filepath="$PROJECT_DIR$/hover/hover.iml" />
     </modules>
   </component>
 </project>

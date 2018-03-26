@@ -32,7 +32,6 @@ import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.main.ActivityCamera
 import asunder.toche.sccmanagement.preference.Utils
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult

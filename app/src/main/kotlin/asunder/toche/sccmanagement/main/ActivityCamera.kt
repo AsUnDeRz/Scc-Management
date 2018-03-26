@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import asunder.toche.sccmanagement.R
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -21,8 +20,6 @@ import java.io.File
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import com.fasterxml.jackson.databind.AnnotationIntrospector.ReferenceProperty.back
-import org.h2.store.fs.FilePath
 import java.util.*
 
 
