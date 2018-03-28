@@ -22,7 +22,7 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
     private val txtMediumDate = itemView.findViewById<TxtThin>(R.id.txtMediumDate)
 
 
-    fun bind(transaction: Model.Transaction,product: Model.Product,listener: TransactionListener){
+    fun bind(transaction: Model.Transaction,product: Model.Product,listener: TransactionListener?){
         txtProdName.text = product.product_name
         txtSalePrice.text = transaction.sale_price[0].price
         if(transaction.sale_price[0].vat){
@@ -41,7 +41,7 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
         txtMediumDate.text = product.medium_rate[0].date.substring(0,10)
 
         itemView.rootView.setOnClickListener {
-            listener.onClickTransaction(transaction)
+            listener?.onClickTransaction(transaction)
         }
 
     }

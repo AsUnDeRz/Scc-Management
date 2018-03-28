@@ -27,10 +27,13 @@
         android:allowBackup="true"
         android:fullBackupContent="true">
         <activity android:name=".main.ActivityMain"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan">
 
         </activity>
-        <activity android:name=".auth.ActivityLogin" >
+        <activity android:name=".auth.ActivityLogin"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name="com.onegravity.contactpicker.core.ContactPickerActivity"
@@ -67,19 +70,25 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".auth.ActivitySignup" />
+        <activity android:name=".auth.ActivitySignup"
+            android:screenOrientation="portrait" />
         <activity android:name=".testFirebase" >
 
         </activity>
-        <activity android:name=".auth.ActivityManagement" >
+        <activity android:name=".auth.ActivityManagement"
+            android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".settings.ActivitySetting" />
-        <activity android:name=".main.ActivityCamera" >
+        <activity android:name=".settings.ActivitySetting"
+            android:screenOrientation="portrait" />
+        <activity android:name=".main.ActivityCamera"
+            android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".main.ActivityMap" />
-        <activity android:name=".main.ActivityLanding" >
+        <activity android:name=".main.ActivityMap"
+            android:screenOrientation="portrait" />
+        <activity android:name=".main.ActivityLanding"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

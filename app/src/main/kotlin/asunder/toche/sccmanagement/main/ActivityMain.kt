@@ -35,7 +35,7 @@ import asunder.toche.sccmanagement.service.ManageUserService
 import asunder.toche.sccmanagement.settings.ActivitySetting
 import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
-import io.mattcarroll.hover.Content
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.menu_drawer.*
 import org.greenrobot.eventbus.EventBus
@@ -43,8 +43,9 @@ import org.greenrobot.eventbus.Subscribe
 
 class ActivityMain : AppCompatActivity(), LifecycleOwner{
 
-    override fun getLifecycle(): Lifecycle {
-        return lifecycleRegistry
+
+    companion object {
+        var isActivityResume : Boolean? = null
     }
 
 
@@ -77,32 +78,37 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner{
         searchTextChanged()
         controllViewModel.updateCurrentUI(ROOT.CONTACTS)
         HoverService.showFloatingMenu(this)
-        checkDataFromService()
+        checkDataFromService(intent)
     }
 
-    fun checkDataFromService(){
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let {
+            if (intent.hasExtra(ROOT.MOBILE)){
+                Utils.findCompany(intent.getStringExtra(ROOT.MOBILE),
+                        object : Utils.OnFindCompanyListener{
+                            override fun onResults(results: MutableList<Model.Contact>) {
+                                contactVM.updateContact(results.first())
+                                contactVM.updateViewState(ContactState.SELECTCONTACT)
+                            }
+                        },contactVM.service.getContactInDb())
+            }else {
+                checkDataFromService(it)
+            }
+        }
+    }
+
+    private fun checkDataFromService(intent: Intent){
         if (intent.hasExtra(ROOT.ISSUE)){
-            System.out.println("Data from issue")
-            openIssueForm()
+            pager.currentItem = 1
+            issueVM.updateViewState(IssueState.TRIGGERFROMSERVICE)
+            issueVM.updateCurrentIssue(intent.getParcelableExtra(ROOT.ISSUE))
         }
         if (intent.hasExtra(ROOT.TRANSACTIONS)){
-            System.out.println("Data from transactions")
-            openTransactionForm()
+            pager.currentItem = 3
+            transactionVM.updateStateView(TransactionState.SHOWTRANSACTION)
+            transactionVM.updateTransaction(intent.getParcelableExtra(ROOT.TRANSACTIONS))
         }
-    }
-
-    fun openIssueForm(){
-        pager.currentItem = 1
-        issueVM.updateViewState(IssueState.TRIGGERFROMSERVICE)
-        issueVM.updateCurrentIssue(intent.getParcelableExtra(ROOT.ISSUE))
-
-
-    }
-
-    fun openTransactionForm(){
-        pager.currentItem = 3
-        transactionVM.updateStateView(TransactionState.SHOWTRANSACTION)
-        transactionVM.updateTransaction(intent.getParcelableExtra(ROOT.TRANSACTIONS))
     }
 
 
@@ -256,10 +262,10 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner{
             }
         })
         contactVM.contact.observe(this, Observer {
-            txtSearch.setText(it?.company)
+            txtSearch.setText(it?.company?.trim())
         })
         productVM.product.observe(this, Observer {
-            txtSearch.setText(it?.product_name)
+            txtSearch.setText(it?.product_name?.trim())
         })
 
         transactionVM.stateView.observe(this, Observer {
@@ -304,8 +310,37 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner{
 
                     }
                 }
+
+                //change icon search
+                if (s.isNullOrEmpty()){
+                    Glide.with(this@ActivityMain)
+                            .load(R.drawable.ic_search_black_36dp)
+                            .into(imgSearch)
+                }else{
+                    Glide.with(this@ActivityMain)
+                            .load(R.drawable.ic_close_black_24dp)
+                            .into(imgSearch)
+                    imgSearch.setOnClickListener {
+                        txtSearch.text.clear()
+                    }
+                }
             }
         })
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        isActivityResume = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isActivityResume = false
+    }
+
+    override fun getLifecycle(): Lifecycle {
+        return lifecycleRegistry
     }
 
 }

@@ -7,8 +7,10 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
+import asunder.toche.sccmanagement.BuildConfig
 import asunder.toche.sccmanagement.R
 import io.mattcarroll.hover.Content
+import kotlinx.android.synthetic.main.main_hover.view.*
 
 /**
  *Created by ToCHe on 26/3/2018 AD.
@@ -28,6 +30,7 @@ class MainHover : FrameLayout,Content {
 
     fun initUI(){
         LayoutInflater.from(context).inflate(R.layout.main_hover, this, true)
+        txtVersion.text = "Version ${BuildConfig.VERSION_NAME}"
     }
 
 
@@ -58,7 +61,7 @@ class MainHover : FrameLayout,Content {
     }
 
     override fun isFullscreen(): Boolean {
-        return true
+        return false
     }
 
     override fun onShown() {

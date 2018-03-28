@@ -38,7 +38,18 @@ class HistoryIssueHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         itemView.rootView.setOnClickListener {
             listener.onClickIssue(issue)
         }
+    }
 
+    fun bind(issue: Model.Issue){
+        if(issue.status == "ทำแล้ว"){
+            txtCircleState.isSelected = true
+            txtCircleState.text = "C"
+        }else{
+            txtCircleState.isSelected = false
+            txtCircleState.text = "P"
+        }
+        txtDate.text = issue.date.substring(0,10)
+        txtIssue.text = issue.issue_name
     }
 
 }

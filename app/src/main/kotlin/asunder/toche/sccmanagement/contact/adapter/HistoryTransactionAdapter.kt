@@ -14,12 +14,18 @@ class HistoryTransactionAdapter : RecyclerView.Adapter<HistoryTransactionHolder>
 
     var mapTransaction : MutableMap<Model.Transaction,Model.Product> = mutableMapOf()
     var transactions : MutableList<Model.Transaction> = mutableListOf()
-    lateinit var listener : TransactionListener
+    var listener : TransactionListener? = null
 
     fun updateMapTransaction(map:MutableMap<Model.Transaction,Model.Product>,
                              newData:MutableList<Model.Transaction>,
                              newListener: TransactionListener){
         listener = newListener
+        transactions = newData
+        mapTransaction = map
+        notifyDataSetChanged()
+    }
+    fun updateMapTransaction(map:MutableMap<Model.Transaction,Model.Product>,
+                             newData:MutableList<Model.Transaction>){
         transactions = newData
         mapTransaction = map
         notifyDataSetChanged()
@@ -36,7 +42,8 @@ class HistoryTransactionAdapter : RecyclerView.Adapter<HistoryTransactionHolder>
     }
 
     override fun onBindViewHolder(holder: HistoryTransactionHolder, position: Int) {
-        holder.bind(transactions[position],mapTransaction[transactions[position]]!!,listener)
+            holder.bind(transactions[position], mapTransaction[transactions[position]]!!, listener)
+
     }
 
 }

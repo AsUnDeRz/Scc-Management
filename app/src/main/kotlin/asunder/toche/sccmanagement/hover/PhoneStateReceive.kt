@@ -6,6 +6,9 @@ import android.content.Intent
 import android.provider.ContactsContract
 import android.telephony.TelephonyManager
 import android.util.Log
+import asunder.toche.sccmanagement.main.ActivityMain
+import asunder.toche.sccmanagement.preference.ROOT
+import asunder.toche.sccmanagement.service.ContactService
 import java.util.*
 
 /**
@@ -79,18 +82,30 @@ class PhoneStateReceive : BroadcastReceiver() {
             HoverService.showFloatingMenu(ctx)
         } else {
             if (number != null) {
-                val displayname = filterContact(number,ctx)
-                HoverService.expenHover(number,displayname.name)
+                val displayname = filterContact(number, ctx)
+                if(!displayname.number.isEmpty()){
+                    checkActivity(displayname,ctx)
+                }
 
             }
         }
         println("onInComingCallReceived")
     }
 
+    fun checkActivity(displayname:PlaceholderContent.User,context: Context){
+        if (ActivityMain.isActivityResume != null && ActivityMain.isActivityResume!!){
+            val intent = Intent()
+            intent.putExtra(ROOT.MOBILE,displayname.number)
+            context.startActivity(intent.setClass(context,ActivityMain::class.java))
+        }else {
+            HoverService.expenHover(displayname.number, displayname.name)
+        }
+    }
+
     protected fun onIncomingCallAnswered(ctx: Context, number: String?, start: Date?) {
         if (number != null) {
-            val displayname = filterContact(number,ctx)
-            HoverService.expenHover(number,displayname.name)
+            //val displayname = filterContact(number,ctx)
+            //HoverService.expenHover(number,displayname.name)
         }
         println("onInComingCallAnswered")
 
@@ -116,24 +131,23 @@ class PhoneStateReceive : BroadcastReceiver() {
 
     private fun filterContact(numberReceive: String,context: Context): PlaceholderContent.User {
         val users :MutableList<PlaceholderContent.User> = mutableListOf()
-        val phones = context.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
-        if (phones != null) {
-            while (phones.moveToNext()) {
-                val name = phones.getString(phones.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
-                val phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-                Log.d("TEST", "$name  $phoneNumber")
-                if (phoneNumber == numberReceive) {
-                    val user = PlaceholderContent.User(phoneNumber, name)
-                    users.add(user)
-                    break
-                }
+        val service = ContactService(object : ContactService.ContactCallBack{
+            override fun onSuccess() {
             }
-            phones.close()
+            override fun onFail() {
+            }
+        })
+        val contacts = service.getContactInDb()
+        contacts.asSequence().forEach {
+            if (it.mobile == numberReceive || it.telephone == numberReceive) {
+                val user = PlaceholderContent.User(numberReceive, it.contact_name)
+                users.add(user)
+            }
         }
         return if(users.isNotEmpty()){
             users.first()
         }else{
-            PlaceholderContent.User(numberReceive,numberReceive)
+            PlaceholderContent.User("","")
         }
     }
 

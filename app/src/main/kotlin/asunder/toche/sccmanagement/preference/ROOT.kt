@@ -18,6 +18,7 @@ object ROOT{
     const val TERMINATE = "terminate"
     const val REQUEST = "request"
     const val IMAGES = "images"
+    const val MOBILE = "mobile"
 
     const val GOOGLE ="google"
     const val FACEBOOK = "facebook"

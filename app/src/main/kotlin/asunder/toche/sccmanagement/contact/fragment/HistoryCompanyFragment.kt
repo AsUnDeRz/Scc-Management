@@ -22,7 +22,11 @@ import asunder.toche.sccmanagement.service.TransactionService
 import asunder.toche.sccmanagement.transactions.TransactionListener
 import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
 import kotlinx.android.synthetic.main.layout_history_issue.*
+import kotlinx.android.synthetic.main.layout_history_issue.view.*
 import kotlinx.android.synthetic.main.layout_history_transaction.*
+import kotlinx.android.synthetic.main.layout_history_transaction.view.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -82,16 +86,22 @@ class HistoryCompanyFragment : Fragment(),TransactionListener {
     }
 
 
-
     fun updateIssueAdapter(contact: Model.Contact?){
-            val result = IssueService(object : IssueService.IssueCallBack{
-                override fun onIssueSuccess() {
-                }
-                override fun onIssueFail() {
-                }
-            }).getIssueInDb()
-            historyIssueAdapter = HistoryIssueAdapter(result.filter { it.company_id == contact?.id } as MutableList<Model.Issue>)
-            rvHistoryIssue.adapter = historyIssueAdapter
+        val result = IssueService(object : IssueService.IssueCallBack{
+            override fun onIssueSuccess() {
+            }
+            override fun onIssueFail() {
+            }
+        }).getIssueInDb()
+        historyIssueAdapter = HistoryIssueAdapter(mutableListOf())
+        rvHistoryIssue.adapter = historyIssueAdapter
+        async(UI) {
+            val filterResult = async {
+                result.filter { it.company_id == contact?.id }
+            }
+            historyIssueAdapter.updateIssues(
+                    filterResult.await().toMutableList())
+        }
     }
 
     fun updateTransactionAdapter(contact: Model.Contact?){
@@ -107,14 +117,18 @@ class HistoryCompanyFragment : Fragment(),TransactionListener {
                     }
                 }).getProductsInDb()
                 val mapTransaction : MutableMap<Model.Transaction,Model.Product> = mutableMapOf()
-                results.forEach {item ->
-                    val product = products.first { it.id == item.product_id}
-                    mapTransaction[item] = product
+                async(UI) {
+                    val filterResult = async {
+                        results.filter { it.company_id == contact.id }
+                    }
+                    filterResult.await().forEach { item ->
+                        val product = products.first { it.id == item.product_id}
+                        mapTransaction[item] = product
+                    }
+                    historyTransactionAdapter.updateMapTransaction(
+                            mapTransaction
+                            ,filterResult.await().toMutableList())
                 }
-                historyTransactionAdapter.updateMapTransaction(
-                        mapTransaction
-                        ,results
-                        ,this@HistoryCompanyFragment)
             }
         },TransactionService(object : TransactionService.TransactionCallback{
             override fun onFail() {

@@ -13,11 +13,15 @@ import asunder.toche.sccmanagement.transactions.IssueListener
 class HistoryIssueAdapter(var issues:MutableList<Model.Issue>): RecyclerView.Adapter<HistoryIssueHolder>() {
 
 
-    lateinit var listener : IssueListener
+    var listener : IssueListener? = null
 
     fun updateIssues(newIssues : MutableList<Model.Issue>,newListener: IssueListener){
         issues = newIssues
         listener = newListener
+        notifyDataSetChanged()
+    }
+    fun updateIssues(newIssues : MutableList<Model.Issue>){
+        issues = newIssues
         notifyDataSetChanged()
     }
 
@@ -32,7 +36,11 @@ class HistoryIssueAdapter(var issues:MutableList<Model.Issue>): RecyclerView.Ada
     }
 
     override fun onBindViewHolder(holder: HistoryIssueHolder, position: Int) {
-        holder.bind(issues[position],listener)
+        if (listener != null) {
+            holder.bind(issues[position], listener!!)
+        }else{
+            holder.bind(issues[position])
+        }
     }
 
 }
