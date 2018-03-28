@@ -442,6 +442,11 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
     }
 
     fun observerIssue(){
+        issueVM.currentIssue.observe(this, Observer {
+            if (issueVM.isSaveIssueComplete.value == IssueState.TRIGGERFROMSERVICE){
+                it?.let { it1 -> setUpIssueForm(it1) }
+            }
+        })
 
         issueVM.companyReference.observe(this, Observer {
             edtCompany.setText(it?.company)
@@ -459,6 +464,9 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
                 IssueState.NEWFROMCONTACT ->{
                     showIssueForm()
                     issueVM.updateCompany(contactVm.contact.value!!)
+                }
+                IssueState.TRIGGERFROMSERVICE ->{
+                    showIssueForm()
                 }
 
             }

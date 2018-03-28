@@ -1,24 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <asunder.toche.sccmanagement.custom.textview.TxtMedium
-        android:id="@+id/txtSectionId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="adsf"
-        android:textColor="@android:color/black"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</android.support.constraint.ConstraintLayout>
+    <RelativeLayout
+        android:id="@+id/rootTitle"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/edtSearch"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_toLeftOf="@+id/imgClose"
+            android:gravity="left|center"
+            android:paddingStart="24dp"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/imgClose"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:padding="8dp"
+            android:tint="@color/colorGoogle"
+            app:srcCompat="@drawable/ic_close_black_24dp" />
+    </RelativeLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/rootTitle"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/transaction"
+            layout="@layout/layout_history_transaction" />
+
+        <include
+            android:id="@+id/issue"
+            layout="@layout/layout_history_issue" />
+
+    </LinearLayout>
+    <ViewStub
+        android:layout_below="@+id/rootTitle"
+        android:layout_marginTop="16dp"
+        android:id="@+id/stubIssueAdd"
+        android:inflatedId="@+id/layout_issue_add"
+        android:layout="@layout/fragment_issue_add"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+</RelativeLayout>

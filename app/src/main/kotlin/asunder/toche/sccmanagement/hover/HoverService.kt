@@ -5,13 +5,11 @@ import android.content.Intent
 import android.support.v7.view.ContextThemeWrapper
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.hover.main.ContactHover
-import asunder.toche.sccmanagement.hover.main.MainHover
 import asunder.toche.sccmanagement.hover.theme.HoverTheme
 import io.mattcarroll.hover.HoverView
 import io.mattcarroll.hover.window.HoverMenuService
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import java.io.IOException
 
 /**
@@ -19,14 +17,13 @@ import java.io.IOException
  */
 class HoverService : HoverMenuService() {
 
-
     override fun onStart(intent: Intent, startId: Int) {
         super.onStart(intent, startId)
-        EventBus.getDefault().register(this)
+        //EventBus.getDefault().register(this)
     }
 
     override fun onDestroy() {
-        EventBus.getDefault().unregister(this)
+        //EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
 
@@ -43,7 +40,6 @@ class HoverService : HoverMenuService() {
 
     fun createHoverMenu(): SccHoverMenu? {
         try {
-
             mHoverMenu = HoverMenuFactory().createDemoMenuFromCode(contextForHoverMenu, EventBus.getDefault())
             return mHoverMenu
         } catch (e: IOException) {
@@ -59,7 +55,7 @@ class HoverService : HoverMenuService() {
 
     companion object {
 
-        private val TAG = "DemoHoverMenuService"
+        private val TAG = "HoverService"
 
         fun showFloatingMenu(context: Context) {
             context.startService(Intent(context, HoverService::class.java))
@@ -76,8 +72,7 @@ class HoverService : HoverMenuService() {
         }
 
         fun addHover(number: String?,name: String) {
-            mHoverMenu.addSection(ContactHover(mHoverMenu.mContext!!,number!!),number,name)
-
+           mHoverMenu.addSection(ContactHover(mHoverMenu.mContext!!,number!!),number,name)
         }
 
         fun deleteHover(number: String?){

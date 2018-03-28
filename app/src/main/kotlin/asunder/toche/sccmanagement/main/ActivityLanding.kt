@@ -2,6 +2,7 @@ package asunder.toche.sccmanagement.main
 
 import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
@@ -17,6 +18,7 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import io.mattcarroll.hover.overlay.OverlayPermission
 
 /**
  *Created by ToCHe on 14/3/2018 AD.
@@ -27,6 +29,10 @@ class ActivityLanding : AppCompatActivity(){
     private lateinit var  handler: Handler
     private lateinit var runnable: Runnable
     private var loading = LoadingDialog.newInstance()
+    private val REQUEST_CODE_HOVER_PERMISSION = 1000
+
+    private var mPermissionsRequested = false
+    var MY_PERMISSIONS_REQUEST_READ_CONTACTS = 155
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +41,13 @@ class ActivityLanding : AppCompatActivity(){
                 WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_landing)
         loading.show(supportFragmentManager, LoadingDialog.TAG)
+        if (!mPermissionsRequested && !OverlayPermission.hasRuntimePermissionToDrawOverlay(this)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                OverlayPermission.createIntentToRequestOverlayPermission(this)
+                startActivityForResult(OverlayPermission.createIntentToRequestOverlayPermission(this)
+                        , REQUEST_CODE_HOVER_PERMISSION)
+            }
+        }
         requestPermission()
         setupPreference()
 
@@ -93,4 +106,14 @@ class ActivityLanding : AppCompatActivity(){
         Prefer.saveUUID("gf08q0kR0yPQFBdW4wr3QElBL9i1",this)
 
     }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (REQUEST_CODE_HOVER_PERMISSION == requestCode) {
+            mPermissionsRequested = true
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
 }

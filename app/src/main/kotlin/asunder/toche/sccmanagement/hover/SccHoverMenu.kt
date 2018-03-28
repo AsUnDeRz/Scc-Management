@@ -77,7 +77,7 @@ constructor(val mContext: Context?,
 
     private fun createTabView(sectionId: String): View {
         return when {
-            MAIN_HOVER == sectionId -> createTabView(R.drawable.ic_phonelink_ring_black_36dp,mTheme!!.baseColor, mTheme!!.accentColor)
+            MAIN_HOVER == sectionId -> createTabView(R.drawable.ic_record_voice_over_white_24dp,mTheme!!.baseColor, mTheme!!.accentColor)
             else -> createTabView(R.drawable.ic_contact_phone_white_36dp,mTheme!!.baseColor, mTheme!!.accentColor)
         }
     }

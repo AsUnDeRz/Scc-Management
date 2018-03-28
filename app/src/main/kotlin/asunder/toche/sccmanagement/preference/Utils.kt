@@ -8,11 +8,24 @@ import android.widget.Filter
 import asunder.toche.sccmanagement.Model
 import java.text.SimpleDateFormat
 import java.util.*
+import android.content.ContextWrapper
+import android.app.Activity
+
+
 
 /**
  *Created by ToCHe on 9/3/2018 AD.
  */
 object Utils{
+
+    fun scanForActivity(cont: Context?): Activity? {
+        return when (cont) {
+            null -> null
+            is Activity -> cont
+            is ContextWrapper -> scanForActivity(cont.baseContext)
+            else -> null
+        }
+    }
 
     fun getCurrentDateShort() :String{
         val fmtOut = SimpleDateFormat("dd/MM/yyyy", Locale("th","TH"))

@@ -1,12 +1,17 @@
 package asunder.toche.sccmanagement
 
+import android.annotation.SuppressLint
+import android.os.Parcelable
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter
+import kotlinx.android.parcel.Parcelize
 
 /**
  *Created by ToCHe on 27/2/2018 AD.
  */
 object Model{
 
+    @SuppressLint("ParcelCreator")
+    @Parcelize
     data class Contact(var id:String = "",
                        val company:String = "",
                        val bill:String = "",
@@ -22,7 +27,10 @@ object Model{
                        var url_img_map:String = "",
                        var path_img_map:String ="",
                        val map_latitude:String = "",
-                       val map_longitude:String = "")
+                       val map_longitude:String = "") : Parcelable
+
+    @SuppressLint("ParcelCreator")
+    @Parcelize
     data class Issue(var id:String = "",
                      val status:String = "",
                      var company_id:String = "",
@@ -32,7 +40,7 @@ object Model{
                      var image_url:String = "",
                      var image_path:String = "",
                      var file_url:String = "",
-                     var file_path:String = "")
+                     var file_path:String = "") : Parcelable
     data class Product(var id:String = "",
                        val product_name:String = "",
                        val product_desc:String = "",
@@ -47,18 +55,24 @@ object Model{
                           val date:String = "",
                           val note:String = "",
                           var default:Boolean = false)
+
+    @SuppressLint("ParcelCreator")
+    @Parcelize
     data class Transaction(var id:String = "",
                            val company_id:String = "",
                            val product_id:String = "",
                            val medium_price:String = "",
                            val date:String = "",
                            val desc:String = "",
-                           val sale_price:MutableList<SalePrice> = ArrayList())
+                           val sale_price:MutableList<SalePrice> = ArrayList()) : Parcelable
+
+    @SuppressLint("ParcelCreator")
+    @Parcelize
     data class SalePrice(val price:String ="",
                          val vat:Boolean = false,
                          val values:String = "",
                          val date:String = "",
-                         val note:String = "")
+                         val note:String = "") : Parcelable
     data class User(val uid:String="",
                     val status_user:String ="",
                     val request_date:String ="",

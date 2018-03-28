@@ -122,6 +122,7 @@ class TabView : View {
     override fun onDraw(canvas: Canvas) {
         mCircleDrawable.draw(canvas)
         if (null != mIconDrawable) {
+            updateIconBounds()
             mIconDrawable?.draw(canvas)
         }else{
             // letter

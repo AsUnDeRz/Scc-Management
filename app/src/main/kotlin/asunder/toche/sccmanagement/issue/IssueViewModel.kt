@@ -149,6 +149,10 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
         issues.value = data
     }
 
+    fun updateCurrentIssue(data: Model.Issue){
+        currentIssue.value = data
+    }
+
     override fun onIssueSuccess() {
         updateViewState(IssueState.ALLISSUE)
         loadIssue()

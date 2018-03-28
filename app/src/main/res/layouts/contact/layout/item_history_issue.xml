@@ -4,7 +4,8 @@
     android:layout_height="28dp"
     android:orientation="horizontal"
     android:clickable="true"
-    android:foreground="?attr/selectableItemBackgroundBorderless">
+    android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:focusable="true">
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
         android:id="@+id/txtDate"

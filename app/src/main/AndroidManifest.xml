@@ -69,10 +69,7 @@
         </activity>
         <activity android:name=".auth.ActivitySignup" />
         <activity android:name=".testFirebase" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
         <activity android:name=".auth.ActivityManagement" >
 
@@ -83,6 +80,10 @@
         </activity>
         <activity android:name=".main.ActivityMap" />
         <activity android:name=".main.ActivityLanding" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <service android:name=".hover.HoverService" />

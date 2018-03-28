@@ -12,14 +12,15 @@ import asunder.toche.sccmanagement.transactions.TransactionListener
  */
 class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    val txtProdName = itemView.findViewById<TxtThin>(R.id.txtProdName)
-    val txtSalePrice = itemView.findViewById<TxtThin>(R.id.txtSalePrice)
-    val txtSaleVat = itemView.findViewById<TxtThin>(R.id.txtSaleVat)
-    val txtSaleValues = itemView.findViewById<TxtThin>(R.id.txtSaleValues)
-    val txtSaleDate = itemView.findViewById<TxtThin>(R.id.txtSaleDate)
-    val txtMediumPrice = itemView.findViewById<TxtThin>(R.id.txtMediumPrice)
-    val txtMediumVat = itemView.findViewById<TxtThin>(R.id.txtMediumVat)
-    val txtMediumDate = itemView.findViewById<TxtThin>(R.id.txtMediumDate)
+    private val txtProdName = itemView.findViewById<TxtThin>(R.id.txtProdName)
+    private val txtSalePrice = itemView.findViewById<TxtThin>(R.id.txtSalePrice)
+    private val txtSaleVat = itemView.findViewById<TxtThin>(R.id.txtSaleVat)
+    private val txtSaleValues = itemView.findViewById<TxtThin>(R.id.txtSaleValues)
+    private val txtSaleDate = itemView.findViewById<TxtThin>(R.id.txtSaleDate)
+    private val txtMediumPrice = itemView.findViewById<TxtThin>(R.id.txtMediumPrice)
+    private val txtMediumVat = itemView.findViewById<TxtThin>(R.id.txtMediumVat)
+    private val txtMediumDate = itemView.findViewById<TxtThin>(R.id.txtMediumDate)
+
 
     fun bind(transaction: Model.Transaction,product: Model.Product,listener: TransactionListener){
         txtProdName.text = product.product_name
@@ -39,9 +40,10 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
         txtMediumPrice.text = product.medium_rate[0].price
         txtMediumDate.text = product.medium_rate[0].date.substring(0,10)
 
-        itemView.setOnClickListener {
+        itemView.rootView.setOnClickListener {
             listener.onClickTransaction(transaction)
         }
+
     }
 
 }

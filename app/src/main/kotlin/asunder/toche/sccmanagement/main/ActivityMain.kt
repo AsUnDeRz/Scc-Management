@@ -24,6 +24,7 @@ import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.TriggerUpdate
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
+import asunder.toche.sccmanagement.hover.HoverService
 import asunder.toche.sccmanagement.issue.IssueState
 import asunder.toche.sccmanagement.issue.IssueViewModel
 import asunder.toche.sccmanagement.preference.KEY
@@ -34,13 +35,13 @@ import asunder.toche.sccmanagement.service.ManageUserService
 import asunder.toche.sccmanagement.settings.ActivitySetting
 import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
+import io.mattcarroll.hover.Content
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.menu_drawer.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
-class ActivityMain : AppCompatActivity(), LifecycleOwner {
-
+class ActivityMain : AppCompatActivity(), LifecycleOwner{
 
     override fun getLifecycle(): Lifecycle {
         return lifecycleRegistry
@@ -75,8 +76,33 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner {
         observerContacts()
         searchTextChanged()
         controllViewModel.updateCurrentUI(ROOT.CONTACTS)
+        HoverService.showFloatingMenu(this)
+        checkDataFromService()
+    }
+
+    fun checkDataFromService(){
+        if (intent.hasExtra(ROOT.ISSUE)){
+            System.out.println("Data from issue")
+            openIssueForm()
+        }
+        if (intent.hasExtra(ROOT.TRANSACTIONS)){
+            System.out.println("Data from transactions")
+            openTransactionForm()
+        }
+    }
+
+    fun openIssueForm(){
+        pager.currentItem = 1
+        issueVM.updateViewState(IssueState.TRIGGERFROMSERVICE)
+        issueVM.updateCurrentIssue(intent.getParcelableExtra(ROOT.ISSUE))
 
 
+    }
+
+    fun openTransactionForm(){
+        pager.currentItem = 3
+        transactionVM.updateStateView(TransactionState.SHOWTRANSACTION)
+        transactionVM.updateTransaction(intent.getParcelableExtra(ROOT.TRANSACTIONS))
     }
 
 

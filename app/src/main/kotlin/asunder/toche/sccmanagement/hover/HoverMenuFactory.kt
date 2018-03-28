@@ -24,10 +24,6 @@ class HoverMenuFactory {
     fun createDemoMenuFromCode(context: Context, bus: EventBus): SccHoverMenu {
         val menu = LinkedHashMap<String, Content>()
         menu[SccHoverMenu.MAIN_HOVER] = MainHover(context)
-        menu[SccHoverMenu.MAIN_HOVER] = MainHover(context)
-        menu[SccHoverMenu.MAIN_HOVER] = MainHover(context)
-        menu[SccHoverMenu.MAIN_HOVER] = MainHover(context)
-        menu[SccHoverMenu.MAIN_HOVER] = MainHover(context)
         return SccHoverMenu(context, ROOT.HOVER, menu, HoverThemeManager.getInstance()?.mTheme)
     }
 

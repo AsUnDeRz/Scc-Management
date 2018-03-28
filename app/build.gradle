@@ -59,6 +59,9 @@ android {
         exclude 'META-INF/ASL2.0'
         exclude 'META-INF/library_release.kotlin_module'
     }
+    androidExtensions {
+        experimental = true
+    }
 }
 
 dependencies {

@@ -21,3 +21,7 @@ enum class TransactionState{
 interface TransactionListener{
     fun onClickTransaction(transaction: Model.Transaction)
 }
+
+interface IssueListener{
+    fun onClickIssue(issue: Model.Issue)
+}

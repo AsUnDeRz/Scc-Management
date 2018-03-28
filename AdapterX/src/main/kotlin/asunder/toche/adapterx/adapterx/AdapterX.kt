@@ -80,7 +80,7 @@ open class AdapterX(private var list: List<Any>,
 
 
     override fun onCreateViewHolder(view: ViewGroup, viewType: Int): HolderX<ViewDataBinding> {
-        val binding = DataBindingUtil.inflate<ViewDataBinding>(inflater, viewType, view, false)
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(inflater!!, viewType, view, false)
         val holder = HolderX(binding)
         binding.addOnRebindCallback(object : OnRebindCallback<ViewDataBinding>() {
             override fun onPreBind(binding: ViewDataBinding) = recyclerView?.isComputingLayout ?: false

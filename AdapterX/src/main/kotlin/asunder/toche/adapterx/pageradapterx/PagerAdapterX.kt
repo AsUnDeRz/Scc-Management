@@ -56,7 +56,7 @@ class PagerAdapterX(private val modelId: Int) : PagerAdapter() {
 							.inflate(layoutId, container, false)
 
 					binding = DataBindingUtil.bind<ViewDataBinding>(view).apply {
-						setVariable(modelId, model)
+						this!!.setVariable(modelId, model)
 						executePendingBindings()
 					}
                     //val rvContent = view.findViewById(R.id.rv_myaccount) as RecyclerView
@@ -70,8 +70,8 @@ class PagerAdapterX(private val modelId: Int) : PagerAdapter() {
 	override fun isViewFromObject(view: View, obj: Any): Boolean =
 			view == ((obj as PagerItemX).binding?.root as View)
 
-	override fun getItemPosition(obj: Any?): Int {
-		val position = pagerItems.indexOf(obj as PagerItemX)
+	override fun getItemPosition(`object`: Any): Int {
+		val position = pagerItems.indexOf(`object` as PagerItemX)
 		return if (position == -1) POSITION_NONE else position
 	}
 
