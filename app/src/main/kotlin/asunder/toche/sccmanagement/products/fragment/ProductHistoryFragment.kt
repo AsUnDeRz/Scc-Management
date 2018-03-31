@@ -15,6 +15,8 @@ import asunder.toche.sccmanagement.products.adapter.ProductHistoryAdapter
 import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
 import kotlinx.android.synthetic.main.fragment_product_history.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -66,6 +68,12 @@ ProductHistoryAdapter.ProductHistoryOnClickListener{
             override fun onResults(results: MutableList<Model.Transaction>) {
                 val mapTransaction:MutableMap<Model.Transaction,Model.Contact> = mutableMapOf()
                 val contacts = transactionVM.getContact()
+                async(UI){
+                    val result = async {
+                        results.sortByDescending { Utils.getDateWithString(it.date).time }
+                    }
+                    result.await()
+                }
                 results.forEach {transac ->
                     val company = contacts.first { transac.company_id == it.id  }
                     mapTransaction[transac] = company

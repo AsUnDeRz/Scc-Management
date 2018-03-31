@@ -24,26 +24,46 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
 
     fun bind(transaction: Model.Transaction,product: Model.Product,listener: TransactionListener?){
         txtProdName.text = product.product_name
-        txtSalePrice.text = transaction.sale_price[0].price
-        if(transaction.sale_price[0].vat){
-            txtSaleVat.text = "A"
-        }else{
-            txtSaleVat.text = "B"
+        if (transaction.sale_price.isNotEmpty()) {
+            txtSalePrice.text = checkDecimal(transaction.sale_price[0].price)
+
+            if(transaction.sale_price[0].vat){
+                txtSaleVat.text = "A"
+            }else{
+                txtSaleVat.text = "B"
+            }
+
+            txtSaleValues.text = transaction.sale_price[0].values
+            txtSaleDate.text = transaction.sale_price[0].date.substring(0,10)
+
         }
-        if(product.medium_rate[0].vat){
-            txtMediumVat.text = "A"
-        }else{
-            txtMediumVat.text = "B"
+
+        if(transaction.medium_price.isNotEmpty()) {
+            if (product.medium_rate[0].vat) {
+                txtMediumVat.text = "A"
+            } else {
+                txtMediumVat.text = "B"
+            }
+            txtMediumPrice.text = product.medium_rate[0].price
+            txtMediumDate.text = product.medium_rate[0].date.substring(0, 10)
         }
-        txtSaleValues.text = transaction.sale_price[0].values
-        txtSaleDate.text = transaction.sale_price[0].date.substring(0,10)
-        txtMediumPrice.text = product.medium_rate[0].price
-        txtMediumDate.text = product.medium_rate[0].date.substring(0,10)
 
         itemView.rootView.setOnClickListener {
             listener?.onClickTransaction(transaction)
         }
 
+    }
+
+    fun checkDecimal(price:String):String{
+        return if(price[price.lastIndex-2].toString() == "."){
+            if (price[price.lastIndex].toString() != "0" || price[price.lastIndex-1].toString() != "0"){
+                price
+            }else{
+                price.toDouble().toInt().toString()
+            }
+        }else{
+            price
+        }
     }
 
 }

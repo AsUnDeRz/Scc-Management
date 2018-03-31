@@ -6,6 +6,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.TabLayout
@@ -47,6 +48,7 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.thefinestartist.finestwebview.FinestWebView
 import kotlinx.android.synthetic.main.fragment_contact.*
 import kotlinx.android.synthetic.main.fragment_contact_add.*
 import kotlinx.android.synthetic.main.section_contact_address.*
@@ -244,6 +246,7 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
                     imgEdit.visibility = View.GONE
                 }else{
                     imgEdit.visibility = View.VISIBLE
+                    contactVM.updateContact(Model.Contact())
                 }
             }
         })
@@ -323,13 +326,18 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
 
     fun validateInput() : Boolean{
         if(TextUtils.isEmpty(edtCompany.text)){
+            contactScrollView.fullScroll(ScrollView.FOCUS_UP)
             edtCompany.error = "กรุณากรอกข้อมูลบริษัท"
             return false
         }
-        if(TextUtils.isEmpty(edtBill.text)){
+        if(TextUtils.isEmpty(edtContactName.text)){
+            contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+            edtContactName.error = "กรุณากรอกชื่อผู้ติดต่อ"
             return false
         }
-        if(TextUtils.isEmpty(edtContactName.text)){
+        if(TextUtils.isEmpty(edtMobile.text)){
+            contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+            edtMobile.error = "กรุณากรอกเบอร์โทรศัพท์มือถือ"
             return false
         }
 
@@ -453,6 +461,7 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
     }
 
     fun observeStateInput(){
+        val actionState = arrayListOf(actionMobile,null,actionPhone,actionEmail,actionWebsite,null)
         val circleState = arrayListOf(imgCircleMobile,imgFax,imgPhone,imgEmail,imgWeb,imgStateAdd)
         val edtObserver = arrayListOf(edtMobile,edtFax,edtPhone,edtEmail,edtWeb,edtAddress)
         for (i in 0 until edtObserver.size){
@@ -463,11 +472,17 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
                         Glide.with(this@ContactFragment)
                                 .load(R.drawable.ic_remove_white_24dp)
                                 .into(circleState[i])
+                        actionState[i]?.let {
+                            it.visibility = View.VISIBLE
+                        }
                     }else{
                         circleState[i].isSelected = false
                         Glide.with(this@ContactFragment)
                                 .load(R.drawable.ic_add_white_24dp)
                                 .into(circleState[i])
+                        actionState[i]?.let {
+                            it.visibility = View.GONE
+                        }
                     }
                 }
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -477,6 +492,48 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
             })
 
         }
+        setAction()
+    }
+
+    fun setAction(){
+        actionMobile.setOnClickListener {
+            callPhone(edtMobile.text.toString())
+
+        }
+        actionPhone.setOnClickListener {
+            callPhone(edtPhone.text.toString())
+        }
+        actionEmail.setOnClickListener {
+            sendEmail(edtEmail.text.toString())
+
+        }
+        actionWebsite.setOnClickListener {
+            openWeb(edtWeb.text.toString())
+
+        }
+
+    }
+
+    fun openWeb(url:String){
+        if(url.startsWith("www",true)){
+            FinestWebView.Builder(activity!!).show("https://$url")
+        }else {
+            FinestWebView.Builder(activity!!).show(url)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun callPhone(phone:String){
+        val intent = Intent(Intent.ACTION_CALL)
+        intent.data = Uri.parse("tel:$phone")
+        context?.startActivity(intent)
+    }
+
+    fun sendEmail(email:String?){
+        val intent = Intent(Intent.ACTION_SENDTO)
+        intent.data = Uri.parse("mailto:")
+        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+        startActivity(Intent.createChooser(intent, "Email via..."))
     }
 
 
@@ -519,7 +576,9 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
             when(it){
                 ContactState.ALLCONTACT ->{
                     showContactList()
-                    loading.dismiss()
+                    if (loading.isShow) {
+                        loading.dismiss()
+                    }
                 }
                 ContactState.NEWCONTACT ->{
 

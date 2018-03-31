@@ -9,6 +9,8 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import io.paperdb.Paper
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import java.util.HashMap
 
 /**
@@ -36,10 +38,8 @@ class ProductService(var listener:ProductCallback){
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
-                listener.onFail()
             } else {
                 System.out.println("Data Product,Managemnt saved successfully.")
-                listener.onSuccess()
             }
         })
         pushNewProductToDb(updateProductFromDb(product,getProductsInDb()))
@@ -54,10 +54,8 @@ class ProductService(var listener:ProductCallback){
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
-                listener.onFail()
             } else {
                 System.out.println("Data Update Product successfully.")
-                listener.onSuccess()
             }
         })
         pushNewProductToDb(updateProductFromDb(product,getProductsInDb()))
@@ -78,17 +76,29 @@ class ProductService(var listener:ProductCallback){
     }
 
     fun getProductsInDb() : MutableList<Model.Product>{
-        val Product = Paper.book().read<Model.ProductUser>(ROOT.PRODUCTS)
-        return if(Product != null) {
-            Product.products
+        val product = Paper.book().read<Model.ProductUser>(ROOT.PRODUCTS)
+        return if(product != null) {
+            product.products
         }else{
             Log.d(TAG,"Not Found Product in DB")
             mutableListOf()
         }
     }
 
-    fun pushNewProductToDb(Products:MutableList<Model.Product>) {
-        Paper.book().write(ROOT.PRODUCTS,Model.ProductUser(Products))
+    fun pushNewProductToDb(products:MutableList<Model.Product>) = async(UI) {
+        try {
+            val addProduct = async {
+                Paper.book().write(ROOT.PRODUCTS,Model.ProductUser(products))
+            }
+
+            addProduct.await()
+            listener.onSuccess()
+
+        }
+        catch (e: Exception) {
+        }
+        finally {
+        }
     }
 
     fun deleteProductInDb(uid:String){

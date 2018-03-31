@@ -50,19 +50,32 @@ class TransactionHistoryAdapter : RecyclerView.Adapter<TransactionHistoryAdapter
 
         fun bind(transaction: Model.Transaction,contact:Model.Contact,listner:TransactionListener){
             txtCompany?.text = contact.company
-            txtPriceSale?.text = transaction.sale_price[0].price
-            if(transaction.sale_price[0].vat){
-                txtVat?.text = "A"
-            }else{
-                txtVat?.text = "B"
+            if(transaction.sale_price.isNotEmpty()) {
+                txtPriceSale?.text = checkDecimal(transaction.sale_price[0].price)
+
+                if(transaction.sale_price[0].vat){
+                    txtVat?.text = "A"
+                }else{
+                    txtVat?.text = "B"
+                }
+                txtValues?.text = transaction.sale_price[0].values
             }
-            txtValues?.text = transaction.sale_price[0].values
             txtDate?.text = transaction.date.substring(0,10)
             itemView.setOnClickListener {
                 listner.onClickTransaction(transaction)
             }
+        }
 
-
+        fun checkDecimal(price:String):String{
+            return if(price[price.lastIndex-2].toString() == "."){
+                if (price[price.lastIndex].toString() != "0" || price[price.lastIndex-1].toString() != "0"){
+                    price
+                }else{
+                    price.toDouble().toInt().toString()
+                }
+            }else{
+                price
+            }
         }
 
     }

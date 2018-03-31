@@ -78,7 +78,7 @@
                 app:tabPaddingEnd="0dp"
                 app:tabPaddingStart="0dp"
                 app:tabSelectedTextColor="@android:color/white"
-                app:tabTextColor="@android:color/white" />
+                app:tabTextColor="#70ffffff" />
         </RelativeLayout>
     </android.support.design.widget.CoordinatorLayout>
 

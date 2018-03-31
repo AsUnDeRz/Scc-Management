@@ -2,6 +2,7 @@ package asunder.toche.sccmanagement.transactions.viewmodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.util.Log
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.issue.adapter.SectionIssueAdapter
 import asunder.toche.sccmanagement.preference.Utils
@@ -22,6 +23,7 @@ class TransactionViewModel : ViewModel(),
         ContactService.ContactCallBack,
         ProductService.ProductCallback{
 
+    val TAG = this::class.java.simpleName
     val service = TransactionService(this)
     val contactService = ContactService(this)
     val productService = ProductService(this)
@@ -60,18 +62,8 @@ class TransactionViewModel : ViewModel(),
             groupCompany.add(it.company_id)
         }
 
-        return Model.MasterGroup(groupDate.distinctBy { it }.sortedDescending().toMutableList()
-                ,groupCompany.distinctBy { it }.sortedDescending().toMutableList())
-    }
-
-    fun setSectionAdapter(sectionList: List<String>, results: MutableMap<String,List<Model.Issue>?>)
-            : SectionedRecyclerViewAdapter {
-        val sectionIssueAdapter = SectionedRecyclerViewAdapter()
-        sectionList.forEach {
-            val section = SectionIssueAdapter(it, results[it] as MutableList<Model.Issue>)
-            sectionIssueAdapter.addSection(section)
-        }
-        return sectionIssueAdapter
+        return Model.MasterGroup(groupDate.distinctBy { it }.sortedByDescending { Utils.getDateString(it).time  }.toMutableList()
+                ,groupCompany.distinctBy { it }.sortedByDescending { it }.toMutableList())
     }
 
     fun separateSection(sectionList: List<String>, companyList:List<String>,
@@ -83,25 +75,30 @@ class TransactionViewModel : ViewModel(),
         val mapSection : MutableMap<String,SectionedRecyclerViewAdapter> = mutableMapOf()
         sectionList.forEach { sectionDate ->
             val sectionAdapter = SectionedRecyclerViewAdapter()
+            Log.d(TAG,"SectionList [$sectionDate]")
             companyList.forEach {compId ->
+                Log.d(TAG,"CompanyList [$compId]")
                 val mapProduct : MutableMap<String,Model.Product> = mutableMapOf()
-                val transaction = data
-                        .filter { it.company_id == compId &&
+                val transaction = data.filter { it.company_id == compId &&
                                   sectionDate == it.date.substring(0,10)}
+                if (transaction.isNotEmpty()) {
+
                     transaction.forEach { transacModel ->
+                        Log.d(TAG,"Transaction [${transacModel.id}]")
                         val item = products.filter { it.id == transacModel.product_id }
                         if(item.isNotEmpty()) {
-                             mapProduct[transacModel.id] = item[0]
+                            Log.d(TAG,"Map product with transaction [${item.first().product_name}]")
+                            mapProduct[transacModel.id] = item.first()
                         }
                     }
 
-                if (transaction.isNotEmpty()) {
                     val compName = companys.first { it.id == compId }
-                    sectionAdapter.addSection(
-                            SectionTransactionAdapter(compName.company,
-                                    transaction.toMutableList(),
-                                    mapProduct,
-                                    listener))
+                    Log.d(TAG, "Transaction isNotEmpty [${compName.company}]")
+                        sectionAdapter.addSection(
+                                SectionTransactionAdapter(compName.company,
+                                        transaction.toMutableList(),
+                                        mapProduct,
+                                        listener))
                 }
             }
             mapSection[sectionDate] = sectionAdapter
@@ -112,11 +109,12 @@ class TransactionViewModel : ViewModel(),
 
     fun sortAll(listener: TransactionListener) : Model.MasterGroup{
         val masterGroup = tranformFormat()
-        val sectionList = masterGroup.groupDate
+        val sectionList = masterGroup.groupDate.filter { Utils.getDateString(it).time <= Utils.getCurrentDate().time }
         val companyList = masterGroup.groupCompany
         val result = separateSection(sectionList,companyList,listener)
         return if(result.isNotEmpty()) {
             masterGroup.resultMap = result
+            masterGroup.groupDate = sectionList.toMutableList()
             masterGroup
         }else{
             Model.MasterGroup()
@@ -126,7 +124,7 @@ class TransactionViewModel : ViewModel(),
     fun sortTomorrow(listener: TransactionListener):Model.MasterGroup{
         val masterGroup = tranformFormat()
         val companyList = masterGroup.groupCompany
-        val newDate = masterGroup.groupDate.filter { it > Utils.getCurrentDateShort() }
+        val newDate = masterGroup.groupDate.filter { Utils.getDateString(it).time > Utils.getCurrentDate().time }
         val result = separateSection(newDate,companyList,listener)
         return if(result.isNotEmpty()) {
             masterGroup.resultMap = result
@@ -141,7 +139,7 @@ class TransactionViewModel : ViewModel(),
     fun sortYesterday(listener: TransactionListener):Model.MasterGroup{
         val masterGroup = tranformFormat()
         val companyList = masterGroup.groupCompany
-        val newDate = masterGroup.groupDate.filter { it < Utils.getCurrentDateShort() }
+        val newDate = masterGroup.groupDate.filter { Utils.getDateString(it).time < Utils.getPreviusDate().time }
         val result = separateSection(newDate
                 ,companyList,listener)
         return if(result.isNotEmpty()) {

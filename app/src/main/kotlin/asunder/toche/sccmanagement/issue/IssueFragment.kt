@@ -28,10 +28,11 @@ import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
-import asunder.toche.sccmanagement.main.ControllViewModel
+import asunder.toche.sccmanagement.main.ControlViewModel
 import asunder.toche.sccmanagement.main.FilterViewPager
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
+import asunder.toche.sccmanagement.transactions.IssueListener
 import com.bumptech.glide.Glide
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
 import droidninja.filepicker.FilePickerBuilder
@@ -42,6 +43,9 @@ import kotlinx.android.synthetic.main.fragment_issue_add.*
 import kotlinx.android.synthetic.main.layout_input.*
 import kotlinx.android.synthetic.main.section_issue_confirm.*
 import kotlinx.android.synthetic.main.section_issue_info.*
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import java.io.File
 import java.util.*
 
@@ -49,8 +53,7 @@ import java.util.*
 /**
  *Created by ToCHe on 26/2/2018 AD.
  */
-class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
-
+class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueListener{
 
     companion object {
         fun newInstance(): IssueFragment = IssueFragment()
@@ -63,7 +66,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var issueVM: IssueViewModel
     private lateinit var contactVm : ContactViewModel
-    private lateinit var controllViewModel: ControllViewModel
+    private lateinit var controlViewModel: ControlViewModel
     val selectedFile = arrayListOf<String>()
     val selectedPhoto = arrayListOf<String>()
     var selectedDate : Date = Date()
@@ -75,12 +78,12 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
         super.onCreate(savedInstanceState)
         issueVM = ViewModelProviders.of(activity!!).get(IssueViewModel::class.java)
         contactVm = ViewModelProviders.of(activity!!).get(ContactViewModel::class.java)
-        controllViewModel = ViewModelProviders.of(activity!!).get(ControllViewModel::class.java)
+        controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
         initControllState()
     }
 
     fun initControllState(){
-        controllViewModel.currentUI.observe(this, Observer {
+        controlViewModel.currentUI.observe(this, Observer {
             if (it == ROOT.ISSUE){
                 initViewCreated()
             }
@@ -89,7 +92,12 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
 
     fun initViewCreated(){
         issueVM.loadIssue()
-        separateSection(issueVM.sortAll())
+        async(UI) {
+            val data = async(CommonPool) {
+                issueVM.sortAll(this@IssueFragment)
+            }
+            separateSection(data.await())
+        }
         rvSectionIssue.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
@@ -149,19 +157,39 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
                 when(tab?.position){
                     0 ->{
                         //all
-                        separateSection(issueVM.sortAll())
+                        async(UI) {
+                            val data = async(CommonPool) {
+                                issueVM.sortAll(this@IssueFragment)
+                            }
+                            separateSection(data.await())
+                        }
                     }
                     1 ->{
                         //today
-                        separateSection(issueVM.sortToday())
+                        async(UI) {
+                            val data = async(CommonPool) {
+                                issueVM.sortToday(this@IssueFragment)
+                            }
+                            separateSection(data.await())
+                        }
                     }
                     2 ->{
                         //tomorrow
-                        separateSection(issueVM.sortTomorrow())
+                        async(UI) {
+                            val data = async(CommonPool) {
+                                issueVM.sortTomorrow(this@IssueFragment)
+                            }
+                            separateSection(data.await())
+                        }
                     }
                     3 ->{
                         //yesterday
-                        separateSection(issueVM.sortYesterday())
+                        async(UI) {
+                            val data = async(CommonPool) {
+                                issueVM.sortYesterday(this@IssueFragment)
+                            }
+                            separateSection(data.await())
+                        }
                     }
                 }
             }
@@ -388,7 +416,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
         edtProcess.setText(issue.status)
         edtIssue.setText(issue.issue_name)
         edtIssueDetail.setText(issue.issue_desc)
-
+        issueVM.currentIssueId = issue.id
         if(issue.company_id == "") {
             edtCompany.setText(issue.company_id)
         }else{
@@ -396,6 +424,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
             issueVM.findCompanyWithKey(issue.company_id)
         }
         edtIssueDate.setText(issue.date)
+        selectedDate = Utils.getDateWithString(issue.date)
         if(issue.image_path == ""){
             Glide.with(context!!)
                     .load("")
@@ -432,7 +461,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
         selectedPhoto.clear()
         selectedFile.clear()
         issueVM.updateCompany(Model.Contact())
-
+        issueVM.currentIssueId = ""
     }
 
     override fun onClickCompany(contact: Model.Contact) {
@@ -475,19 +504,39 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
             when(tabLayoutFilterIssue.selectedTabPosition){
                 0 ->{
                     //all
-                    separateSection(issueVM.sortAll())
+                    async(UI) {
+                        val data = async(CommonPool) {
+                            issueVM.sortAll(this@IssueFragment)
+                        }
+                        separateSection(data.await())
+                    }
                 }
                 1 ->{
                     //today
-                    separateSection(issueVM.sortToday())
+                    async(UI) {
+                        val data = async(CommonPool) {
+                            issueVM.sortToday(this@IssueFragment)
+                        }
+                        separateSection(data.await())
+                    }
                 }
                 2 ->{
                     //tomorrow
-                    separateSection(issueVM.sortTomorrow())
+                    async(UI) {
+                        val data = async(CommonPool) {
+                            issueVM.sortTomorrow(this@IssueFragment)
+                        }
+                        separateSection(data.await())
+                    }
                 }
                 3 ->{
                     //yesterday
-                    separateSection(issueVM.sortYesterday())
+                    async(UI) {
+                        val data = async(CommonPool) {
+                            issueVM.sortYesterday(this@IssueFragment)
+                        }
+                        separateSection(data.await())
+                    }
                 }
             }
         })
@@ -497,10 +546,12 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
         System.out.println("Check selected $selectedPhoto  $selectedFile")
         val photoPath = if (selectedPhoto.isEmpty()) "" else selectedPhoto[0]
         val filePath = if (selectedFile.isEmpty()) "" else selectedFile[0]
-        val data = Model.Issue("",edtProcess.text.toString(),"",edtIssue.text.toString()
+        val data = Model.Issue(issueVM.currentIssueId,edtProcess.text.toString(),"",edtIssue.text.toString()
                 ,edtIssueDetail.text.toString(),Utils.getDateStringWithDate(selectedDate),"",
                 photoPath,"",filePath)
-        issueVM.saveIssue(data)
+        async(UI) {
+            issueVM.saveIssue(data).await()
+        }
         loading.show(fragmentManager, LoadingDialog.TAG)
     }
 
@@ -515,5 +566,12 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener{
         }
         return true
     }
+
+    override fun onClickIssue(issue: Model.Issue) {
+        showIssueForm()
+        setUpIssueForm(issue)
+
+    }
+
 
 }

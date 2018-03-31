@@ -70,12 +70,15 @@ class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolea
             val btnEdt = swipeView?.findViewById<BtnMedium>(R.id.btnEdit)
             val btnDelete = swipeView?.findViewById<BtnMedium>(R.id.btnDelete)
             txtProdct?.text = product.product_name
-            txtPriceMedium?.text = product.medium_rate[0].price
-            if(product.medium_rate[0].vat) {
-                txtVat?.text = "A"
-            }else{
-                txtVat?.text = "B"
+            if (product.medium_rate.isNotEmpty()){
+                txtPriceMedium?.text = checkDecimal(product.medium_rate[0].price)
+                if(product.medium_rate[0].vat) {
+                    txtVat?.text = "A"
+                }else{
+                    txtVat?.text = "B"
+                }
             }
+
             txtDate?.text = product.date.substring(0,10)
             swipeView?.swipeGestureListener = object : SwipeGestureListener {
                 override fun onSwipedLeft(swipeActionView: SwipeActionView): Boolean {
@@ -104,11 +107,14 @@ class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolea
 
         fun bind(product: Model.Product,listener:ProductOnClickListener){
             txtProdct?.text = product.product_name
-            txtPriceMedium?.text = product.medium_rate[0].price
-            if(product.medium_rate[0].vat) {
-                txtVat?.text = "A"
-            }else{
-                txtVat?.text = "B"
+            if (product.medium_rate.isNotEmpty()){
+                txtPriceMedium?.text = checkDecimal(product.medium_rate[0].price)
+
+                if(product.medium_rate[0].vat) {
+                    txtVat?.text = "A"
+                }else{
+                    txtVat?.text = "B"
+                }
             }
             txtDate?.text = product.date.substring(0,10)
             itemView.setOnClickListener {
@@ -116,7 +122,24 @@ class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolea
             }
         }
 
+        fun checkDecimal(price:String):String {
+            return if (price.length > 2) {
+                if (price[price.lastIndex - 2].toString() == ".") {
+                    if (price[price.lastIndex].toString() != "0" || price[price.lastIndex - 1].toString() != "0") {
+                        price
+                    } else {
+                        price.toDouble().toInt().toString()
+                    }
+                } else {
+                    price
+                }
+            }else{
+                price
+            }
+        }
+
     }
+
 
     interface ProductListener{
         fun onSelectProduct(product: Model.Product)

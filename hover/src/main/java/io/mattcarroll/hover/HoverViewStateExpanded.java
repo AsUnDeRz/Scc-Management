@@ -36,7 +36,7 @@ import java.util.Map;
  * When the selected tab is tapped again by the user, the {@code HoverView} is transitioned to its
  * collapsed state.
  */
-class HoverViewStateExpanded extends BaseHoverViewState {
+public class HoverViewStateExpanded extends BaseHoverViewState {
 
     private static final String TAG = "HoverMenuViewState";
     private static final int ANCHOR_TAB_X_OFFSET_IN_PX = 100;
@@ -396,6 +396,9 @@ class HoverViewStateExpanded extends BaseHoverViewState {
             FloatingTab newTab = addTab(section.getId(), section.getTabView(), sectionIndex);
             mSections.put(newTab, section);
         }
+        if(mSections.size() == 2){
+            selectSection(mHoverView.mMenu.getSection(0));
+        }
 
         updateChainedPositions();
     }
@@ -528,7 +531,7 @@ class HoverViewStateExpanded extends BaseHoverViewState {
         }
     }
 
-    private void selectSection(@NonNull HoverMenu.Section section) {
+    public void selectSection(@NonNull HoverMenu.Section section) {
         mHoverView.mSelectedSectionId = section.getId();
         mSelectedTab = mHoverView.mScreen.getChainedTab(mHoverView.mSelectedSectionId);
         ContentDisplay contentDisplay = mHoverView.mScreen.getContentDisplay();

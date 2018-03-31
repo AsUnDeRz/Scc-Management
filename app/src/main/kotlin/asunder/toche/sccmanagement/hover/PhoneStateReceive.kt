@@ -78,9 +78,6 @@ class PhoneStateReceive : BroadcastReceiver() {
     }
 
     protected fun onIncomingCallReceived(ctx: Context, number: String?, start: Date?) {
-        if (HoverService.mHoverView == null) {
-            HoverService.showFloatingMenu(ctx)
-        } else {
             if (number != null) {
                 val displayname = filterContact(number, ctx)
                 if(!displayname.number.isEmpty()){
@@ -88,7 +85,7 @@ class PhoneStateReceive : BroadcastReceiver() {
                 }
 
             }
-        }
+
         println("onInComingCallReceived")
     }
 

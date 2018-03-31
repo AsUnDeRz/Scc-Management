@@ -91,6 +91,8 @@
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:id="@+id/txtMobile"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -108,9 +110,10 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="24dp"
             android:layout_toEndOf="@+id/txtMobile"
-            android:background="@android:color/transparent"
+            android:background="@drawable/bg_round_table"
             android:ems="10"
             android:inputType="textPersonName"
+            android:paddingStart="8dp"
             android:textSize="16sp" />
     </RelativeLayout>
 
@@ -154,9 +157,10 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="24dp"
             android:layout_toEndOf="@+id/txtFax"
-            android:background="@android:color/transparent"
+            android:background="@drawable/bg_round_table"
             android:ems="10"
             android:inputType="textPersonName"
+            android:paddingStart="8dp"
             android:textSize="16sp" />
     </RelativeLayout>
 
@@ -199,9 +203,10 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="24dp"
             android:layout_toEndOf="@+id/txtPhone"
-            android:background="@android:color/transparent"
+            android:background="@drawable/bg_round_table"
             android:ems="10"
             android:inputType="textPersonName"
+            android:paddingStart="8dp"
             android:textSize="16sp" />
     </RelativeLayout>
 
@@ -244,9 +249,10 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="24dp"
             android:layout_toEndOf="@+id/txtEmail"
-            android:background="@android:color/transparent"
+            android:background="@drawable/bg_round_table"
             android:ems="10"
             android:inputType="textPersonName"
+            android:paddingStart="8dp"
             android:textSize="16sp" />
     </RelativeLayout>
 
@@ -289,9 +295,10 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="24dp"
             android:layout_toEndOf="@+id/txtWeb"
-            android:background="@android:color/transparent"
+            android:background="@drawable/bg_round_table"
             android:ems="10"
             android:inputType="textPersonName"
+            android:paddingStart="8dp"
             android:textSize="16sp" />
     </RelativeLayout>
 
@@ -321,6 +328,54 @@
         app:layout_constraintEnd_toStartOf="@+id/edtBill"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/edtContactName" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/actionMobile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/colorConfirm"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/vMobile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/vMobile"
+        app:layout_constraintTop_toTopOf="@+id/vMobile"
+        app:srcCompat="@drawable/ic_phone_white_36dp" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:visibility="gone"
+        android:id="@+id/actionPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/colorConfirm"
+        app:layout_constraintBottom_toBottomOf="@+id/vPhone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/vPhone"
+        app:layout_constraintTop_toTopOf="@+id/vPhone"
+        app:srcCompat="@drawable/ic_phone_white_36dp" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:visibility="gone"
+        android:id="@+id/actionEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/colorConfirm"
+        app:layout_constraintBottom_toBottomOf="@+id/vEmail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/vEmail"
+        app:layout_constraintTop_toTopOf="@+id/vEmail"
+        app:srcCompat="@android:drawable/ic_dialog_email" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:visibility="gone"
+        android:id="@+id/actionWebsite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/colorConfirm"
+        app:layout_constraintBottom_toBottomOf="@+id/vWebsite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/vWebsite"
+        app:layout_constraintTop_toTopOf="@+id/vWebsite"
+        app:srcCompat="@android:drawable/ic_menu_mapmode" />
 
 
 </android.support.constraint.ConstraintLayout>

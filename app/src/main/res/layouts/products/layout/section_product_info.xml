@@ -147,6 +147,7 @@
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
+        android:focusable="false"
         android:id="@+id/rvMediumPrice"
         android:layout_width="0dp"
         android:layout_height="200dp"

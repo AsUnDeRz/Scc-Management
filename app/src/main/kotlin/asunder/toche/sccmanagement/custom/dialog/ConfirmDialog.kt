@@ -17,16 +17,19 @@ class ConfirmDialog : DialogFragment() {
     private var listener: ConfirmDialogListener? = null
     private var title:String = ""
     private var message:String =""
+    private var isCancel = false
 
     companion object {
         private const val MESSAGE = "message"
         private const val TITLE = "title"
+        private const val CANCELABLE = "cancel_able"
         fun newInstance(message: String,
-                        title:String) : ConfirmDialog{
+                        title:String,cancelAble:Boolean) : ConfirmDialog{
             val fragment = ConfirmDialog()
             val bundle = Bundle()
             bundle.putString(MESSAGE, message)
             bundle.putString(TITLE, title)
+            bundle.putBoolean(CANCELABLE,cancelAble)
             fragment.arguments = bundle
             return fragment
         }
@@ -60,23 +63,38 @@ class ConfirmDialog : DialogFragment() {
             listener?.onClickConfirm()
             dismiss()
         }
+
+        btnCancel.setOnClickListener {
+            listener?.onClickCancel()
+            dismiss()
+        }
     }
     fun setText(){
         txtTitle.text = title
         txtMsg.text = message
+
+        if (isCancel){
+            btnCancel.visibility = View.VISIBLE
+        }else{
+            btnCancel.visibility = View.GONE
+        }
     }
 
     private fun initData() {
         message = arguments!!.getString(MESSAGE)
         title = arguments!!.getString(TITLE)
+        isCancel = arguments!!.getBoolean(CANCELABLE)
     }
 
     private fun restoreData(savedInstanceState: Bundle) {
         message = savedInstanceState.getString(MESSAGE)
         title = savedInstanceState.getString(TITLE)
+        isCancel = savedInstanceState.getBoolean(CANCELABLE)
+
     }
 
     interface ConfirmDialogListener{
         fun onClickConfirm()
+        fun onClickCancel()
     }
 }

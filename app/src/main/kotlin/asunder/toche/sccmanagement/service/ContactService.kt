@@ -9,6 +9,8 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import io.paperdb.Paper
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import java.util.*
 
@@ -35,10 +37,8 @@ class ContactService(var listener:ContactCallBack){
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
-                listener.onFail()
             } else {
                 System.out.println("Data Contact,Managemnt saved successfully.")
-                listener.onSuccess()
             }
         })
         pushNewContactToDb(updateContactFromDb(contact,getContactInDb()))
@@ -85,8 +85,20 @@ class ContactService(var listener:ContactCallBack){
         }
     }
 
-    fun pushNewContactToDb(contacts:MutableList<Model.Contact>) {
-        Paper.book().write(ROOT.CONTACTS,Model.ContactUser(contacts))
+    fun pushNewContactToDb(contacts:MutableList<Model.Contact>) = async(UI) {
+        try {
+            val addContact = async {
+                Paper.book().write(ROOT.CONTACTS,Model.ContactUser(contacts))
+            }
+
+            addContact.await()
+            listener.onSuccess()
+
+        }
+        catch (e: Exception) {
+        }
+        finally {
+        }
     }
 
     fun deleteContactInDb(uid:String){

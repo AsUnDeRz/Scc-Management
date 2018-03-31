@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
+import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import asunder.toche.sccmanagement.Model
@@ -23,11 +25,13 @@ import asunder.toche.sccmanagement.auth.ActivityManagement
 import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.TriggerUpdate
+import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.hover.HoverService
 import asunder.toche.sccmanagement.issue.IssueState
 import asunder.toche.sccmanagement.issue.IssueViewModel
 import asunder.toche.sccmanagement.preference.KEY
+import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
@@ -36,23 +40,26 @@ import asunder.toche.sccmanagement.settings.ActivitySetting
 import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.menu_drawer.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
-class ActivityMain : AppCompatActivity(), LifecycleOwner{
-
+class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDialogListener{
 
     companion object {
         var isActivityResume : Boolean? = null
     }
 
 
+    val TAG = this::class.java.simpleName
     lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
     lateinit var actionBar: Toolbar
     lateinit var drawerLayout: DrawerLayout
-    lateinit var controllViewModel: ControllViewModel
+    lateinit var controlViewModel: ControlViewModel
     lateinit var contactVM : ContactViewModel
     lateinit var productVM : ProductViewModel
     lateinit var issueVM : IssueViewModel
@@ -65,7 +72,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        controllViewModel = ViewModelProviders.of(this).get(ControllViewModel::class.java)
+        controlViewModel = ViewModelProviders.of(this).get(ControlViewModel::class.java)
         contactVM = ViewModelProviders.of(this).get(ContactViewModel::class.java)
         productVM = ViewModelProviders.of(this).get(ProductViewModel::class.java)
         issueVM = ViewModelProviders.of(this).get(IssueViewModel::class.java)
@@ -76,9 +83,9 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner{
         setHumburgerButton()
         observerContacts()
         searchTextChanged()
-        controllViewModel.updateCurrentUI(ROOT.CONTACTS)
-        HoverService.showFloatingMenu(this)
+        controlViewModel.updateCurrentUI(ROOT.CONTACTS)
         checkDataFromService(intent)
+        setupCurrentUser()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -129,19 +136,19 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner{
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when(tab?.position){
                     0 ->{
-                        controllViewModel.updateCurrentUI(ROOT.CONTACTS)
+                        controlViewModel.updateCurrentUI(ROOT.CONTACTS)
                         System.out.println("Tab Select ${tab.position}")
                     }
                     1 ->{
-                        controllViewModel.updateCurrentUI(ROOT.ISSUE)
+                        controlViewModel.updateCurrentUI(ROOT.ISSUE)
                         System.out.println("Tab Select ${tab.position}")
                     }
                     2 ->{
-                        controllViewModel.updateCurrentUI(ROOT.PRODUCTS)
+                        controlViewModel.updateCurrentUI(ROOT.PRODUCTS)
                         System.out.println("Tab Select ${tab.position}")
                     }
                     3 ->{
-                        controllViewModel.updateCurrentUI(ROOT.TRANSACTIONS)
+                        controlViewModel.updateCurrentUI(ROOT.TRANSACTIONS)
                         System.out.println("Tab Select ${tab.position}")
                     }
                 }
@@ -332,6 +339,11 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner{
     override fun onResume() {
         super.onResume()
         isActivityResume = true
+        async(UI) {
+            async {
+                HoverService.showFloatingMenu(this@ActivityMain)
+            }.await()
+        }
     }
 
     override fun onPause() {
@@ -342,5 +354,33 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner{
     override fun getLifecycle(): Lifecycle {
         return lifecycleRegistry
     }
+
+    override fun onBackPressed() {
+        val confirmDialog = ConfirmDialog.newInstance("คุณต้องการออกจากแอฟพลิเคชั่นใช่หรือไม่","แจ้งเตือน",true)
+        confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+        confirmDialog.show(supportFragmentManager, ConfirmDialog::class.java.simpleName)
+    }
+
+    override fun onClickConfirm() {
+        HoverService.showFloatingMenu(this)
+        finish()
+    }
+
+    override fun onClickCancel() {
+
+    }
+
+    fun setupCurrentUser(){
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user!!.uid == Prefer.getUUID(this)){
+            txtAccount.text = "Email : ${user?.email} \n Uid : ${user?.uid}"
+        }else{
+            txtAccount.text = "Email : ${user?.email} \n Uid : current uid not match in Preference "
+        }
+    }
+
+
+
+
 
 }

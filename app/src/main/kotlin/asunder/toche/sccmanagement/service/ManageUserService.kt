@@ -13,6 +13,12 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.TwitterAuthProvider
 import com.google.firebase.database.*
 import com.twitter.sdk.android.core.TwitterSession
+import com.twitter.sdk.android.core.models.User
+import io.paperdb.Paper
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import java.util.*
 
 
@@ -42,6 +48,8 @@ class ManageUserService{
                         }
                     }else{
                         Log.w(TAG, "signInWithCredential:failure", it.exception)
+                        listener.authFail(it.exception?.message.toString())
+                        //Crashlytics.log(it.exception)
                     }
                 }
     }
@@ -58,6 +66,8 @@ class ManageUserService{
                         }
                     }else{
                         Log.w(TAG, "signInWithCredential:failure", it.exception)
+                        listener.currentStatus(Model.UserAuth("",ROOT.REGISTER,"",
+                                "","",""))
                     }
                 }
     }
@@ -76,6 +86,8 @@ class ManageUserService{
                         }
                     }else{
                         Log.w(TAG, "signInWithCredential:failure", it.exception)
+                        listener.authFail(it.exception?.message.toString())
+                        //Crashlytics.log(it.exception)
                     }
                 }
     }
@@ -92,6 +104,8 @@ class ManageUserService{
                         }
                     }else{
                         Log.w(TAG, "signInWithCredential:failure", it.exception)
+                        listener.currentStatus(Model.UserAuth("",ROOT.REGISTER,"",
+                                "","",""))
                     }
                 }
     }
@@ -110,6 +124,8 @@ class ManageUserService{
                         }
                     }else{
                         Log.w(TAG, "signInWithEmail:failure", it.exception)
+                        listener.currentStatus(Model.UserAuth("",ROOT.REGISTER,"",
+                                "","",""))
                     }
                 }
     }
@@ -129,6 +145,8 @@ class ManageUserService{
                         }
                     }else{
                         Log.w(TAG, "signInWithEmail:failure", it.exception)
+                        listener.authFail(it.exception?.message.toString())
+                        //Crashlytics.log(it.exception)
                     }
                 }
     }
@@ -144,6 +162,8 @@ class ManageUserService{
                         }
                     }else{
                         Log.w(TAG, "signInWithEmail:failure", it.exception)
+                        listener.currentStatus(Model.UserAuth("",ROOT.REGISTER,"",
+                                "","",""))
                     }
                 }
     }
@@ -161,6 +181,8 @@ class ManageUserService{
                         }
                     }else{
                         Log.w(TAG, "signInWithEmail:failure", it.exception)
+                        listener.authFail(it.exception?.message.toString())
+                        //Crashlytics.log(it.exception)
                     }
                 }
     }
@@ -168,7 +190,9 @@ class ManageUserService{
     fun signOut(){
         val user = mAuth.currentUser
         Log.d(TAG,"Error with "+user?.email)
+        Paper.book().destroy()
         mAuth.signOut()
+
     }
 
     fun approveUser(userAuth: Model.UserAuth){
@@ -232,10 +256,31 @@ class ManageUserService{
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
+                listener.authFail(databaseError.message)
+                signOut()
             } else {
                 System.out.println("Data management saved successfully.")
-                listener.authSuccess(userAuth.auth_with)
-                signOut()
+                listener.authSuccess(userAuth.auth_with,userAuth.email,userAuth.uid)
+            }
+        })
+    }
+
+    fun checkAdmin(){
+        ROOT.listAdmin.clear()
+        firebase.child(ROOT.ADMIN).addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onCancelled(data: DatabaseError?) {
+                Log.d(TAG, data?.message)
+                //Crashlytics.log(data?.message)
+            }
+            override fun onDataChange(data: DataSnapshot?) {
+                val emails = mutableListOf<String>()
+                data?.children?.mapNotNullTo(emails){
+                    it.child(ROOT.EMAIL).value.toString()
+                }
+                ROOT.listAdmin.addAll(emails)
+                ROOT.listAdmin.forEach {
+                    Log.d(TAG,it)
+                }
             }
         })
     }
@@ -265,10 +310,18 @@ class ManageUserService{
         firebase.child("${ROOT.MANAGEMENT}/$uid").addListenerForSingleValueEvent(object  : ValueEventListener{
             override fun onCancelled(data: DatabaseError?) {
                 Log.d(TAG, data?.message)
+                listener?.currentStatus(Model.UserAuth("", ROOT.REGISTER,
+                        "","","",""))
+                handler.removeCallbacks(runnable)
                 //Crashlytics.log(data?.message)
             }
             override fun onDataChange(data: DataSnapshot?) {
                 val userAuth = data?.getValue(Model.UserAuth::class.java)
+                if(userAuth == null){
+                    listener?.currentStatus(Model.UserAuth("",ROOT.REGISTER,
+                            "","","",""))
+                    handler.removeCallbacks(runnable)
+                }
                 userAuth?.let {
                     listener?.currentStatus(it)
                     handler.removeCallbacks(runnable)
@@ -278,6 +331,102 @@ class ManageUserService{
         })
         handler.postDelayed(runnable,4000)
     }
+
+
+    fun synceDatabase(uid: String,listener :SyncData){
+        Log.d(TAG,"Uid  "+uid)
+        firebase.child(ROOT.USERS+"/"+uid).addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onCancelled(error: DatabaseError?) {
+            }
+
+            override fun onDataChange(data: DataSnapshot?) {
+                val contacts = mutableListOf<Model.Contact>()
+                val issues = mutableListOf<Model.Issue>()
+                val products = mutableListOf<Model.Product>()
+                val transactions = mutableListOf<Model.Transaction>()
+                async(UI){
+                    val jobContact = async(CommonPool) {
+                        data?.child(ROOT.CONTACTS)?.children?.mapNotNullTo(contacts) {
+                            it.getValue<Model.Contact>(Model.Contact::class.java)
+                        }
+                    }
+                    val jobIssue = async(CommonPool){
+                        data?.child(ROOT.ISSUE)?.children?.mapNotNullTo(issues) {
+                            it.getValue<Model.Issue>(Model.Issue::class.java)
+                        }
+                    }
+                    val jobProduct = async(CommonPool){
+                        data?.child(ROOT.PRODUCTS)?.children?.mapNotNullTo(products) {
+                            it.getValue<Model.Product>(Model.Product::class.java)
+                        }
+                    }
+                    val jobTransaction = async(CommonPool){
+                        data?.child(ROOT.TRANSACTIONS)?.children?.mapNotNullTo(transactions) {
+                            it.getValue<Model.Transaction>(Model.Transaction::class.java)
+                        }
+                    }
+                    async {
+                        jobContact.await()?.let {
+                            ContactService(object : ContactService.ContactCallBack{
+                                override fun onSuccess() {
+
+                                }
+
+                                override fun onFail() {
+                                }
+                            }).pushNewContactToDb(it)
+                        }
+                    }.await()
+
+                    async {
+                        jobIssue.await()?.let {
+                            IssueService(object :IssueService.IssueCallBack{
+                                override fun onIssueSuccess() {
+
+                                }
+
+                                override fun onIssueFail() {
+                                }
+                            }).pushNewIssueToDb(it)
+                        }
+                    }.await()
+
+                    async {
+                        jobProduct.await()?.let {
+                            ProductService(object : ProductService.ProductCallback{
+                                override fun onSuccess() {
+
+                                }
+
+                                override fun onFail() {
+                                }
+                            }).pushNewProductToDb(it)
+                        }
+                    }.await()
+
+                    async {
+                        jobTransaction.await()?.let {
+                            TransactionService(object : TransactionService.TransactionCallback{
+                                override fun onSuccess() {
+
+                                }
+
+                                override fun onFail() {
+                                }
+                            }).pushNewTransactionToDb(it)
+                        }
+                    }.await()
+                    Log.d(TAG,contacts.toString())
+                    Log.d(TAG,issues.toString())
+                    Log.d(TAG,products.toString())
+                    Log.d(TAG,transactions.toString())
+                    listener.syncSuccess()
+                }
+            }
+        })
+    }
+
+
 
     interface ServiceState{
         fun loadUserSuccess(users:MutableList<Model.UserAuth>)
@@ -289,7 +438,11 @@ class ManageUserService{
         fun currentStatus(userAuth: Model.UserAuth)
     }
     interface Auth{
-        fun authSuccess(authWith:String)
+        fun authSuccess(authWith:String,email:String,uid: String)
+        fun authFail(message:String)
+    }
+    interface SyncData{
+        fun syncSuccess()
     }
 
 }

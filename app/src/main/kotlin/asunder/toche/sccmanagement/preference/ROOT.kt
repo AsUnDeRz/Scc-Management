@@ -11,7 +11,7 @@ object ROOT{
     const val PRODUCTS = "products"
     const val TRANSACTIONS = "transactions"
     const val MANAGEMENT = "management"
-    const val ADMIN = "admin"
+    const val ADMIN = "Admin"
     const val REGISTER ="register"
     const val APPROVE = "approve"
     const val REJECT = "reject"
@@ -24,4 +24,5 @@ object ROOT{
     const val FACEBOOK = "facebook"
     const val TWITTER = "twitter"
     const val EMAIL ="email"
+    val listAdmin = mutableListOf<String>()
 }

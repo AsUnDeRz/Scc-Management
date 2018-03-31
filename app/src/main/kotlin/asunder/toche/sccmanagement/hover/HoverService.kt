@@ -71,6 +71,10 @@ class HoverService : HoverMenuService() {
             addHover(number,name)
         }
 
+        fun moveToSection(number: String?){
+
+        }
+
         fun addHover(number: String?,name: String) {
            mHoverMenu.addSection(ContactHover(mHoverMenu.mContext!!,number!!),number,name)
         }

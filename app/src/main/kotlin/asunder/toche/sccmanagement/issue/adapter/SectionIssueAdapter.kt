@@ -5,6 +5,7 @@ import android.view.View
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
+import asunder.toche.sccmanagement.transactions.IssueListener
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters
 import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection
 
@@ -18,12 +19,14 @@ class SectionIssueAdapter() : StatelessSection(SectionParameters.builder()
         .itemResourceId(R.layout.item_issue)
         .headerResourceId(R.layout.item_section_issue)
         .build()) {
-    constructor(dateString: String, data:MutableList<Model.Issue>) : this(){
+    constructor(dateString: String, data:MutableList<Model.Issue>,newListener: IssueListener) : this(){
         sectionDate = dateString
         issues = data
+        listener = newListener
     }
     var issues: MutableList<Model.Issue> = mutableListOf()
     var sectionDate:String =""
+    lateinit var listener : IssueListener
 
     override fun getContentItemsTotal(): Int {
         return issues.size // number of items of this section
@@ -36,7 +39,7 @@ class SectionIssueAdapter() : StatelessSection(SectionParameters.builder()
 
     override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val itemHolder = holder as IssueAdapter.IssueHolder
-        itemHolder.bind(issues[position])
+        itemHolder.bind(issues[position],listener)
     }
 
     override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
@@ -50,5 +53,9 @@ class SectionIssueAdapter() : StatelessSection(SectionParameters.builder()
 
      class SectionHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
          val sectionDate: TxtMedium = itemView.findViewById(R.id.txtSectionDate)
+
+
     }
+
+
 }

@@ -9,6 +9,9 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import io.paperdb.Paper
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import java.util.HashMap
 
 /**
@@ -36,10 +39,8 @@ class TransactionService(var listener:TransactionCallback){
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
-                listener.onFail()
             } else {
                 System.out.println("Data Transaction,Managemnt saved successfully.")
-                listener.onSuccess()
             }
         })
         pushNewTransactionToDb(updateTransactionFromDb(transaction,getTransactionInDb()))
@@ -52,10 +53,8 @@ class TransactionService(var listener:TransactionCallback){
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
-                listener.onFail()
             } else {
                 System.out.println("Data Update Transaction successfully.")
-                listener.onSuccess()
             }
         })
         pushNewTransactionToDb(updateTransactionFromDb(transaction,getTransactionInDb()))
@@ -86,8 +85,18 @@ class TransactionService(var listener:TransactionCallback){
         }
     }
 
-    fun pushNewTransactionToDb(Transactions:MutableList<Model.Transaction>) {
-        Paper.book().write(ROOT.TRANSACTIONS,Model.TransactionUser(Transactions))
+    fun pushNewTransactionToDb(transactions:MutableList<Model.Transaction>)  = async(UI) {
+        try {
+            val addTransaction = async {
+                Paper.book().write(ROOT.TRANSACTIONS,Model.TransactionUser(transactions))
+            }
+            addTransaction.await()
+            listener.onSuccess()
+        }
+        catch (e: Exception) {
+        }
+        finally {
+        }
     }
 
     fun deleteTransactionInDb(uid:String){

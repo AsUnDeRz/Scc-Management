@@ -26,7 +26,7 @@ import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
-import asunder.toche.sccmanagement.main.ControllViewModel
+import asunder.toche.sccmanagement.main.ControlViewModel
 import asunder.toche.sccmanagement.main.FilterViewPager
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
@@ -59,7 +59,7 @@ class TransactionsFragment : Fragment(){
     private lateinit var sheetDisableCard: BottomSheetBehavior<View>
     private lateinit var transactionVM: TransactionViewModel
     private lateinit var productVM: ProductViewModel
-    private lateinit var controllViewModel: ControllViewModel
+    private lateinit var controlViewModel: ControlViewModel
     private lateinit var saleRateAdapter: SaleRateAdapter
     private lateinit var adapter: CompanyAdapter
     private lateinit var productAdapter: ProductAdapter
@@ -71,12 +71,12 @@ class TransactionsFragment : Fragment(){
         super.onCreate(savedInstanceState)
         transactionVM = ViewModelProviders.of(activity!!).get(TransactionViewModel::class.java)
         productVM = ViewModelProviders.of(activity!!).get(ProductViewModel::class.java)
-        controllViewModel = ViewModelProviders.of(activity!!).get(ControllViewModel::class.java)
+        controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
         initControllState()
     }
 
     fun initControllState(){
-        controllViewModel.currentUI.observe(this, Observer {
+        controlViewModel.currentUI.observe(this, Observer {
             if (it == ROOT.TRANSACTIONS){
                 initViewCreated()
             }
@@ -268,6 +268,7 @@ class TransactionsFragment : Fragment(){
     }
 
     fun showSalePriceForm(){
+        rootLayoutPriceRate.fullScroll(ScrollView.FOCUS_UP)
         rootTransactionForm.visibility = View.GONE
         rootLayoutPriceRate.visibility = View.VISIBLE
         clearPriceForm()

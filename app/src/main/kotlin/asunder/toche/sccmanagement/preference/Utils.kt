@@ -41,6 +41,18 @@ object Utils{
         val fmtOut = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale("th","TH"))
         return fmtOut.parse(date)
     }
+    fun getDateString(date :String) : Date{
+        val fmtOut = SimpleDateFormat("dd/MM/yyyy", Locale("th","TH"))
+        return fmtOut.parse(date)
+    }
+
+    fun getPreviusDate() :Date{
+        val calendar = Calendar.getInstance()
+        calendar.time = getCurrentDate()
+        calendar.add(Calendar.DATE,-1)
+        return calendar.time
+
+    }
 
     fun getDateStringWithDate(date: Date) : String{
         val fmtOut = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale("th","TH"))
@@ -51,6 +63,7 @@ object Utils{
         val calendar = Calendar.getInstance()
         calendar.time = Date()
         calendar.set(Calendar.YEAR,calendar.get(Calendar.YEAR)+543)
+        calendar.set(calendar[Calendar.YEAR],calendar[Calendar.MONTH],calendar[Calendar.DAY_OF_MONTH],0,0)
         return calendar.time
     }
 

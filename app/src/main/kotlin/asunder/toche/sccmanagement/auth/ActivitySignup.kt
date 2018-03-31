@@ -11,6 +11,9 @@ import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.extension.hideLoading
 import asunder.toche.sccmanagement.custom.extension.showLoading
+import asunder.toche.sccmanagement.main.ActivityMain
+import asunder.toche.sccmanagement.preference.Prefer
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.service.ManageUserService
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
@@ -24,6 +27,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.twitter.sdk.android.core.*
 import kotlinx.android.synthetic.main.activity_signup.*
 import java.util.*
@@ -35,12 +41,14 @@ class ActivitySignup : AppCompatActivity(),
         ConfirmDialog.ConfirmDialogListener,
         ManageUserService.Auth{
 
+
     private val TAG= this::class.java.simpleName
     private var mGoogleSignInClient : GoogleSignInClient? = null
     private var mCallbackManager: CallbackManager? = null
     lateinit var authManager : ManageUserService
     private val RC_SIGN_IN = 9001
     private val loadingDialog = LoadingDialog.newInstance()
+    private var isAuthSuccess = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -165,13 +173,29 @@ class ActivitySignup : AppCompatActivity(),
     }
 
     private fun showConfirmDialog(title:String,msg:String) {
-        val fragment = ConfirmDialog.newInstance(msg,title)
+        val fragment = ConfirmDialog.newInstance(msg,title,false)
         fragment.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
         fragment.show(supportFragmentManager, fragment::class.java.simpleName)
     }
 
-    override fun authSuccess(authWith: String) {
-        showConfirmDialog("แจ้งเตือน","ท่านได้ส่งคำขอเข้าใช้ระบบด้วยบัญชี $authWith กรุณารอการยืนยันจากผู้ดูแลระบบ")
+    override fun authSuccess(authWith: String, email: String,uid:String) {
+        val result = ROOT.listAdmin.filter { it == email }
+        if (result.isEmpty()) {
+            isAuthSuccess = true
+            showConfirmDialog("แจ้งเตือน", "ท่านได้ส่งคำขอเข้าใช้ระบบด้วยบัญชี $authWith กรุณารอการยืนยันจากผู้ดูแลระบบ")
+            hideLoading()
+        }else{
+            Prefer.saveUUID(uid,this)
+            val intent = Intent()
+            intent.putExtra(ROOT.ADMIN,true)
+            startActivity(intent.setClass(this@ActivitySignup,ActivityMain::class.java))
+            finish()
+        }
+    }
+
+    override fun authFail(message: String) {
+        isAuthSuccess = false
+        showConfirmDialog("แจ้งเตือน",message)
         hideLoading()
     }
 
@@ -184,7 +208,16 @@ class ActivitySignup : AppCompatActivity(),
     }
 
     override fun onClickConfirm() {
-        authManager.signOut()
-        finish()
+        if (isAuthSuccess){
+            authManager.signOut()
+            finish()
+        }
+    }
+
+    override fun onClickCancel() {
+        if (isAuthSuccess){
+            authManager.signOut()
+            finish()
+        }
     }
 }

@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
 import asunder.toche.sccmanagement.preference.Utils
@@ -110,6 +111,7 @@ class TransactionHistoryFragment : Fragment(),TransactionListener {
         val bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet_company, null)
         val rvFilterCompany = bottomSheetView.findViewById<RecyclerView>(R.id.rvFilterCompany)
         val txtFilter = bottomSheetView.findViewById<EdtMedium>(R.id.txtCompanyFilter)
+        val btnCancel = bottomSheetView.findViewById<BtnMedium>(R.id.btnCancel)
         bottomSheetDialog = BottomSheetDialog(context!!)
         bottomSheetDialog.setContentView(bottomSheetView)
         sheetDisableCard = BottomSheetBehavior.from(bottomSheetView.parent as View)
@@ -142,6 +144,10 @@ class TransactionHistoryFragment : Fragment(),TransactionListener {
 
             }
         })
+
+        btnCancel.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
 
     }
 

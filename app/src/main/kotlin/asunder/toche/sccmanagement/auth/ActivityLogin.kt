@@ -4,13 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
+import android.text.TextUtils
 import android.util.Log
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
-import asunder.toche.sccmanagement.custom.extension.hideLoading
-import asunder.toche.sccmanagement.custom.extension.showLoading
 import asunder.toche.sccmanagement.main.ActivityMain
 import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
@@ -27,6 +26,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.twitter.sdk.android.core.*
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
@@ -38,43 +40,7 @@ import java.util.*
 class ActivityLogin : AppCompatActivity(),ManageUserService.Sign,
         ConfirmDialog.ConfirmDialogListener{
 
-
     private val loadingDialog = LoadingDialog.newInstance()
-
-    override fun onClickConfirm() {
-    }
-
-
-    override fun currentStatus(userAuth: Model.UserAuth) {
-        when(userAuth.status_user){
-            ROOT.APPROVE ->{
-                loadingDialog.dismiss()
-                val intent = Intent()
-                intent.putExtra(ROOT.ADMIN,false)
-                startActivity(Intent().setClass(this@ActivityLogin,ActivityMain::class.java))
-                finish()
-            }
-            ROOT.REQUEST ->{
-                showConfirmDialog("แจ้งเตือน","บัญชีของท่านอยู่ในระหว่างยืนยันตัวตน")
-            }
-            ROOT.REJECT ->{
-                showConfirmDialog("แจ้งเตือน","บัญชีของท่านถูกปฏิเสธการเข้าใช้งานแอฟพลิเคชั่น")
-            }
-            ROOT.REGISTER ->{
-                showConfirmDialog("แจ้งเตือน","ไม่พบบัญชีของท่านในระบบกรุณาลงทะเบียน")
-                authManager.signOut()
-            }
-            ROOT.ADMIN ->{
-                loadingDialog.dismiss()
-                val intent = Intent()
-                intent.putExtra(ROOT.ADMIN,true)
-                startActivity(intent.setClass(this@ActivityLogin,ActivityMain::class.java))
-                finish()
-            }
-        }
-
-    }
-
     private val TAG= this::class.java.simpleName
     private var mGoogleSignInClient : GoogleSignInClient? = null
     private var mCallbackManager: CallbackManager? = null
@@ -99,6 +65,14 @@ class ActivityLogin : AppCompatActivity(),ManageUserService.Sign,
             startActivity(Intent().setClass(this@ActivityLogin,ActivitySignup::class.java))
         }
 
+        btnConfirm.setOnClickListener {
+            if (validateEmailPassword()){
+                loadingDialog.show(supportFragmentManager,LoadingDialog.TAG)
+                authManager.signWithEmail(edtEmail.text.toString(),edtPassword.text.toString(),this)
+            }
+
+        }
+
         val user = authManager.mAuth.currentUser
         if(user != null){
             Log.d(TAG,"Current User /"+user.email)
@@ -106,8 +80,26 @@ class ActivityLogin : AppCompatActivity(),ManageUserService.Sign,
             Prefer.saveUUID(user.uid,this)
             loadingDialog.show(supportFragmentManager,LoadingDialog.TAG)
             authManager.checkLogin(user.uid,this)
+            onStatusChange(user.uid)
         }
 
+    }
+
+    fun onStatusChange(uid:String){
+        authManager.firebase.child(ROOT.MANAGEMENT+"/"+uid+"/status_user")
+                .addValueEventListener(object :ValueEventListener{
+            override fun onCancelled(error: DatabaseError?) {
+            }
+
+            override fun onDataChange(data: DataSnapshot?) {
+                if(data?.value.toString() == ROOT.ADMIN){
+                    val intent = Intent()
+                    intent.putExtra(ROOT.ADMIN,true)
+                    startActivity(intent.setClass(this@ActivityLogin,ActivityMain::class.java))
+                    finish()
+                }
+            }
+        })
     }
 
     fun initSDK(){
@@ -205,9 +197,72 @@ class ActivityLogin : AppCompatActivity(),ManageUserService.Sign,
 
     private fun showConfirmDialog(title:String,msg:String) {
         loadingDialog.dismiss()
-        val fragment = ConfirmDialog.newInstance(msg,title)
+        val fragment = ConfirmDialog.newInstance(msg,title,false)
         fragment.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
         fragment.show(supportFragmentManager, fragment::class.java.simpleName)
+    }
+
+    override fun currentStatus(userAuth: Model.UserAuth) {
+        when(userAuth.status_user){
+            ROOT.APPROVE ->{
+                Prefer.saveUUID(userAuth.uid,this)
+                authManager.synceDatabase(userAuth.uid,object : ManageUserService.SyncData{
+                    override fun syncSuccess() {
+                        loadingDialog.dismiss()
+                        val intent = Intent()
+                        intent.putExtra(ROOT.ADMIN,false)
+                        startActivity(intent.setClass(this@ActivityLogin,ActivityMain::class.java))
+                        finish()
+                    }
+                })
+            }
+            ROOT.REQUEST ->{
+                showConfirmDialog("แจ้งเตือน","บัญชีของท่านอยู่ในระหว่างยืนยันตัวตน")
+            }
+            ROOT.REJECT ->{
+                showConfirmDialog("แจ้งเตือน","บัญชีของท่านถูกปฏิเสธการเข้าใช้งานแอฟพลิเคชั่น")
+            }
+            ROOT.REGISTER ->{
+                showConfirmDialog("แจ้งเตือน","ไม่พบบัญชีของท่านในระบบกรุณาลงทะเบียน")
+                authManager.signOut()
+            }
+            ROOT.ADMIN ->{
+                Prefer.saveUUID(userAuth.uid,this)
+                authManager.synceDatabase(userAuth.uid,object : ManageUserService.SyncData{
+                    override fun syncSuccess() {
+                        loadingDialog.dismiss()
+                        val intent = Intent()
+                        intent.putExtra(ROOT.ADMIN,true)
+                        startActivity(intent.setClass(this@ActivityLogin,ActivityMain::class.java))
+                        finish()
+                    }
+                })
+            }
+            else ->{
+                showConfirmDialog("แจ้งเตือน",userAuth.status_user)
+                authManager.signOut()
+            }
+        }
+
+    }
+
+
+    fun validateEmailPassword() :Boolean {
+        val emailPattern = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
+        if(TextUtils.isEmpty(edtEmail.text) || !edtEmail.text.toString().matches(Regex(emailPattern))){
+            edtEmail.error = "กรุณากรอกอีเมลให้ถูกต้อง"
+            return false
+        }
+        if(TextUtils.isEmpty(edtPassword.text)){
+            edtPassword.error = "กรุณากรอกรหัสผ่านให้ถูกต้อง"
+            return false
+        }
+        return true
+    }
+    override fun onClickCancel() {
+    }
+
+    override fun onClickConfirm() {
     }
 
 

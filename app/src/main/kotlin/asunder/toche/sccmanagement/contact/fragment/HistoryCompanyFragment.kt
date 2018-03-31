@@ -76,12 +76,16 @@ class HistoryCompanyFragment : Fragment(),TransactionListener {
 
     fun initUI(){
         btnAddIssueWithCompany.setOnClickListener {
-            contactVM.updateViewState(ContactState.NEWISSUE)
+            if(contactVM.contact.value != null) {
+                contactVM.updateViewState(ContactState.NEWISSUE)
+            }
         }
 
         btnAddTransactionWithCompany.setOnClickListener {
-            transactionVM.updateContact(contactVM.contact.value!!)
-            contactVM.updateViewState(ContactState.NEWTRANSACTION)
+            if(contactVM.contact.value != null) {
+                transactionVM.updateContact(contactVM.contact.value!!)
+                contactVM.updateViewState(ContactState.NEWTRANSACTION)
+            }
         }
     }
 
@@ -98,6 +102,7 @@ class HistoryCompanyFragment : Fragment(),TransactionListener {
         async(UI) {
             val filterResult = async {
                 result.filter { it.company_id == contact?.id }
+                        .sortedByDescending { Utils.getDateWithString(it.date).time }
             }
             historyIssueAdapter.updateIssues(
                     filterResult.await().toMutableList())
@@ -120,6 +125,8 @@ class HistoryCompanyFragment : Fragment(),TransactionListener {
                 async(UI) {
                     val filterResult = async {
                         results.filter { it.company_id == contact.id }
+                                .sortedByDescending { Utils.getDateWithString(it.date).time }
+
                     }
                     filterResult.await().forEach { item ->
                         val product = products.first { it.id == item.product_id}

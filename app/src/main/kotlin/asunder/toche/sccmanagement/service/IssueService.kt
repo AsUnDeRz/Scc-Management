@@ -42,10 +42,8 @@ class IssueService(var listener : IssueCallBack){
             if (databaseError != null) {
                 //Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
-                listener.onIssueFail()
             } else {
-                System.out.println("Data Issue,Managemnt saved successfully.")
-                listener.onIssueSuccess()
+                System.out.println("Data Issue  saved successfully.")
             }
         })
         pushNewIssueToDb(updateIssueFromDb(issue,getIssueInDb()))
@@ -64,6 +62,7 @@ class IssueService(var listener : IssueCallBack){
                 System.out.println("Data Update Issue successfully.")
             }
         })
+        pushNewIssueToDb(updateIssueFromDb(Issue,getIssueInDb()))
 
     }
 
@@ -80,25 +79,25 @@ class IssueService(var listener : IssueCallBack){
     }
 
     fun getIssueInDb() : MutableList<Model.Issue>{
-        val data:MutableList<Model.Issue> = mutableListOf()
-        async {
-            val contact = async(CommonPool){
-                Paper.book().read<Model.IssueUser>(ROOT.ISSUE)
-            }
-            data.addAll(contact.await().issues)
+        val issue = Paper.book().read<Model.IssueUser>(ROOT.ISSUE)
+        return if(issue != null) {
+            issue.issues
+        }else{
+            Log.d(TAG,"Not Found Issue in DB")
+            mutableListOf()
         }
-        return data
     }
+
 
     fun pushNewIssueToDb(issues:MutableList<Model.Issue>) = async(UI) {
         try {
-            val job = async(CommonPool) {
-                Paper.book().write(ROOT.ISSUE,Model.IssueUser(issues))
+            val addIssue = async {
+               Paper.book().write(ROOT.ISSUE,Model.IssueUser(issues))
                 Log.d(TAG,"Paper write $issues")
             }
-            job.await()
-            //We're back on the main thread here.
-            //Update UI controls such as RecyclerView adapter data.
+            addIssue.await()
+            listener.onIssueSuccess()
+
         }
         catch (e: Exception) {
         }
@@ -107,14 +106,14 @@ class IssueService(var listener : IssueCallBack){
     }
 
     fun deleteIssueInDb(uid:String){
-        val currentIssue = getIssueInDb()
-        currentIssue
-                .filter { it.id == uid }
-                .forEach {
-                    currentIssue.remove(it)
-                }
+            val currentIssue = getIssueInDb()
+            currentIssue
+                    .filter { it.id == uid }
+                    .forEach {
+                        currentIssue.remove(it)
+                    }
 
-        pushNewIssueToDb(currentIssue)
+            pushNewIssueToDb(currentIssue)
         //Paper.book().delete(ROOT.CONTACTS)
     }
 

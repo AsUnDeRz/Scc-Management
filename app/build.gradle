@@ -107,6 +107,7 @@ dependencies {
     implementation project(':SpinnerDatePicker')
     implementation project(':FilePicker')
     implementation project(':hover')
+    implementation 'com.thefinestartist:finestwebview:1.2.7'
 }
 kotlin {
     experimental {

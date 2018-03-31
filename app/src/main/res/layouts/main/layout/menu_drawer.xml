@@ -92,4 +92,13 @@
         android:text="@string/logout"
         android:textAllCaps="false"
         android:textSize="16sp" />
+
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+        android:id="@+id/txtAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingStart="16dp"
+        android:textSize="16sp"
+        android:visibility="invisible" />
 </LinearLayout>

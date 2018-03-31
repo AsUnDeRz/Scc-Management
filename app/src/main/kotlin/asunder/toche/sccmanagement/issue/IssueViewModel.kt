@@ -11,9 +11,9 @@ import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.service.ContactService
 import asunder.toche.sccmanagement.service.FirebaseManager
 import asunder.toche.sccmanagement.service.IssueService
+import asunder.toche.sccmanagement.transactions.IssueListener
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import java.io.File
@@ -23,8 +23,7 @@ import java.io.File
  */
 class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
                     Utils.OnFindCompanyListener,
-                    IssueService.IssueCallBack{
-
+                    IssueService.IssueCallBack {
 
     val service = IssueService(this)
     val contactService = ContactService(this)
@@ -33,6 +32,7 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
     val currentIssue : MutableLiveData<Model.Issue> = MutableLiveData()
     val companyReference : MutableLiveData<Model.Contact> = MutableLiveData()
     var isSaveIssueComplete  = MutableLiveData<IssueState>()
+    var currentIssueId = ""
 
 
     fun getContact():MutableList<Model.Contact>{
@@ -67,11 +67,13 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
                     firebase.pushFileToFirebase(data.image_path,"")
                 }
                 data.company_id = companyReference.value!!.id
-                service.pushNewIssue(data)
             }
             job.await()
-            //We're back on the main thread here.
-            //Update UI controls such as RecyclerView adapter data.
+            if (currentIssueId == "") {
+                service.pushNewIssue(data)
+            }else{
+                service.updateIssue(data)
+            }
         }
         catch (e: Exception) {
         }
@@ -87,37 +89,40 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
         return tranformFormat.distinctBy { it }
     }
 
-    fun setSectionAdapter(sectionList: List<String>, results: MutableMap<String,List<Model.Issue>?>)
+    fun setSectionAdapter(sectionList: List<String>,
+                          results: MutableMap<String,
+                                  List<Model.Issue>?>,
+                          listener: IssueListener)
             :SectionedRecyclerViewAdapter{
         val sectionIssueAdapter = SectionedRecyclerViewAdapter()
         sectionList.forEach {
-            val section = SectionIssueAdapter(it, results[it] as MutableList<Model.Issue>)
+            val section = SectionIssueAdapter(it, results[it] as MutableList<Model.Issue>,listener)
             sectionIssueAdapter.addSection(section)
         }
         return sectionIssueAdapter
     }
 
-    fun sortAll() : SectionedRecyclerViewAdapter {
-        val sectionList = tranformFormat().sortedDescending()
-        val resultIssue = separateSection(sectionList,false)
-        return setSectionAdapter(sectionList,resultIssue)
+    fun sortAll(listener: IssueListener) : SectionedRecyclerViewAdapter{
+        val sectionList = tranformFormat().sortedByDescending { Utils.getDateString(it).time }
+        val resultIssue = separateSection(sectionList, false)
+        return setSectionAdapter(sectionList, resultIssue,listener)
     }
-    fun sortToday(): SectionedRecyclerViewAdapter{
-        val sectionList = tranformFormat().sorted()
+    fun sortToday(listener: IssueListener): SectionedRecyclerViewAdapter{
+        val sectionList = tranformFormat().filter { Utils.getDateString(it).time <= Utils.getCurrentDate().time }.sortedByDescending { Utils.getDateString(it).time }
         val resultIssue = separateSection(sectionList,true)
-        return setSectionAdapter(sectionList,resultIssue)
+        return setSectionAdapter(sectionList,resultIssue,listener)
     }
-    fun sortTomorrow(): SectionedRecyclerViewAdapter{
-        val sectionList = tranformFormat().filter { it > Utils.getCurrentDateShort()}
-                .sortedDescending()
+    fun sortTomorrow(listener: IssueListener): SectionedRecyclerViewAdapter{
+        val sectionList = tranformFormat().filter { Utils.getDateString(it).time > Utils.getCurrentDate().time }
+                .sortedByDescending { Utils.getDateString(it).time }
         val resultIssue = separateSection(sectionList,false)
-        return setSectionAdapter(sectionList,resultIssue)
+        return setSectionAdapter(sectionList,resultIssue,listener)
     }
-    fun sortYesterday(): SectionedRecyclerViewAdapter{
-        val sectionList = tranformFormat().filter { it < Utils.getCurrentDateShort()}
-                .sortedDescending()
+    fun sortYesterday(listener: IssueListener): SectionedRecyclerViewAdapter{
+        val sectionList = tranformFormat().filter { Utils.getDateString(it).time < Utils.getPreviusDate().time }
+                .sortedByDescending { Utils.getDateString(it).time }
         val resultIssue = separateSection(sectionList,false)
-        return setSectionAdapter(sectionList,resultIssue)
+        return setSectionAdapter(sectionList,resultIssue,listener)
     }
 
     fun separateSection(sectionList : List<String>,isToday:Boolean) : MutableMap<String,List<Model.Issue>?>{
@@ -169,6 +174,7 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
 
     override fun onFail() {
     }
+
 
 
 }

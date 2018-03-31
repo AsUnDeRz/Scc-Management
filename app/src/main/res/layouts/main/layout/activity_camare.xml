@@ -26,13 +26,13 @@
             android:layout_gravity="bottom|left"
             tools:ignore="ContentDescription,RtlHardcoded" />
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/capture"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="10dp"
-            android:src="@drawable/bg_circle_input"
+            app:srcCompat="@drawable/bg_circle"
             tools:ignore="ContentDescription" />
     </FrameLayout>
 </android.support.constraint.ConstraintLayout>

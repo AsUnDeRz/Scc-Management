@@ -55,7 +55,7 @@
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:gravity="center"
-            android:text="Manage User"
+            android:text="การจัดการผู้ใช้งานระบบ"
             android:textColor="@android:color/white"
             android:textSize="24dp" />
 

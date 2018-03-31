@@ -73,6 +73,8 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
     }
 
     override fun onFail() {
+        updateStateView(ProductState.SHOWLIST)
+        loadProduct()
     }
 
 

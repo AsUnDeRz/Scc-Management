@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:gravity="center"
-            android:text="Login"
+            android:text="เข้าสู่ระบบ"
             android:textColor="@android:color/white"
             android:textSize="24dp" />
 
@@ -70,7 +70,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:background="@drawable/btn_signup"
-        android:text="Sign up"
+        android:text="ลงทะเบียน"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -84,23 +84,73 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="Already a member ?"
+        android:text="คุณลงทะเบียนไว้แล้วหรือยัง"
         app:layout_constraintBottom_toTopOf="@+id/btnSignup"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ProgressBar
-        android:id="@+id/loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="56dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:progressTint="@color/colorAccent"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <asunder.toche.sccmanagement.custom.button.BtnBold
+        android:id="@+id/btnConfirm"
+        android:layout_width="@dimen/btn_width"
+        android:layout_height="@dimen/btn_height"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/btn_confirm"
+        android:text="ล็อคอินด้วยอีเมล"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/edtPassword" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtEmail"
+        android:layout_width="@dimen/btn_width"
+        android:layout_height="48dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/input_text"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:paddingStart="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="อีเมล"
+        app:layout_constraintStart_toStartOf="@+id/btnGoogle"
+        app:layout_constraintTop_toBottomOf="@+id/btnGoogle" />
+
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="รหัสผ่าน"
+        app:layout_constraintStart_toStartOf="@+id/edtEmail"
+        app:layout_constraintTop_toBottomOf="@+id/edtEmail" />
+
+    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+        android:id="@+id/edtPassword"
+        android:layout_width="@dimen/btn_width"
+        android:layout_height="48dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/input_text"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:paddingStart="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
 </android.support.constraint.ConstraintLayout>

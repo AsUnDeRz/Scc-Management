@@ -10,6 +10,7 @@ import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.service.ContactService
 import asunder.toche.sccmanagement.service.IssueService
+import asunder.toche.sccmanagement.transactions.IssueListener
 
 /**
  *Created by ToCHe on 15/3/2018 AD.
@@ -35,7 +36,7 @@ class IssueAdapter : RecyclerView.Adapter<IssueAdapter.IssueHolder>(){
         val txtIssue :TxtMedium = itemView.findViewById(R.id.txtIssue)
         val txtCompany:TxtMedium = itemView.findViewById(R.id.txtCompany)
 
-        fun bind(issue:Model.Issue){
+        fun bind(issue:Model.Issue,listener: IssueListener){
             txtIssue.text = issue.issue_name
             Utils.findCompany(issue.company_id,object : Utils.OnFindCompanyListener{
                 override fun onResults(results: MutableList<Model.Contact>) {
@@ -44,6 +45,10 @@ class IssueAdapter : RecyclerView.Adapter<IssueAdapter.IssueHolder>(){
                     }
                 }
             },ContactService(this).getContactInDb())
+
+            itemView.setOnClickListener {
+                listener.onClickIssue(issue)
+            }
         }
         override fun onSuccess() {}
 

@@ -17,6 +17,8 @@ import asunder.toche.sccmanagement.R
  */
 class LoadingDialog : DialogFragment() {
 
+
+    var isShow = false
     override fun onStart() {
         super.onStart()
         setupBackDrop()
@@ -47,6 +49,16 @@ class LoadingDialog : DialogFragment() {
         dialog.window!!.requestFeature(Window.FEATURE_NO_TITLE)
         dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         return dialog
+    }
+
+    override fun show(manager: FragmentManager?, tag: String?) {
+        super.show(manager, tag)
+        isShow = true
+    }
+
+    override fun dismiss() {
+        super.dismiss()
+        isShow = false
     }
 
     /*

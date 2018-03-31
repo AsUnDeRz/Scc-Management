@@ -78,6 +78,6 @@
         android:layout_weight="4"
         android:gravity="center"
         android:maxLines="1"
-        android:textSize="14sp" />
+        android:textSize="12sp" />
 </LinearLayout>
 </me.thanel.swipeactionview.SwipeActionView>

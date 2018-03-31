@@ -29,7 +29,6 @@ class CompanyFragment : Fragment(),CompanyAdapter.CompanyListener {
     private val TAG = this::class.java.simpleName
     lateinit var adapter: CompanyAdapter
     lateinit var contactVM : ContactViewModel
-    val uid = "155434134123"
 
     companion object {
         fun newInstance(): CompanyFragment = CompanyFragment()
