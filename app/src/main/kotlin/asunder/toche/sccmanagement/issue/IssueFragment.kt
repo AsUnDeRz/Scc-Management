@@ -28,11 +28,11 @@ import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
+import asunder.toche.sccmanagement.issue.adapter.IssueAdapter
 import asunder.toche.sccmanagement.main.ControlViewModel
 import asunder.toche.sccmanagement.main.FilterViewPager
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
-import asunder.toche.sccmanagement.transactions.IssueListener
 import com.bumptech.glide.Glide
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
 import droidninja.filepicker.FilePickerBuilder
@@ -53,7 +53,7 @@ import java.util.*
 /**
  *Created by ToCHe on 26/2/2018 AD.
  */
-class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueListener{
+class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueAdapter.IssueItemListener{
 
     companion object {
         fun newInstance(): IssueFragment = IssueFragment()
@@ -492,6 +492,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueList
                 }
                 IssueState.NEWFROMCONTACT ->{
                     showIssueForm()
+                    clearFormIssue()
                     issueVM.updateCompany(contactVm.contact.value!!)
                 }
                 IssueState.TRIGGERFROMSERVICE ->{
@@ -567,11 +568,19 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueList
         return true
     }
 
-    override fun onClickIssue(issue: Model.Issue) {
-        showIssueForm()
-        setUpIssueForm(issue)
+    override fun onSelectIssue(issue: Model.Issue) {
 
     }
+
+    override fun onClickEdit(issue: Model.Issue) {
+        showIssueForm()
+        setUpIssueForm(issue)
+    }
+
+    override fun onClickDelete(issue: Model.Issue) {
+        issueVM.deleteIssue(issue)
+    }
+
 
 
 }

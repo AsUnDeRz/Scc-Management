@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/vRoot"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageStateDelete"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_circle_input"
+            app:srcCompat="@drawable/ic_add_white_24dp" />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtTitle"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@+id/imageStateDelete"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="@color/colorDark"
+            android:textSize="16sp" />
+
+        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+            android:id="@+id/edtContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_toRightOf="@+id/txtTitle"
+            android:background="@drawable/bg_round_table"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:maxLines="1"
+            android:paddingStart="8dp" />
+
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/imageAction"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="8dp"
+        android:tint="@android:color/darker_gray"
+        app:layout_constraintBottom_toBottomOf="@+id/vRoot"
+        app:layout_constraintStart_toEndOf="@+id/vRoot"
+        app:layout_constraintTop_toTopOf="@+id/vRoot"
+        app:srcCompat="@drawable/ic_phone_white_36dp" />
+
+</android.support.constraint.ConstraintLayout>

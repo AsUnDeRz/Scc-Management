@@ -93,7 +93,7 @@ object Utils{
                         masterData.filterTo(suggestionList) {
                             it.company.contains(constraint.toString()) ||
                                     it.contact_name.contains(constraint.toString()) ||
-                                    it.mobile.contains(constraint.toString()) ||
+                                    it.numbers.any { it.number.contains(constraint.toString()) } ||
                                     it.id.contains(constraint.toString())
                         }
                     }
@@ -119,7 +119,11 @@ object Utils{
                 override fun performFiltering(constraint: CharSequence?): FilterResults {
                     val suggestionList = mutableListOf<Model.Issue>()
                     if (!(constraint == null || constraint.isEmpty())) {
-                        masterData.filterTo(suggestionList) { it.issue_name.startsWith(constraint.toString()) }
+                        masterData.filterTo(suggestionList) {
+                            it.issue_name.contains(constraint.toString()) ||
+                                    it.issue_name.contains(constraint.toString()) ||
+                                            it.date.contains(constraint.toString())
+                        }
                     }
                     val results = FilterResults()
                     results.values = suggestionList
@@ -167,8 +171,8 @@ object Utils{
                 val suggestionList = mutableListOf<Model.Transaction>()
                 if(!(constraint == null || constraint.isEmpty())){
                     masterData.filterTo(suggestionList){
-                        it.company_id.contains(constraint.toString()) ||
-                        it.product_id.contains(constraint.toString())
+                        it.company_name.contains(constraint.toString()) ||
+                        it.product_name.contains(constraint.toString())
                     }
                 }
                 val result = FilterResults()

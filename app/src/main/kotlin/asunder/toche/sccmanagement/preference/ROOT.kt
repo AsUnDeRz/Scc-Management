@@ -19,10 +19,14 @@ object ROOT{
     const val REQUEST = "request"
     const val IMAGES = "images"
     const val MOBILE = "mobile"
-
     const val GOOGLE ="google"
     const val FACEBOOK = "facebook"
     const val TWITTER = "twitter"
     const val EMAIL ="email"
     val listAdmin = mutableListOf<String>()
+
+    //type number
+    const val HOME = "Home"
+    const val Mobile ="Mobile"
+    const val WORK = "Work"
 }

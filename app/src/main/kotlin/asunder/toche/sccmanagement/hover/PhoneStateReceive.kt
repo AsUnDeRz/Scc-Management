@@ -136,7 +136,8 @@ class PhoneStateReceive : BroadcastReceiver() {
         })
         val contacts = service.getContactInDb()
         contacts.asSequence().forEach {
-            if (it.mobile == numberReceive || it.telephone == numberReceive) {
+            val result = it.numbers.filter { it.number == numberReceive }
+            if (result.isNotEmpty()) {
                 val user = PlaceholderContent.User(numberReceive, it.contact_name)
                 users.add(user)
             }

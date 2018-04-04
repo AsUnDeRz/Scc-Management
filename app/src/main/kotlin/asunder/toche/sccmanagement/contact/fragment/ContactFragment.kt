@@ -11,9 +11,8 @@ import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
-import android.text.Editable
+import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +20,12 @@ import android.view.ViewGroup
 import android.widget.*
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.contact.ComponentListener
 import asunder.toche.sccmanagement.contact.ContactState
+import asunder.toche.sccmanagement.contact.adapter.AddressAdapter
+import asunder.toche.sccmanagement.contact.adapter.EmailAdapter
+import asunder.toche.sccmanagement.contact.adapter.NumberAdapter
+import asunder.toche.sccmanagement.contact.adapter.WebsiteAdapter
 import asunder.toche.sccmanagement.contact.pager.ContactPager
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.TriggerContact
@@ -62,8 +66,7 @@ import java.io.File
 /**
  *Created by ToCHe on 26/2/2018 AD.
  */
-class ContactFragment  : Fragment(),OnMapReadyCallback{
-
+class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
 
     private val TAG = this::class.java.simpleName
     companion object {
@@ -87,6 +90,10 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
     private var stateInput : CurrentInputState = CurrentInputState.Company
     lateinit var contactVM : ContactViewModel
     private var loading = LoadingDialog.newInstance()
+    private lateinit var numberAdapter : NumberAdapter
+    private lateinit var emailAdapter: EmailAdapter
+    private lateinit var webstieAdapter: WebsiteAdapter
+    private lateinit var addressAdapter: AddressAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,8 +117,37 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
         setUpStub1()
         setUpStub2()
         observerContacts()
+        setupAdapter()
     }
 
+    fun setupAdapter(){
+        numberAdapter = NumberAdapter(this)
+        emailAdapter = EmailAdapter(this)
+        webstieAdapter = WebsiteAdapter(this)
+        addressAdapter = AddressAdapter(this)
+
+        rvNumber.apply {
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true)
+            adapter = numberAdapter
+        }
+        rvEmail.apply {
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true)
+            adapter = emailAdapter
+        }
+        rvWebsite.apply {
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true)
+            adapter = webstieAdapter
+        }
+        rvAddress.apply {
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true)
+            adapter = addressAdapter
+        }
+
+    }
 
     fun setUpStub1(){
         stubContactAdd.setOnInflateListener { _, v ->
@@ -128,7 +164,11 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
 
             val btnInput = v.findViewById<Button>(R.id.btnInput)
             btnInput.setOnClickListener {
-                if(validateInput()) saveContact()
+                if(validateInput()) {
+                    saveContact()
+                    contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+                }
+
             }
 
             initViewAdd(v)
@@ -185,15 +225,29 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
             updateState(CurrentInputState.ContactName)
             showFormInput()
         }
-        edtAddress.DisableClick()
-        edtAddress.setOnClickListener {
+        imgStateAdd.setOnClickListener {
             updateState(CurrentInputState.Address)
             showFormInput()
+            updateInputForm("ที่อยู่","")
+        }
 
+        imgPhone.setOnClickListener {
+            numberAdapter.addNumber(Model.Number("",""))
+        }
+
+        imgEmail.setOnClickListener {
+            emailAdapter.addEmail("")
+        }
+
+        imgWeb.setOnClickListener {
+            webstieAdapter.addWebSite("")
         }
 
         btnSave.setOnClickListener {
-            if (validateInput()) saveContact()
+            if (validateInput()) {
+                saveContact()
+                contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+            }
         }
 
         observeStateInput()
@@ -311,11 +365,10 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
 
     fun saveContact(){
         val data = Model.Contact("",edtCompany.text.toString().capitalize(),edtBill.text.toString()
-                ,edtContactName.text.toString(),edtMobile.text.toString(), edtFax.text.toString(),
-                edtPhone.text.toString(),edtEmail.text.toString(),edtWeb.text.toString(),
-                edtTypeAddress.text.toString(),edtFactoryAddress.text.toString(),
-                edtAddress.text.toString(), "", "",
-                "${location?.latitude}","${location?.longitude}")
+                ,edtContactName.text.toString(),numberAdapter.numbers,emailAdapter.emails,
+                webstieAdapter.websites, edtTypeAddress.text.toString(),edtFactoryAddress.text.toString(),
+                addressAdapter.addresses, "", "",
+                "${location?.latitude}","${location?.longitude}",numberAdapter.typeList)
 
 
         contactVM.saveContact(data)
@@ -335,12 +388,6 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
             edtContactName.error = "กรุณากรอกชื่อผู้ติดต่อ"
             return false
         }
-        if(TextUtils.isEmpty(edtMobile.text)){
-            contactScrollView.fullScroll(ScrollView.FOCUS_UP)
-            edtMobile.error = "กรุณากรอกเบอร์โทรศัพท์มือถือ"
-            return false
-        }
-
         return true
     }
 
@@ -350,14 +397,13 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
         edtCompany.setText(contact.company)
         edtBill.setText(contact.bill)
         edtContactName.setText(contact.contact_name)
-        edtMobile.setText(contact.mobile)
-        edtFax.setText(contact.fax)
-        edtPhone.setText(contact.telephone)
-        edtEmail.setText(contact.email)
-        edtWeb.setText(contact.website)
+        numberAdapter.updateNumbers(contact.numbers)
+        numberAdapter.updateTypeList(contact.type_number)
+        emailAdapter.updateEmails(contact.email)
+        webstieAdapter.updateWebsites(contact.websites)
+        addressAdapter.updateAddress(contact.addresses)
         edtTypeAddress.setText(contact.address_type)
         edtFactoryAddress.setText(contact.address_factory)
-        edtAddress.setText(contact.address)
 
         val image = File(contact.path_img_map)
         Glide.with(this@ContactFragment)
@@ -373,7 +419,7 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
     }
 
     fun showFormContact(){
-        contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+        //contactScrollView.fullScroll(ScrollView.FOCUS_UP)
         root.visibility = View.VISIBLE
         rootInput.visibility = View.GONE
         imgEdit.visibility = View.GONE
@@ -383,18 +429,17 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
         val contact = Model.Contact()
         contactVM.updateContactId("")
         contactVM.updatePathPicture("")
+        emailAdapter.updateEmails(mutableListOf())
+        addressAdapter.updateAddress(mutableListOf())
+        webstieAdapter.updateWebsites(mutableListOf())
+        numberAdapter.updateNumbers(mutableListOf())
+        numberAdapter.updateTypeList(mutableListOf())
 
         edtCompany.setText(contact.company)
         edtBill.setText(contact.bill)
         edtContactName.setText(contact.contact_name)
-        edtMobile.setText(contact.mobile)
-        edtFax.setText(contact.fax)
-        edtPhone.setText(contact.telephone)
-        edtEmail.setText(contact.email)
-        edtWeb.setText(contact.website)
         edtTypeAddress.setText(contact.address_type)
         edtFactoryAddress.setText(contact.address_factory)
-        edtAddress.setText(contact.address)
 
         Glide.with(this@ContactFragment)
                 .load("")
@@ -419,7 +464,6 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
                 updateInputForm("บริษัท",edtCompany.text.toString())
             }
             CurrentInputState.Address ->{
-                updateInputForm("ที่อยู่",edtAddress.text.toString())
             }
             CurrentInputState.Bill ->{
                 updateInputForm("กำหนดวางบิล",edtBill.text.toString())
@@ -436,7 +480,7 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
                 edtCompany.text = edtInput.text
             }
             CurrentInputState.Address ->{
-                edtAddress.text = edtInput.text
+                addressAdapter.addAddress(edtInput.text.toString())
             }
             CurrentInputState.Bill ->{
                 edtBill.text = edtInput.text
@@ -461,6 +505,7 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
     }
 
     fun observeStateInput(){
+        /*
         val actionState = arrayListOf(actionMobile,null,actionPhone,actionEmail,actionWebsite,null)
         val circleState = arrayListOf(imgCircleMobile,imgFax,imgPhone,imgEmail,imgWeb,imgStateAdd)
         val edtObserver = arrayListOf(edtMobile,edtFax,edtPhone,edtEmail,edtWeb,edtAddress)
@@ -493,9 +538,11 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
 
         }
         setAction()
+        */
     }
 
     fun setAction(){
+        /*
         actionMobile.setOnClickListener {
             callPhone(edtMobile.text.toString())
 
@@ -511,6 +558,7 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
             openWeb(edtWeb.text.toString())
 
         }
+        */
 
     }
 
@@ -599,6 +647,44 @@ class ContactFragment  : Fragment(),OnMapReadyCallback{
     @Subscribe
     fun triggerContact(contact: Model.Contact){
         EventBus.getDefault().postSticky(TriggerContact(contact))
+    }
+
+    override fun OnNumberClick(number: Model.Number, isAction: Boolean,position:Int) {
+        if (isAction){
+            callPhone(number.number)
+        }else{
+            numberAdapter.remove(position)
+        }
+
+    }
+
+    override fun OnAddressClick(address: String, isAction: Boolean,position:Int) {
+
+        if (isAction){
+            updateState(CurrentInputState.Address)
+            showFormInput()
+            updateInputForm("ที่อยู่",address)
+            addressAdapter.remove(position)
+        }else{
+            addressAdapter.remove(position)
+        }
+
+    }
+
+    override fun OnEmailClick(email: String, isAction: Boolean,position:Int) {
+        if(isAction){
+            sendEmail(email)
+        }else{
+            emailAdapter.remove(position)
+        }
+    }
+
+    override fun OnWebsiteClick(web: String, isAction: Boolean,position:Int) {
+        if(isAction){
+            openWeb(web)
+        }else{
+            webstieAdapter.remove(position)
+        }
     }
 
 }

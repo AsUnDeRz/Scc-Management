@@ -88,8 +88,8 @@ class CompanyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun validateContact(contact: Model.Contact):String{
         return when {
-            contact.contact_name == "" -> "- ${contact.mobile}"
-            contact.company == "" -> "- ${contact.mobile}"
+            contact.contact_name == "" -> "- ${contact.numbers.let { it[0] }}"
+            contact.company == "" -> "- ${contact.numbers.let { it[0] }}"
             else -> "- ${contact.contact_name.capitalize()}"
         }
     }

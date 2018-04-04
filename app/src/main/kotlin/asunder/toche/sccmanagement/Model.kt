@@ -10,24 +10,29 @@ import kotlinx.android.parcel.Parcelize
  */
 object Model{
 
+
     @SuppressLint("ParcelCreator")
     @Parcelize
     data class Contact(var id:String = "",
                        val company:String = "",
                        val bill:String = "",
                        val contact_name:String = "",
-                       val mobile:String = "",
-                       val fax:String = "",
-                       val telephone:String ="",
-                       val email:String = "",
-                       val website:String = "",
+                       val numbers:MutableList<Number> = mutableListOf(),
+                       val email:MutableList<String> = mutableListOf(),
+                       val websites:MutableList<String> = mutableListOf(),
                        val address_type:String = "",
                        val address_factory:String = "",
-                       val address:String = "",
+                       val addresses :MutableList<String> = mutableListOf(),
                        var url_img_map:String = "",
                        var path_img_map:String ="",
                        val map_latitude:String = "",
-                       val map_longitude:String = "") : Parcelable
+                       val map_longitude:String = "",
+                       val type_number:MutableList<String> = mutableListOf()) : Parcelable
+
+    @SuppressLint("ParcelCreator")
+    @Parcelize
+    data class Number(var number:String ="",
+                      var type:String ="") : Parcelable
 
     @SuppressLint("ParcelCreator")
     @Parcelize
@@ -60,7 +65,9 @@ object Model{
     @Parcelize
     data class Transaction(var id:String = "",
                            val company_id:String = "",
+                           val company_name:String = "",
                            val product_id:String = "",
+                           val product_name: String ="",
                            val medium_price:String = "",
                            val date:String = "",
                            val desc:String = "",

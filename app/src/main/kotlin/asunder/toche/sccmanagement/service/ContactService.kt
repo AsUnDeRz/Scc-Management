@@ -5,6 +5,7 @@ import android.util.Log
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
+import com.crashlytics.android.Crashlytics
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -35,7 +36,7 @@ class ContactService(var listener:ContactCallBack){
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.CONTACTS}/$keyAuth"] = contact
         firebase.updateChildren(childUpdates,{databaseError, _ ->
             if (databaseError != null) {
-                //Crashlytics.log(databaseError.message)
+                Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
             } else {
                 System.out.println("Data Contact,Managemnt saved successfully.")
@@ -50,7 +51,7 @@ class ContactService(var listener:ContactCallBack){
 
         firebase.updateChildren(childUpdates,{ databaseError, _ ->
             if (databaseError != null) {
-                //Crashlytics.log(databaseError.message)
+                Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
                 listener.onFail()
             } else {
@@ -65,7 +66,7 @@ class ContactService(var listener:ContactCallBack){
     fun deleteContact(contact : Model.Contact){
         firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.CONTACTS}/${contact.id}").removeValue({ databaseError, _ ->
             if (databaseError != null) {
-                //Crashlytics.log(databaseError.message)
+                Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
                 listener.onFail()
             } else {
@@ -120,7 +121,7 @@ class ContactService(var listener:ContactCallBack){
 
         return if(rawData.size > 0){
             for(raw in rawData){
-                newData.filter { it.mobile == raw.mobile }
+                newData.filter { it.id == raw.id }
                         .forEach {
                             newData.remove(it)
                         }
@@ -134,7 +135,7 @@ class ContactService(var listener:ContactCallBack){
 
     fun updateContactFromDb(contact:Model.Contact,contactFromDb: MutableList<Model.Contact>)
     : MutableList<Model.Contact>{
-        contactFromDb.filter { it.mobile ==contact.mobile }
+        contactFromDb.filter { it.id == contact.id }
                 .forEach {
                     contactFromDb.remove(it)
                 }

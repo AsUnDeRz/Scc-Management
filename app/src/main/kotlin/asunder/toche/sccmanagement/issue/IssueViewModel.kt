@@ -4,6 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.net.Uri
 import asunder.toche.sccmanagement.Model
+import asunder.toche.sccmanagement.issue.adapter.IssueAdapter
 import asunder.toche.sccmanagement.issue.adapter.SectionIssueAdapter
 import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
@@ -11,7 +12,6 @@ import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.service.ContactService
 import asunder.toche.sccmanagement.service.FirebaseManager
 import asunder.toche.sccmanagement.service.IssueService
-import asunder.toche.sccmanagement.transactions.IssueListener
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
@@ -37,6 +37,12 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
 
     fun getContact():MutableList<Model.Contact>{
         return contactService.getContactInDb()
+    }
+
+    fun deleteIssue(data: Model.Issue){
+        service.deleteIssue(data)
+        service.deleteIssueInDb(data.id)
+
     }
 
     fun findCompanyWithKey(key:String){
@@ -92,7 +98,7 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
     fun setSectionAdapter(sectionList: List<String>,
                           results: MutableMap<String,
                                   List<Model.Issue>?>,
-                          listener: IssueListener)
+                          listener: IssueAdapter.IssueItemListener)
             :SectionedRecyclerViewAdapter{
         val sectionIssueAdapter = SectionedRecyclerViewAdapter()
         sectionList.forEach {
@@ -102,23 +108,23 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
         return sectionIssueAdapter
     }
 
-    fun sortAll(listener: IssueListener) : SectionedRecyclerViewAdapter{
+    fun sortAll(listener: IssueAdapter.IssueItemListener) : SectionedRecyclerViewAdapter{
         val sectionList = tranformFormat().sortedByDescending { Utils.getDateString(it).time }
         val resultIssue = separateSection(sectionList, false)
         return setSectionAdapter(sectionList, resultIssue,listener)
     }
-    fun sortToday(listener: IssueListener): SectionedRecyclerViewAdapter{
+    fun sortToday(listener: IssueAdapter.IssueItemListener): SectionedRecyclerViewAdapter{
         val sectionList = tranformFormat().filter { Utils.getDateString(it).time <= Utils.getCurrentDate().time }.sortedByDescending { Utils.getDateString(it).time }
         val resultIssue = separateSection(sectionList,true)
         return setSectionAdapter(sectionList,resultIssue,listener)
     }
-    fun sortTomorrow(listener: IssueListener): SectionedRecyclerViewAdapter{
+    fun sortTomorrow(listener: IssueAdapter.IssueItemListener): SectionedRecyclerViewAdapter{
         val sectionList = tranformFormat().filter { Utils.getDateString(it).time > Utils.getCurrentDate().time }
                 .sortedByDescending { Utils.getDateString(it).time }
         val resultIssue = separateSection(sectionList,false)
         return setSectionAdapter(sectionList,resultIssue,listener)
     }
-    fun sortYesterday(listener: IssueListener): SectionedRecyclerViewAdapter{
+    fun sortYesterday(listener: IssueAdapter.IssueItemListener): SectionedRecyclerViewAdapter{
         val sectionList = tranformFormat().filter { Utils.getDateString(it).time < Utils.getPreviusDate().time }
                 .sortedByDescending { Utils.getDateString(it).time }
         val resultIssue = separateSection(sectionList,false)

@@ -27,6 +27,7 @@ import android.util.Log
 import android.widget.ImageView
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.preference.KEY
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.service.ContactService
 import com.onegravity.contactpicker.contact.Contact
 import com.onegravity.contactpicker.contact.ContactDescription
@@ -104,9 +105,10 @@ class ActivitySetting: AppCompatActivity(),ContactService.ContactCallBack{
             val contact :MutableList<Model.Contact> = mutableListOf()
             val result = data.getSerializableExtra(ContactPickerActivity.RESULT_CONTACT_DATA) as List<Contact>
             result.mapTo(contact) {
-                Model.Contact("","","", it.displayName,
-                        it.getPhone(ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
-                        ,"","","","","","","",
+                val numbers = mutableListOf<Model.Number>()
+               numbers.add(Model.Number(it.getPhone(ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE), ROOT.Mobile))
+                Model.Contact("","","", it.displayName,numbers
+                        , mutableListOf(), mutableListOf(),"","", mutableListOf(),"","",
                         "","")
             }
 

@@ -304,7 +304,11 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
                         },contactVM.service.getContactInDb())
                     }
                     1 ->{
-
+                        Utils.findIssue(s.toString(),object : Utils.OnFindIssueListener{
+                            override fun onResults(results: MutableList<Model.Issue>) {
+                                issueVM.updateIssues(results)
+                            }
+                        },issueVM.service.getIssueInDb())
                     }
                     2 ->{
                         Utils.findProduct(s.toString(),object : Utils.OnFindProductListener{
@@ -314,7 +318,11 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
                         },productVM.service.getProductsInDb())
                     }
                     3 ->{
-
+                        Utils.findTransaction(s.toString(),object : Utils.OnFindTransactionsListener{
+                            override fun onResults(results: MutableList<Model.Transaction>) {
+                                transactionVM.updateTransactions(results)
+                            }
+                        },transactionVM.service.getTransactionInDb())
                     }
                 }
 

@@ -70,98 +70,21 @@
         app:layout_constraintTop_toBottomOf="@+id/edtBill" />
 
     <RelativeLayout
-        android:id="@+id/vMobile"
+        android:id="@+id/vNumber"
         android:layout_width="0dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginStart="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtContactName">
 
-        <ImageView
-            android:id="@+id/imgCircleMobile"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/bg_circle_input"
-            app:srcCompat="@drawable/ic_add_white_24dp" />
-
-        <asunder.toche.sccmanagement.custom.textview.TxtMedium
-            android:id="@+id/txtMobile"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@+id/imgCircleMobile"
-            android:text="มือถือ"
-            android:textColor="@color/colorDark"
-            android:textSize="16sp" />
-
-
-        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-            android:id="@+id/edtMobile"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvNumber"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="24dp"
-            android:layout_toEndOf="@+id/txtMobile"
-            android:background="@drawable/bg_round_table"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:paddingStart="8dp"
-            android:textSize="16sp" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/vTelephone"
-        android:layout_width="0dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vMobile">
-
-        <ImageView
-            android:id="@+id/imgFax"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentStart="false"
-            android:layout_centerHorizontal="false"
-            android:layout_centerVertical="true"
-            android:background="@drawable/bg_circle_input"
-            app:srcCompat="@drawable/ic_add_white_24dp" />
-
-        <asunder.toche.sccmanagement.custom.textview.TxtMedium
-            android:id="@+id/txtFax"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@+id/imgFax"
-            android:text="โทรสาร"
-            android:textColor="@color/colorDark"
-            android:textSize="16sp" />
-
-
-        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-            android:id="@+id/edtFax"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="24dp"
-            android:layout_toEndOf="@+id/txtFax"
-            android:background="@drawable/bg_round_table"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:paddingStart="8dp"
-            android:textSize="16sp" />
+            android:background="@drawable/bg_round_table"></android.support.v7.widget.RecyclerView>
     </RelativeLayout>
 
     <RelativeLayout
@@ -173,7 +96,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vTelephone">
+        app:layout_constraintTop_toBottomOf="@+id/vNumber">
 
         <ImageView
             android:id="@+id/imgPhone"
@@ -191,23 +114,11 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
             android:layout_toEndOf="@+id/imgPhone"
-            android:text="เบอร์โทรศัพท์"
+            android:text="เพิ่มเบอร์โทรศัพท์"
             android:textColor="@color/colorDark"
             android:textSize="16sp" />
 
 
-        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-            android:id="@+id/edtPhone"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="24dp"
-            android:layout_toEndOf="@+id/txtPhone"
-            android:background="@drawable/bg_round_table"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:paddingStart="8dp"
-            android:textSize="16sp" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -216,10 +127,11 @@
         android:layout_height="36dp"
         android:layout_marginEnd="48dp"
         android:layout_marginStart="48dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vPhone">
+        app:layout_constraintTop_toBottomOf="@+id/rvEmail">
 
         <ImageView
             android:id="@+id/imgEmail"
@@ -237,23 +149,11 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
             android:layout_toEndOf="@+id/imgEmail"
-            android:text="อีเมล"
+            android:text="เพิ่มอีเมล"
             android:textColor="@color/colorDark"
             android:textSize="16sp" />
 
 
-        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-            android:id="@+id/edtEmail"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="24dp"
-            android:layout_toEndOf="@+id/txtEmail"
-            android:background="@drawable/bg_round_table"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:paddingStart="8dp"
-            android:textSize="16sp" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -262,10 +162,11 @@
         android:layout_height="36dp"
         android:layout_marginEnd="48dp"
         android:layout_marginStart="48dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vEmail">
+        app:layout_constraintTop_toBottomOf="@+id/rvWebsite">
 
         <ImageView
             android:id="@+id/imgWeb"
@@ -283,23 +184,11 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
             android:layout_toEndOf="@+id/imgWeb"
-            android:text="เว็ปไซด์"
+            android:text="เพิ่มเว็ปไซด์"
             android:textColor="@color/colorDark"
             android:textSize="16sp" />
 
 
-        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-            android:id="@+id/edtWeb"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="24dp"
-            android:layout_toEndOf="@+id/txtWeb"
-            android:background="@drawable/bg_round_table"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:paddingStart="8dp"
-            android:textSize="16sp" />
     </RelativeLayout>
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
@@ -329,53 +218,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/edtContactName" />
 
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/actionMobile"
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvEmail"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:tint="@color/colorConfirm"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/vMobile"
+        android:layout_alignStart="@+id/txtPhone"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_round_table"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/vMobile"
-        app:layout_constraintTop_toTopOf="@+id/vMobile"
-        app:srcCompat="@drawable/ic_phone_white_36dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vPhone" />
 
-    <android.support.v7.widget.AppCompatImageView
-        android:visibility="gone"
-        android:id="@+id/actionPhone"
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvWebsite"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:tint="@color/colorConfirm"
-        app:layout_constraintBottom_toBottomOf="@+id/vPhone"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_round_table"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/vPhone"
-        app:layout_constraintTop_toTopOf="@+id/vPhone"
-        app:srcCompat="@drawable/ic_phone_white_36dp" />
-
-    <android.support.v7.widget.AppCompatImageView
-        android:visibility="gone"
-        android:id="@+id/actionEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:tint="@color/colorConfirm"
-        app:layout_constraintBottom_toBottomOf="@+id/vEmail"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/vEmail"
-        app:layout_constraintTop_toTopOf="@+id/vEmail"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
-
-    <android.support.v7.widget.AppCompatImageView
-        android:visibility="gone"
-        android:id="@+id/actionWebsite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:tint="@color/colorConfirm"
-        app:layout_constraintBottom_toBottomOf="@+id/vWebsite"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/vWebsite"
-        app:layout_constraintTop_toTopOf="@+id/vWebsite"
-        app:srcCompat="@android:drawable/ic_menu_mapmode" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vEmail" />
 
 
 </android.support.constraint.ConstraintLayout>

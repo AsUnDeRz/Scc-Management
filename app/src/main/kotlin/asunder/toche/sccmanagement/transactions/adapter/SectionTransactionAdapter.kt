@@ -69,8 +69,10 @@ class SectionTransactionAdapter() : StatelessSection(SectionParameters.builder()
             txtCompany.text = product.product_name
             txtDate.text = data.date
             txtVat.text = "A"
-            txtPriceSale.text = data.sale_price[0].price
-            txtValues.text = data.sale_price[0].values
+            if (data.sale_price.isNotEmpty()) {
+                txtPriceSale.text = data.sale_price[0].price
+                txtValues.text = data.sale_price[0].values
+            }
             itemView.setOnClickListener {
                 listener.onClickTransaction(data)
             }

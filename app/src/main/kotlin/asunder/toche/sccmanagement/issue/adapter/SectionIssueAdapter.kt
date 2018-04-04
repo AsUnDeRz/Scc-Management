@@ -5,7 +5,6 @@ import android.view.View
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
-import asunder.toche.sccmanagement.transactions.IssueListener
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters
 import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection
 
@@ -19,14 +18,14 @@ class SectionIssueAdapter() : StatelessSection(SectionParameters.builder()
         .itemResourceId(R.layout.item_issue)
         .headerResourceId(R.layout.item_section_issue)
         .build()) {
-    constructor(dateString: String, data:MutableList<Model.Issue>,newListener: IssueListener) : this(){
+    constructor(dateString: String, data:MutableList<Model.Issue>,newListener: IssueAdapter.IssueItemListener) : this(){
         sectionDate = dateString
         issues = data
         listener = newListener
     }
     var issues: MutableList<Model.Issue> = mutableListOf()
     var sectionDate:String =""
-    lateinit var listener : IssueListener
+    lateinit var listener : IssueAdapter.IssueItemListener
 
     override fun getContentItemsTotal(): Int {
         return issues.size // number of items of this section

@@ -14,14 +14,24 @@ android {
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.1"
         testInstrumentationRunner "android.support.menu_drawer.runner.AndroidJUnitRunner"
         multiDexEnabled true
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("/Users/admin/Desktop/MyWork/asunder_store.jks")
+            storePassword "a0880657145"
+            keyAlias "asunder"
+            keyPassword "a0880657145"
+        }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     sourceSets {
@@ -62,6 +72,13 @@ android {
     androidExtensions {
         experimental = true
     }
+    android {
+        lintOptions {
+            checkReleaseBuilds false
+            abortOnError false
+        }
+    }
+
 }
 
 dependencies {
@@ -73,9 +90,9 @@ dependencies {
     implementation deps.kotlin.stdlib
     implementation deps.support.multidex
     implementation deps.support.design
-    //implementation('com.crashlytics.sdk.android:crashlytics:2.9.0@aar') {
-    //transitive = true
-    //}
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.0@aar') {
+    transitive = true
+    }
     implementation('com.twitter.sdk.android:twitter:3.2.0@aar') {
         transitive = true
     }

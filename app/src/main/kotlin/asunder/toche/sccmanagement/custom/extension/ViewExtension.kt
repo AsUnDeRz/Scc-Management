@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
+import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,4 +64,8 @@ fun EditText.ShowKeyboard(){
     requestFocus()
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+}
+
+fun EditText.limitLength(maxLength: Int) {
+    filters = arrayOf(InputFilter.LengthFilter(maxLength))
 }

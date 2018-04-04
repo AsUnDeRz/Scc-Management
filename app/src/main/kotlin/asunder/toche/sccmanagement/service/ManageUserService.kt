@@ -5,6 +5,7 @@ import android.util.Log
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
+import com.crashlytics.android.Crashlytics
 import com.facebook.AccessToken
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FacebookAuthProvider
@@ -13,12 +14,10 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.TwitterAuthProvider
 import com.google.firebase.database.*
 import com.twitter.sdk.android.core.TwitterSession
-import com.twitter.sdk.android.core.models.User
 import io.paperdb.Paper
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
 import java.util.*
 
 
@@ -49,7 +48,7 @@ class ManageUserService{
                     }else{
                         Log.w(TAG, "signInWithCredential:failure", it.exception)
                         listener.authFail(it.exception?.message.toString())
-                        //Crashlytics.log(it.exception)
+                        Crashlytics.log(it.exception?.message)
                     }
                 }
     }
@@ -87,7 +86,7 @@ class ManageUserService{
                     }else{
                         Log.w(TAG, "signInWithCredential:failure", it.exception)
                         listener.authFail(it.exception?.message.toString())
-                        //Crashlytics.log(it.exception)
+                        Crashlytics.log(it.exception?.message)
                     }
                 }
     }
@@ -146,7 +145,7 @@ class ManageUserService{
                     }else{
                         Log.w(TAG, "signInWithEmail:failure", it.exception)
                         listener.authFail(it.exception?.message.toString())
-                        //Crashlytics.log(it.exception)
+                        Crashlytics.log(it.exception?.message)
                     }
                 }
     }
@@ -182,7 +181,7 @@ class ManageUserService{
                     }else{
                         Log.w(TAG, "signInWithEmail:failure", it.exception)
                         listener.authFail(it.exception?.message.toString())
-                        //Crashlytics.log(it.exception)
+                        Crashlytics.log(it.exception?.message)
                     }
                 }
     }
@@ -207,7 +206,7 @@ class ManageUserService{
 
         firebase.updateChildren(childUpdates,{databaseError, _ ->
             if (databaseError != null) {
-                //Crashlytics.log(databaseError.message)
+                Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
             } else {
                 System.out.println("Data Contact,Managemnt saved successfully.")
@@ -219,7 +218,7 @@ class ManageUserService{
     fun rejectUser(userAuth: Model.UserAuth){
         firebase.child("${ROOT.MANAGEMENT}/${userAuth.uid}").removeValue({ databaseError, _ ->
             if (databaseError != null) {
-                //Crashlytics.log(databaseError.message)
+                Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
             } else {
                 System.out.println("Data deleted successfully.")
@@ -233,7 +232,7 @@ class ManageUserService{
         childUpdates["${ROOT.USERS}/${userAuth.uid}/status_user"] = ROOT.TERMINATE
         firebase.updateChildren(childUpdates,{databaseError, _ ->
             if (databaseError != null) {
-                //Crashlytics.log(databaseError.message)
+                Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
             } else {
                 System.out.println("Data Contact,Managemnt saved successfully.")
@@ -242,7 +241,7 @@ class ManageUserService{
 
         firebase.child("${ROOT.MANAGEMENT}/${userAuth.uid}").removeValue({ databaseError, _ ->
             if (databaseError != null) {
-                //Crashlytics.log(databaseError.message)
+                Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
             } else {
                 System.out.println("Data deleted successfully.")
@@ -254,7 +253,7 @@ class ManageUserService{
     fun pushRequestSignUp(userAuth: Model.UserAuth,listener:Auth){
         firebase.child("${ROOT.MANAGEMENT}/${userAuth.uid}").setValue(userAuth,{ databaseError, _ ->
             if (databaseError != null) {
-                //Crashlytics.log(databaseError.message)
+                Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
                 listener.authFail(databaseError.message)
                 signOut()
@@ -270,7 +269,7 @@ class ManageUserService{
         firebase.child(ROOT.ADMIN).addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onCancelled(data: DatabaseError?) {
                 Log.d(TAG, data?.message)
-                //Crashlytics.log(data?.message)
+                Crashlytics.log(data?.message)
             }
             override fun onDataChange(data: DataSnapshot?) {
                 val emails = mutableListOf<String>()
@@ -290,7 +289,7 @@ class ManageUserService{
             firebase.child("${ROOT.MANAGEMENT}/").addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(data: DatabaseError?) {
                     Log.d(TAG, data?.message)
-                    //Crashlytics.log(data?.message)
+                    Crashlytics.log(data?.message)
                 }
 
                 override fun onDataChange(data: DataSnapshot?) {
@@ -313,7 +312,7 @@ class ManageUserService{
                 listener?.currentStatus(Model.UserAuth("", ROOT.REGISTER,
                         "","","",""))
                 handler.removeCallbacks(runnable)
-                //Crashlytics.log(data?.message)
+                Crashlytics.log(data?.message)
             }
             override fun onDataChange(data: DataSnapshot?) {
                 val userAuth = data?.getValue(Model.UserAuth::class.java)

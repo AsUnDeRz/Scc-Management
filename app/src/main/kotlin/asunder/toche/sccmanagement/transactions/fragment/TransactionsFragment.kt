@@ -324,7 +324,9 @@ class TransactionsFragment : Fragment(){
         if(validateTransaction()) {
             val data = Model.Transaction(transactionVM.transactionId
                     ,transactionVM.contact.value!!.id
+                    ,transactionVM.contact.value!!.company+"#"+transactionVM.contact.value!!.contact_name
                     ,transactionVM.product.value!!.id
+                    ,transactionVM.product.value!!.product_name+"#"+transactionVM.product.value!!.product_desc
                     ,edtMediumPrice.text.toString()
                     ,Utils.getCurrentDateString()
                     ,edtTransactionNote.text.toString()

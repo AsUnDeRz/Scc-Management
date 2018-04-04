@@ -1,6 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_sheet_type_number"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:orientation="vertical"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="0dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-</android.support.constraint.ConstraintLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+
+        <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+            android:id="@+id/edtType"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_toLeftOf="@+id/btnAddType"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:hint="เพิ่มประเภทที่ต้องการ ..."
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textSize="20sp" />
+
+        <asunder.toche.sccmanagement.custom.button.BtnMedium
+            android:id="@+id/btnAddType"
+            android:layout_width="56dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/btn_confirm"
+            android:text="เพิ่ม"
+            android:textColor="@android:color/white" />
+
+    </RelativeLayout>
+
+
+    <ListView
+        android:id="@+id/rvFilterType"
+        android:layout_width="match_parent"
+        android:layout_height="144dp" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnCancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_round_table"
+        android:text="ยกเลิก"
+        android:textColor="@color/colorDark"
+        android:textSize="16sp" />
+
+</LinearLayout>

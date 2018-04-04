@@ -5,6 +5,7 @@ import android.util.Log
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
+import com.crashlytics.android.Crashlytics
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -40,7 +41,7 @@ class IssueService(var listener : IssueCallBack){
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.ISSUE}/$keyAuth"] = issue
         firebase.updateChildren(childUpdates,{databaseError, _ ->
             if (databaseError != null) {
-                //Crashlytics.log(databaseError.message)
+                Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
             } else {
                 System.out.println("Data Issue  saved successfully.")
@@ -56,7 +57,7 @@ class IssueService(var listener : IssueCallBack){
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.ISSUE}/${Issue.id}"] = Issue
         firebase.updateChildren(childUpdates,{ databaseError, _ ->
             if (databaseError != null) {
-                //Crashlytics.log(databaseError.message)
+                Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
             } else {
                 System.out.println("Data Update Issue successfully.")
@@ -70,7 +71,7 @@ class IssueService(var listener : IssueCallBack){
         firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.ISSUE}/${Issue.id}")
                 .removeValue({ databaseError, _ ->
             if (databaseError != null) {
-                //Crashlytics.log(databaseError.message)
+                Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
             } else {
                 System.out.println("Data deleted successfully.")
