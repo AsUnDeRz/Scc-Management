@@ -64,7 +64,7 @@ class TransactionsFragment : Fragment(){
     private lateinit var adapter: CompanyAdapter
     private lateinit var productAdapter: ProductAdapter
     private var loading = LoadingDialog.newInstance()
-    private var selectedDate = Date()
+    private var selectedDate = Utils.getCurrentDate()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -314,7 +314,7 @@ class TransactionsFragment : Fragment(){
         edtMediumPrice.setText("")
         saleRateAdapter.updateSalePrice(mutableListOf())
         transactionVM.transactionId = ""
-        selectedDate = Date()
+        selectedDate = Utils.getCurrentDate()
         transactionVM.updateProduct(Model.Product())
         transactionVM.updateContact(Model.Contact())
 
@@ -410,11 +410,13 @@ class TransactionsFragment : Fragment(){
         val mount = c.get(Calendar.MONTH)
         val dOfm = c.get(Calendar.DAY_OF_MONTH)
         var year = c.get(Calendar.YEAR)
+        val hour = c.get(Calendar.HOUR_OF_DAY)
+        val minute = c.get(Calendar.MINUTE)
         val spinner = SpinnerDatePickerDialogBuilder()
                 .context(context)
-                .callback { _, yearOf, monthOfYear, dayOfMonth ->
+                .callback { _, yearOf, monthOfYear, dayOfMonth, hourOf, minuteOf ->
                     val dateSelect = Calendar.getInstance()
-                    dateSelect.set(yearOf,monthOfYear,dayOfMonth,0,0,0)
+                    dateSelect.set(yearOf,monthOfYear,dayOfMonth,hourOf,minuteOf,0)
                     selectedDate = dateSelect.time
                     edtPriceDate.setText(Utils.getDateStringWithDate(selectedDate).substring(0,10))
                 }
@@ -422,6 +424,8 @@ class TransactionsFragment : Fragment(){
                 .year(year)
                 .monthOfYear(mount)
                 .dayOfMonth(dOfm)
+                .hour(hour)
+                .minute(minute)
                 .build()
         spinner.show()
 

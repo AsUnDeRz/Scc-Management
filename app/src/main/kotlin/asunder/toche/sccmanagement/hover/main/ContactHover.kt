@@ -128,7 +128,7 @@ class ContactHover(context: Context,
                             ,this@ContactHover)
                 }
             }
-        },transactionService.getTransactionInDb())
+        },transactionService.getTransactionInDb(),ROOT.CONTACTS)
 
     }
 

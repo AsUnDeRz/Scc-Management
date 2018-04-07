@@ -17,6 +17,7 @@ import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.products.adapter.ProductAdapter
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
@@ -88,7 +89,7 @@ class TransactionHistoryFragment : Fragment(),TransactionListener {
         productAdapter = ProductAdapter(productVM.service.getProductsInDb(),false)
         productAdapter.setUpOnClickListener(object : ProductAdapter.ProductOnClickListener{
             override fun onClickProduct(product: Model.Product) {
-                edtSelectProduct.setText(product.product_name)
+                edtSelectProduct.setText(product.product_name.trim())
                 Utils.findTransaction(product.id,object : Utils.OnFindTransactionsListener{
                     override fun onResults(results: MutableList<Model.Transaction>) {
                         val mapTransaction:MutableMap<Model.Transaction,Model.Contact> = mutableMapOf()
@@ -99,7 +100,7 @@ class TransactionHistoryFragment : Fragment(),TransactionListener {
                         }
                         setUpAdapter(mapTransaction,results)
                     }
-                },transactionVM.service.getTransactionInDb())
+                },transactionVM.service.getTransactionInDb(),ROOT.PRODUCTS)
 
 
                 bottomSheetDialog.dismiss()

@@ -65,7 +65,7 @@ class ProductsFragment : Fragment(){
     private var stateInput :CurrentInputState = CurrentInputState.PROD_NAME
     private lateinit var titleInput : TxtMedium
     private lateinit var edtInput : EdtMedium
-    private var selectedDate : Date = Date()
+    private var selectedDate : Date = Utils.getCurrentDate()
     private var loading = LoadingDialog.newInstance()
 
 
@@ -258,12 +258,14 @@ class ProductsFragment : Fragment(){
         c.time = selectedDate
         val mount = c.get(Calendar.MONTH)
         val dOfm = c.get(Calendar.DAY_OF_MONTH)
-        var year = c.get(Calendar.YEAR)
+        val year = c.get(Calendar.YEAR)
+        val hour = c.get(Calendar.HOUR_OF_DAY)
+        val minute = c.get(Calendar.MINUTE)
         val spinner = SpinnerDatePickerDialogBuilder()
                 .context(context)
-                .callback { _, yearOf, monthOfYear, dayOfMonth ->
+                .callback { _, yearOf, monthOfYear, dayOfMonth, hourOf, minuteOf ->
                     val dateSelect = Calendar.getInstance()
-                    dateSelect.set(yearOf,monthOfYear,dayOfMonth,0,0,0)
+                    dateSelect.set(yearOf,monthOfYear,dayOfMonth,hourOf,minuteOf,0)
                     selectedDate = dateSelect.time
                     edtPriceDate.setText(Utils.getDateStringWithDate(selectedDate).substring(0,10))
                 }
@@ -271,6 +273,8 @@ class ProductsFragment : Fragment(){
                 .year(year)
                 .monthOfYear(mount)
                 .dayOfMonth(dOfm)
+                .hour(hour)
+                .minute(minute)
                 .build()
         spinner.show()
 
@@ -379,7 +383,7 @@ class ProductsFragment : Fragment(){
         edtPriceNote.setText("")
         rdbVat.isChecked = true
         edtPriceValues.setText("")
-        selectedDate = Date()
+        selectedDate = Utils.getCurrentDate()
     }
 
     fun validateMediumRate():Boolean {

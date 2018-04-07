@@ -146,8 +146,8 @@ object Utils{
                 val suggestionList = mutableListOf<Model.Product>()
                 if(!(constraint == null || constraint.isEmpty())){
                     masterData.filterTo(suggestionList){
-                        it.product_name.contains(constraint.toString()) ||
-                                it.product_desc.contains(constraint.toString())
+                        it.product_name.contains(constraint.toString(),true) ||
+                                it.product_desc.contains(constraint.toString(),true)
                     }
                 }
                 val result = FilterResults()
@@ -165,15 +165,31 @@ object Utils{
         }.filter(query)
     }
 
-    fun findTransaction(query: String, listener : OnFindTransactionsListener, masterData:MutableList<Model.Transaction>){
+    fun findTransaction(query: String, listener : OnFindTransactionsListener,
+                        masterData:MutableList<Model.Transaction>,optional:String?){
         object :Filter(){
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val suggestionList = mutableListOf<Model.Transaction>()
                 if(!(constraint == null || constraint.isEmpty())){
-                    masterData.filterTo(suggestionList){
-                        it.company_name.contains(constraint.toString()) ||
-                        it.product_name.contains(constraint.toString())
+                    when(optional){
+                        ROOT.PRODUCTS ->{
+                            masterData.filterTo(suggestionList){
+                                it.product_id == constraint.toString()
+                            }
+                        }
+                        ROOT.CONTACTS ->{
+                            masterData.filterTo(suggestionList){
+                                it.company_id == constraint.toString()
+                            }
+                        }
+                        else ->{
+                            masterData.filterTo(suggestionList){
+                                it.company_name.contains(constraint.toString(),true) ||
+                                        it.product_name.contains(constraint.toString(),true)
+                            }
+                        }
                     }
+
                 }
                 val result = FilterResults()
                 result.values = suggestionList
@@ -185,7 +201,14 @@ object Utils{
                 if(results?.count != 0){
                     listener.onResults(results?.values as MutableList<Model.Transaction>)
                 }else{
-                    listener.onResults(masterData)
+                    when(optional){
+                        ROOT.PRODUCTS ->{
+                            listener.onResults(mutableListOf())
+                        }
+                        else ->{
+                            listener.onResults(masterData)
+                        }
+                    }
                 }
             }
 

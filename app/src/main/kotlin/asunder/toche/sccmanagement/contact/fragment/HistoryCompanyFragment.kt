@@ -1,5 +1,6 @@
 package asunder.toche.sccmanagement.contact.fragment
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -15,6 +16,7 @@ import asunder.toche.sccmanagement.contact.adapter.HistoryTransactionAdapter
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.TriggerContact
 import asunder.toche.sccmanagement.issue.IssueViewModel
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.service.IssueService
 import asunder.toche.sccmanagement.service.ProductService
@@ -72,6 +74,7 @@ class HistoryCompanyFragment : Fragment(),TransactionListener {
             layoutManager = LinearLayoutManager(context)
         }
         initUI()
+        obseverDBupdate()
     }
 
     fun initUI(){
@@ -144,7 +147,7 @@ class HistoryCompanyFragment : Fragment(),TransactionListener {
             override fun onSuccess() {
             }
 
-        }).getTransactionInDb())
+        }).getTransactionInDb(), ROOT.CONTACTS)
 
     }
 
@@ -165,5 +168,17 @@ class HistoryCompanyFragment : Fragment(),TransactionListener {
 
     override fun onClickTransaction(transaction: Model.Transaction) {
     }
+
+    fun obseverDBupdate(){
+        issueVM.issues.observe(this, Observer {
+            updateIssueAdapter(contactVM.contact.value)
+        })
+        transactionVM.transactions.observe(this, Observer {
+            if (contactVM.contact.value != null) {
+                updateTransactionAdapter(contactVM.contact.value)
+            }
+        })
+    }
+
 
 }

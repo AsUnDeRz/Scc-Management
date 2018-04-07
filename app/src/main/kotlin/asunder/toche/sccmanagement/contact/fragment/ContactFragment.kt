@@ -2,6 +2,7 @@ package asunder.toche.sccmanagement.contact.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -37,6 +38,7 @@ import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.main.ActivityCamera
 import asunder.toche.sccmanagement.preference.Utils
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -53,6 +55,8 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.thefinestartist.finestwebview.FinestWebView
+import droidninja.filepicker.FilePickerBuilder
+import droidninja.filepicker.FilePickerConst
 import kotlinx.android.synthetic.main.fragment_contact.*
 import kotlinx.android.synthetic.main.fragment_contact_add.*
 import kotlinx.android.synthetic.main.section_contact_address.*
@@ -94,6 +98,8 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
     private lateinit var emailAdapter: EmailAdapter
     private lateinit var webstieAdapter: WebsiteAdapter
     private lateinit var addressAdapter: AddressAdapter
+    val selectedPhoto = arrayListOf<String>()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -179,7 +185,12 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
     fun initViewAdd(v:View){
         val imageView = v.findViewById<ImageView>(R.id.imgMap)
         imageView.setOnClickListener {
-            startActivityForResult(Intent().setClass(activity, ActivityCamera::class.java),666)
+            selectedPhoto.clear()
+            FilePickerBuilder.getInstance().setMaxCount(1)
+                    .setSelectedFiles(selectedPhoto)
+                    .setActivityTheme(R.style.AppTheme)
+                    .pickPhoto(this)
+            //startActivityForResult(Intent().setClass(activity, ActivityCamera::class.java),666)
         }
         val mapFragment : SupportMapFragment? =
                 fragmentManager?.findFragmentById(R.id.mapView) as? SupportMapFragment
@@ -324,8 +335,20 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
             Glide.with(this@ContactFragment)
                     .load(image)
                     .into(imgMap)
+        }
+        when (requestCode) {
+            FilePickerConst.REQUEST_CODE_PHOTO -> if (resultCode == Activity.RESULT_OK && data != null) {
+                selectedPhoto.clear()
+                selectedPhoto.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA))
+                if(selectedPhoto.size > 0) {
+                    contactVM.updatePathPicture(selectedPhoto[0])
+                    Glide.with(context!!)
+                            .load(File(selectedPhoto[0]))
+                            .into(imgMap)
+                }
             }
         }
+    }
 
 
 
@@ -409,7 +432,8 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
         Glide.with(this@ContactFragment)
                 .load(image)
                 .into(imgMap)
-        if(contact.map_latitude != "" && contact.map_longitude != "") {
+        if(contact.map_latitude != "" && contact.map_longitude != ""
+                && contact.map_latitude != "null" && contact.map_longitude != "null") {
             location = Location("")
             location?.latitude = contact.map_latitude.toDouble()
             location?.longitude = contact.map_longitude.toDouble()
@@ -441,8 +465,10 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
         edtTypeAddress.setText(contact.address_type)
         edtFactoryAddress.setText(contact.address_factory)
 
+        val options = RequestOptions().centerCrop()
         Glide.with(this@ContactFragment)
-                .load("")
+                .load(R.drawable.mock_picture)
+                .apply(options)
                 .into(imgMap)
 
     }
@@ -686,5 +712,6 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
             webstieAdapter.remove(position)
         }
     }
+
 
 }

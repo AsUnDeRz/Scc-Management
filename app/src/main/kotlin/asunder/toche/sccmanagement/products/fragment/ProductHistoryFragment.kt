@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.TriggerProduct
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.products.adapter.ProductHistoryAdapter
 import asunder.toche.sccmanagement.transactions.TransactionState
@@ -80,7 +81,7 @@ ProductHistoryAdapter.ProductHistoryOnClickListener{
                 }
                 productHistoryAdapter.updateTransaction(mapTransaction,results)
             }
-        },transactionVM.service.getTransactionInDb())
+        },transactionVM.service.getTransactionInDb(), ROOT.PRODUCTS)
     }
 
     override fun onDestroy() {

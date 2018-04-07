@@ -15,7 +15,6 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import asunder.toche.sccmanagement.Model
@@ -283,6 +282,9 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
             }
         })
 
+        issueVM.isSaveIssueComplete.observe(this,Observer{
+
+        })
 
     }
 
@@ -322,7 +324,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
                             override fun onResults(results: MutableList<Model.Transaction>) {
                                 transactionVM.updateTransactions(results)
                             }
-                        },transactionVM.service.getTransactionInDb())
+                        },transactionVM.service.getTransactionInDb(),null)
                     }
                 }
 

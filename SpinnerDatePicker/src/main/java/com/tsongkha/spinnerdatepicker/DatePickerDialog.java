@@ -51,6 +51,8 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
     private static final String YEAR = "year";
     private static final String MONTH = "month";
     private static final String DAY = "day";
+    private static final String HOUR ="hour";
+    private static final String MINUTE ="minute";
     private static final String YEAR_OPTIONAL = "year_optional";
 
     private final DatePicker mDatePicker;
@@ -61,6 +63,8 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
     private int mInitialYear;
     private int mInitialMonth;
     private int mInitialDay;
+    private int mInitialHour;
+    private int mInitialMinute;
 
     /**
      * The callback used to indicate the user is done filling in the date.
@@ -74,7 +78,7 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
          *                    with {@link java.util.Calendar}.
          * @param dayOfMonth  The day of the month that was set.
          */
-        void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth);
+        void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth,int hour , int minute);
     }
 
     DatePickerDialog(Context context,
@@ -84,6 +88,8 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
                      int year,
                      int monthOfYear,
                      int dayOfMonth,
+                     int hour,
+                     int minute,
                      boolean yearOptional) {
         super(context, theme);
 
@@ -91,23 +97,24 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
         mInitialYear = year;
         mInitialMonth = monthOfYear;
         mInitialDay = dayOfMonth;
+        mInitialHour = hour;
+        mInitialMinute = minute;
 
         mTitleDateFormat = DateFormat.getDateInstance(DateFormat.DEFAULT);
         mTitleNoYearDateFormat = DateUtils.getLocalizedDateFormatWithoutYear(getContext());
-        updateTitle(mInitialYear, mInitialMonth, mInitialDay);
+        updateTitle(mInitialYear, mInitialMonth, mInitialDay,mInitialHour,mInitialMinute);
 
 
         setButton(BUTTON_POSITIVE, context.getText(android.R.string.ok),
                 this);
         setButton(BUTTON_NEGATIVE, context.getText(android.R.string.cancel),
                 (OnClickListener) null);
-
         LayoutInflater inflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.date_picker_dialog_container, null);
         setView(view);
         mDatePicker = new DatePicker(context, (ViewGroup) view, spinnerTheme);
-        mDatePicker.init(mInitialYear, mInitialMonth, mInitialDay, yearOptional, this);
+        mDatePicker.init(mInitialYear, mInitialMonth, mInitialDay,mInitialHour,mInitialMinute, yearOptional, this);
 
     }
 
@@ -127,13 +134,14 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
         if (mCallBack != null) {
             mDatePicker.clearFocus();
             mCallBack.onDateSet(mDatePicker, mDatePicker.getYear(),
-                    mDatePicker.getMonth(), mDatePicker.getDayOfMonth());
+                    mDatePicker.getMonth(), mDatePicker.getDayOfMonth()
+                    ,mDatePicker.getHour(),mDatePicker.getMinute());
         }
     }
 
     @Override
-    public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        updateTitle(year, monthOfYear, dayOfMonth);
+    public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth,int hour,int minute) {
+        updateTitle(year, monthOfYear, dayOfMonth,hour,minute);
     }
 
     public void updateDate(int year, int monthOfYear, int dayOfMonth) {
@@ -143,15 +151,17 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
         mDatePicker.updateDate(year, monthOfYear, dayOfMonth);
     }
 
-    private void updateTitle(int year, int month, int day) {
+    private void updateTitle(int year, int month, int day,int hour,int minute) {
         final Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, day);
+        calendar.set(Calendar.HOUR_OF_DAY,hour);
+        calendar.set(Calendar.MINUTE,minute);
         //final DateFormat dateFormat = year == NO_YEAR ? mTitleNoYearDateFormat : mTitleDateFormat;
         //final DateFormat dateFormat = DateFormat.getDateInstance(1, new Locale("th","TH"));
-        final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMMM yyyy",new Locale("th","TH"));
-        setTitle(dateFormat.format(calendar.getTime()));
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMMM yyyy  HH:mm",new Locale("th","TH"));
+        setTitle(dateFormat.format(calendar.getTime())+" น.");
     }
 
     @Override
@@ -160,6 +170,8 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
         state.putInt(YEAR, mDatePicker.getYear());
         state.putInt(MONTH, mDatePicker.getMonth());
         state.putInt(DAY, mDatePicker.getDayOfMonth());
+        state.putInt(HOUR,mDatePicker.getHour());
+        state.putInt(MINUTE,mDatePicker.getMinute());
         state.putBoolean(YEAR_OPTIONAL, mDatePicker.isYearOptional());
         return state;
     }
@@ -170,9 +182,11 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
         int year = savedInstanceState.getInt(YEAR);
         int month = savedInstanceState.getInt(MONTH);
         int day = savedInstanceState.getInt(DAY);
+        int hour = savedInstanceState.getInt(HOUR);
+        int minute = savedInstanceState.getInt(MINUTE);
         boolean yearOptional = savedInstanceState.getBoolean(YEAR_OPTIONAL);
-        mDatePicker.init(year, month, day, yearOptional, this);
-        updateTitle(year, month, day);
+        mDatePicker.init(year, month, day,hour,minute, yearOptional, this);
+        updateTitle(year, month, day,hour,minute);
     }
 
     @Override

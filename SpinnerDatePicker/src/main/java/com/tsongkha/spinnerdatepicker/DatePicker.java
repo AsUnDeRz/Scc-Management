@@ -54,6 +54,11 @@ public class DatePicker extends FrameLayout {
 
     private static final int DEFAULT_START_YEAR = 1900;
     private static final int DEFAULT_END_YEAR = 3000;
+    private final int DEFALUT_START_HOUR = 0;
+    private final int DEFALUT_END_HOUR = 23;
+    private final int DEFALUT_START_MINUTE = 0;
+    private final int DEFALUT_END_MINUTE = 59;
+
     private static final TwoDigitFormatter sTwoDigitFormatter = new TwoDigitFormatter();
 
     /* UI Components */
@@ -61,6 +66,8 @@ public class DatePicker extends FrameLayout {
     private final NumberPicker mDayPicker;
     private final NumberPicker mMonthPicker;
     private final NumberPicker mYearPicker;
+    private final NumberPicker mHourPicker;
+    private final NumberPicker mMinutePicker;
 
     /**
      * How we notify users the date has changed.
@@ -70,6 +77,8 @@ public class DatePicker extends FrameLayout {
     private int mDay;
     private int mMonth;
     private int mYear;
+    private int mHour;
+    private int mMinute;
     private boolean mYearOptional;
     private boolean mHasYear;
 
@@ -85,7 +94,7 @@ public class DatePicker extends FrameLayout {
          *  with {@link java.util.Calendar}.
          * @param dayOfMonth The day of the month that was set.
          */
-        void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth);
+        void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth,int hour,int minute);
     }
 
     public DatePicker(Context context, ViewGroup root, int numberPickerStyle) {
@@ -162,9 +171,38 @@ public class DatePicker extends FrameLayout {
         mYearPicker.setMinValue(DEFAULT_START_YEAR);
         mYearPicker.setMaxValue(DEFAULT_END_YEAR);
 
+        mMinutePicker = inflater.inflate(R.layout.number_picker_day_month, mPickerContainer).findViewById(R.id.number_picker);
+        mMinutePicker.setId(R.id.minute);
+        mMinutePicker.setMinValue(DEFALUT_START_MINUTE);
+        mMinutePicker.setMaxValue(DEFALUT_END_MINUTE);
+        mMinutePicker.setOnLongPressUpdateInterval(100);
+        mMinutePicker.setOnValueChangedListener(new OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                mMinute = newVal;
+                notifyDateChanged();
+                updateDaySpinner();
+            }
+        });
+        mHourPicker =  inflater.inflate(R.layout.number_picker_day_month, mPickerContainer).findViewById(R.id.number_picker);
+        mHourPicker.setId(R.id.hour);
+        mHourPicker.setMinValue(DEFALUT_START_HOUR);
+        mHourPicker.setMaxValue(DEFALUT_END_HOUR);
+        mHourPicker.setOnLongPressUpdateInterval(100);
+        mHourPicker.setOnValueChangedListener(new OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                mHour = newVal;
+                notifyDateChanged();
+                updateDaySpinner();
+            }
+        });
+
+
         // initialize to current date
         Calendar cal = Calendar.getInstance();
-        init(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), null);
+        init(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+                cal.get(Calendar.HOUR),cal.get(Calendar.MINUTE), null);
 
         // re-order the number pickers to match the current date format
         reorderPickers();
@@ -183,6 +221,8 @@ public class DatePicker extends FrameLayout {
         mDayPicker.setEnabled(enabled);
         mMonthPicker.setEnabled(enabled);
         mYearPicker.setEnabled(enabled);
+        mHourPicker.setEnabled(enabled);
+        mMinutePicker.setEnabled(enabled);
     }
 
     private void reorderPickers() {
@@ -199,6 +239,8 @@ public class DatePicker extends FrameLayout {
         mPickerContainer.addView(mDayPicker);
         mPickerContainer.addView(mMonthPicker);
         mPickerContainer.addView(mYearPicker);
+        mPickerContainer.addView(mHourPicker);
+        mPickerContainer.addView(mMinutePicker);
     }
 
     public void updateDate(int year, int monthOfYear, int dayOfMonth) {
@@ -221,6 +263,8 @@ public class DatePicker extends FrameLayout {
         private final int mYear;
         private final int mMonth;
         private final int mDay;
+        private final int mHour;
+        private final int mMinute;
         private final boolean mHasYear;
         private final boolean mYearOptional;
 
@@ -228,13 +272,15 @@ public class DatePicker extends FrameLayout {
          * Constructor called from {@link DatePicker#onSaveInstanceState()}
          */
         private SavedState(Parcelable superState, int year, int month, int day, boolean hasYear,
-                           boolean yearOptional) {
+                           boolean yearOptional,int hour,int minute) {
             super(superState);
             mYear = year;
             mMonth = month;
             mDay = day;
             mHasYear = hasYear;
             mYearOptional = yearOptional;
+            mHour = hour;
+            mMinute = minute;
         }
 
         /**
@@ -245,6 +291,8 @@ public class DatePicker extends FrameLayout {
             mYear = in.readInt();
             mMonth = in.readInt();
             mDay = in.readInt();
+            mHour = in.readInt();
+            mMinute = in.readInt();
             mHasYear = in.readInt() != 0;
             mYearOptional = in.readInt() != 0;
         }
@@ -261,6 +309,14 @@ public class DatePicker extends FrameLayout {
             return mDay;
         }
 
+        public int getHour() {
+            return mHour;
+        }
+
+        public int getMinute() {
+            return mMinute;
+        }
+
         public boolean hasYear() {
             return mHasYear;
         }
@@ -275,6 +331,8 @@ public class DatePicker extends FrameLayout {
             dest.writeInt(mYear);
             dest.writeInt(mMonth);
             dest.writeInt(mDay);
+            dest.writeInt(mHour);
+            dest.writeInt(mMinute);
             dest.writeInt(mHasYear ? 1 : 0);
             dest.writeInt(mYearOptional ? 1 : 0);
         }
@@ -308,7 +366,7 @@ public class DatePicker extends FrameLayout {
     protected Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
 
-        return new SavedState(superState, mYear, mMonth, mDay, mHasYear, mYearOptional);
+        return new SavedState(superState, mYear, mMonth, mDay, mHasYear, mYearOptional,mHour,mMinute);
     }
 
     @Override
@@ -330,9 +388,9 @@ public class DatePicker extends FrameLayout {
      * @param dayOfMonth The initial day of the month.
      * @param onDateChangedListener How user is notified date is changed by user, can be null.
      */
-    public void init(int year, int monthOfYear, int dayOfMonth,
+    public void init(int year, int monthOfYear, int dayOfMonth,int hour,int minute,
                      OnDateChangedListener onDateChangedListener) {
-        init(year, monthOfYear, dayOfMonth, false, onDateChangedListener);
+        init(year, monthOfYear, dayOfMonth, hour,minute,false, onDateChangedListener);
     }
 
     /**
@@ -343,11 +401,13 @@ public class DatePicker extends FrameLayout {
      * @param yearOptional True if the user can toggle the year
      * @param onDateChangedListener How user is notified date is changed by user, can be null.
      */
-    public void init(int year, int monthOfYear, int dayOfMonth, boolean yearOptional,
+    public void init(int year, int monthOfYear, int dayOfMonth,int hour,int minute, boolean yearOptional,
                      OnDateChangedListener onDateChangedListener) {
         mYear = (yearOptional && year == NO_YEAR) ? getCurrentYear() : year;
         mMonth = monthOfYear;
         mDay = dayOfMonth;
+        mHour = hour;
+        mMinute = minute;
         mYearOptional = yearOptional;
         mHasYear = yearOptional ? (year != NO_YEAR) : true;
         mOnDateChangedListener = onDateChangedListener;
@@ -391,6 +451,14 @@ public class DatePicker extends FrameLayout {
         return mDay;
     }
 
+    public int getHour() {
+        return mHour;
+    }
+
+    public int getMinute() {
+        return mMinute;
+    }
+
     private void adjustMaxDay(){
         Calendar cal = Calendar.getInstance();
         // if year was not set, use 2000 as it was a leap year
@@ -405,7 +473,7 @@ public class DatePicker extends FrameLayout {
     private void notifyDateChanged() {
         if (mOnDateChangedListener != null) {
             int year = (mYearOptional && !mHasYear) ? NO_YEAR : mYear;
-            mOnDateChangedListener.onDateChanged(DatePicker.this, year, mMonth, mDay);
+            mOnDateChangedListener.onDateChanged(DatePicker.this, year, mMonth, mDay, mHour, mMinute);
         }
     }
 }

@@ -22,52 +22,77 @@
               android:layout_gravity="center_horizontal"
               android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/parent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:orientation="horizontal">
-
-
-
-        <!-- Day -->
-        <com.tsongkha.spinnerdatepicker.MediumNumberPicker
-            android:id="@+id/day"
-            android:layout_width="80dip"
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:measureAllChildren="false"
+        android:scrollbars="none">
+        <LinearLayout
+            android:id="@+id/parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="1dip"
-            android:layout_marginLeft="1dip"
-            android:layout_marginRight="1dip"
-            android:layout_marginStart="1dip"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            />
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+            <!-- Day -->
+            <com.tsongkha.spinnerdatepicker.MediumNumberPicker
+                android:id="@+id/day"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="1dip"
+                android:layout_marginLeft="1dip"
+                android:layout_marginRight="1dip"
+                android:layout_marginStart="1dip"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
 
-        <!-- Month -->
-        <com.tsongkha.spinnerdatepicker.MediumNumberPicker
-            android:id="@+id/month"
-            android:layout_width="80dip"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="1dip"
-            android:layout_marginLeft="1dip"
-            android:layout_marginRight="1dip"
-            android:layout_marginStart="1dip"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            />
+            <!-- Month -->
+            <com.tsongkha.spinnerdatepicker.MediumNumberPicker
+                android:id="@+id/month"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="1dip"
+                android:layout_marginLeft="1dip"
+                android:layout_marginRight="1dip"
+                android:layout_marginStart="1dip"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
 
-        <!-- Year -->
-        <com.tsongkha.spinnerdatepicker.MediumNumberPicker
-            android:id="@+id/year"
-            android:layout_width="95dip"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="1dip"
-            android:layout_marginLeft="1dip"
-            android:layout_marginRight="1dip"
-            android:layout_marginStart="1dip"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            />
-    </LinearLayout>
+            <!-- Year -->
+            <com.tsongkha.spinnerdatepicker.MediumNumberPicker
+                android:id="@+id/year"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="1dip"
+                android:layout_marginLeft="1dip"
+                android:layout_marginRight="1dip"
+                android:layout_marginStart="1dip"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
+
+            <!-- Hour -->
+            <com.tsongkha.spinnerdatepicker.MediumNumberPicker
+                android:id="@+id/hour"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="1dip"
+                android:layout_marginLeft="1dip"
+                android:layout_marginRight="1dip"
+                android:layout_marginStart="1dip"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
+
+            <!-- Minute -->
+            <com.tsongkha.spinnerdatepicker.MediumNumberPicker
+                android:id="@+id/minute"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="1dip"
+                android:layout_marginLeft="1dip"
+                android:layout_marginRight="1dip"
+                android:layout_marginStart="1dip"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
+        </LinearLayout>
+    </HorizontalScrollView>
 </LinearLayout>

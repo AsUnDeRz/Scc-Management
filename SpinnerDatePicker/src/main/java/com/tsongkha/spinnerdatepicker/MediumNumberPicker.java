@@ -1,6 +1,7 @@
 package com.tsongkha.spinnerdatepicker;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
@@ -39,6 +40,7 @@ public class MediumNumberPicker extends NumberPicker {
     }
 
      */
+
 
     @Override
     public void addView(View child) {

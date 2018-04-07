@@ -34,6 +34,7 @@ import asunder.toche.sccmanagement.main.FilterViewPager
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
@@ -69,7 +70,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueAdap
     private lateinit var controlViewModel: ControlViewModel
     val selectedFile = arrayListOf<String>()
     val selectedPhoto = arrayListOf<String>()
-    var selectedDate : Date = Date()
+    var selectedDate : Date = Utils.getCurrentDate()
     private lateinit var adapter: CompanyAdapter
     private var loading = LoadingDialog.newInstance()
     private lateinit var sectionIssueAdapter : SectionedRecyclerViewAdapter
@@ -393,11 +394,13 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueAdap
         val mount = c.get(Calendar.MONTH)
         val dOfm = c.get(Calendar.DAY_OF_MONTH)
         var year = c.get(Calendar.YEAR)
+        val hour = c.get(Calendar.HOUR_OF_DAY)
+        val minute = c.get(Calendar.MINUTE)
         val spinner = SpinnerDatePickerDialogBuilder()
                 .context(context)
-                .callback { _, yearOf, monthOfYear, dayOfMonth ->
+                .callback { _, yearOf, monthOfYear, dayOfMonth, hourOf, minuteOf ->
                     val dateSelect = Calendar.getInstance()
-                    dateSelect.set(yearOf,monthOfYear,dayOfMonth,0,0,0)
+                    dateSelect.set(yearOf,monthOfYear,dayOfMonth,hourOf,minuteOf,0)
                     selectedDate = dateSelect.time
                     edtIssueDate.setText(Utils.getDateStringWithDate(selectedDate))
                 }
@@ -405,11 +408,13 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueAdap
                 .year(year)
                 .monthOfYear(mount)
                 .dayOfMonth(dOfm)
+                .hour(hour)
+                .minute(minute)
                 .build()
 
         spinner.show()
-
     }
+
 
 
     fun setUpIssueForm(issue:Model.Issue){
@@ -454,8 +459,10 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueAdap
         edtCompany.setText("")
         selectedDate = Utils.getCurrentDate()
         edtIssueDate.setText(Utils.getCurrentDateString())
+        val options = RequestOptions().centerCrop()
         Glide.with(context!!)
-                .load("")
+                .load(R.drawable.mock_picture)
+                .apply(options)
                 .into(imgIssue)
         edtFileIssue.setText("")
         selectedPhoto.clear()
