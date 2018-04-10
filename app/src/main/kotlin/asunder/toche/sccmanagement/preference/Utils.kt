@@ -10,7 +10,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import android.content.ContextWrapper
 import android.app.Activity
-
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 
 
 /**
@@ -183,10 +185,36 @@ object Utils{
                             }
                         }
                         else ->{
-                            masterData.filterTo(suggestionList){
-                                it.company_name.contains(constraint.toString(),true) ||
-                                        it.product_name.contains(constraint.toString(),true)
+                            /*
+                           masterData.filterTo(suggestionList) {
+                                        it.company_name.contains(constraint.toString(), true) ||
+                                                it.product_name.contains(constraint.toString(), true)
+                           }
+                           */
+                            val sectionAll = masterData.filter {
+                                it.company_name.contains(constraint.toString(), true) ||
+                                        it.product_name.contains(constraint.toString(), true)
                             }
+                            val contacts = sectionAll.filter {
+                                it.company_name.contains(constraint.toString(), true)
+                            }
+                            val products = sectionAll.filter {
+                                it.product_name.contains(constraint.toString(), true)
+                            }
+
+                            when {
+                                contacts.size == products.size -> {
+                                    suggestionList.addAll(sectionAll)
+                                }
+                                contacts.size > products.size -> {
+                                    suggestionList.addAll(contacts)
+                                }
+                                else -> {
+                                    suggestionList.addAll(products)
+                                }
+                            }
+
+
                         }
                     }
 

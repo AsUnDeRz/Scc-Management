@@ -69,7 +69,7 @@ class TransactionViewModel : ViewModel(),
     fun separateSection(sectionList: List<String>, companyList:List<String>,
                         listener: TransactionListener) :
     MutableMap<String,SectionedRecyclerViewAdapter>{
-        val data = service.getTransactionInDb()
+        val data = transactions.value
         val products = productService.getProductsInDb()
         val companys = contactService.getContactInDb()
         val mapSection : MutableMap<String,SectionedRecyclerViewAdapter> = mutableMapOf()
@@ -79,26 +79,26 @@ class TransactionViewModel : ViewModel(),
             companyList.forEach {compId ->
                 Log.d(TAG,"CompanyList [$compId]")
                 val mapProduct : MutableMap<String,Model.Product> = mutableMapOf()
-                val transaction = data.filter { it.company_id == compId &&
+                val transaction = data?.filter { it.company_id == compId &&
                                   sectionDate == it.date.substring(0,10)}
-                if (transaction.isNotEmpty()) {
-
-                    transaction.forEach { transacModel ->
-                        Log.d(TAG,"Transaction [${transacModel.id}]")
-                        val item = products.filter { it.id == transacModel.product_id }
-                        if(item.isNotEmpty()) {
-                            Log.d(TAG,"Map product with transaction [${item.first().product_name}]")
-                            mapProduct[transacModel.id] = item.first()
+                if (transaction != null) {
+                    if (transaction.isNotEmpty()) {
+                        transaction.forEach { transacModel ->
+                            Log.d(TAG,"Transaction [${transacModel.id}]")
+                            val item = products.filter { it.id == transacModel.product_id }
+                            if(item.isNotEmpty()) {
+                                Log.d(TAG,"Map product with transaction [${item.first().product_name}]")
+                                mapProduct[transacModel.id] = item.first()
+                            }
                         }
-                    }
-
-                    val compName = companys.first { it.id == compId }
-                    Log.d(TAG, "Transaction isNotEmpty [${compName.company}]")
+                        val compName = companys.first { it.id == compId }
+                        Log.d(TAG, "Transaction isNotEmpty [${compName.company}]")
                         sectionAdapter.addSection(
                                 SectionTransactionAdapter(compName.company,
                                         transaction.toMutableList(),
                                         mapProduct,
                                         listener))
+                    }
                 }
             }
             mapSection[sectionDate] = sectionAdapter
