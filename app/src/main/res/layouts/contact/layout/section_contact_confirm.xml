@@ -40,38 +40,6 @@
 
     </RelativeLayout>
 
-    <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnSave"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="48dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/btn_confirm"
-        android:text="บันทึก"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vAddress" />
-
-    <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnCancel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/btn_cancel"
-        android:text="ยกเลิก"
-        android:textColor="@color/colorDark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnSave" />
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvAddress"
         android:layout_width="0dp"

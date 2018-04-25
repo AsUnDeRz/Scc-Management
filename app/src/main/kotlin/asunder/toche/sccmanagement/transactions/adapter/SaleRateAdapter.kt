@@ -51,7 +51,7 @@ class SaleRateAdapter(var saleList: MutableList<Model.SalePrice>) :
         private val txtSaleDate = itemView?.findViewById<TxtMedium>(R.id.txtSaleDate)
 
         fun bind(salePrice: Model.SalePrice){
-            txtSaleDate?.text = salePrice.date.substring(0,10)
+            txtSaleDate?.text = salePrice.date.substring(0,7)
             txtSalePrice?.text = salePrice.price
             txtSaleValues?.text = salePrice.values
             txtSaleVat?.text = if(salePrice.vat) "A" else "B"

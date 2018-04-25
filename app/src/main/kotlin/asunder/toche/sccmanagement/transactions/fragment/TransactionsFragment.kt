@@ -2,6 +2,7 @@ package asunder.toche.sccmanagement.transactions.fragment
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomSheetBehavior
@@ -16,8 +17,10 @@ import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.ScrollView
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
@@ -32,6 +35,7 @@ import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.products.adapter.ProductAdapter
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
+import asunder.toche.sccmanagement.transactions.ActivityHistory
 import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.adapter.SaleRateAdapter
 import asunder.toche.sccmanagement.transactions.pager.TransactionPager
@@ -108,7 +112,7 @@ class TransactionsFragment : Fragment(){
         Log.d(TAG,"SetupPager")
        vpTransaction.adapter = TransactionPager(childFragmentManager)
        vpTransaction.setAllowedSwipeDirection(CustomViewPager.SwipeDirection.none)
-       vpTransaction.offscreenPageLimit = 2
+       //vpTransaction.offscreenPageLimit = 2
 
 
     }
@@ -130,6 +134,10 @@ class TransactionsFragment : Fragment(){
                 }
             }
         })
+        val tabStrip = tabTransaction.getChildAt(0) as LinearLayout
+        for (i in 0 until tabStrip.childCount){
+            tabStrip.getChildAt(i).setOnTouchListener { v, event -> true }
+        }
     }
 
 
@@ -191,12 +199,13 @@ class TransactionsFragment : Fragment(){
     fun initViewInStubTransactionForm(){
         btnCancelTransaction.setOnClickListener {
             showTransactionList()
+        }
 
+        btnDeleteTransaction.setOnClickListener {
+            transactionVM.deleteTransaction()
         }
-        btnSaveTransactionOnBottom.setOnClickListener {
-            saveOrUpdateTransaction()
-        }
-        btnSaveTransactionOnTop.setOnClickListener {
+
+        btnAddTransaction.setOnClickListener {
             saveOrUpdateTransaction()
         }
 
@@ -215,16 +224,14 @@ class TransactionsFragment : Fragment(){
         }
 
         setupRalePriceAdapter()
+
+        btnOpenHistory.setOnClickListener {
+            startActivity(Intent().setClass(activity,ActivityHistory::class.java))
+        }
     }
 
     fun setupRalePriceAdapter(){
         rvSalePrice.apply {
-            val data : MutableList<Model.SalePrice> = mutableListOf()
-            for(i in 0 until 10){
-                data.add(Model.SalePrice("1000$i",true,"1000$i",
-                        Utils.getCurrentDateShort(),""))
-            }
-            data.sortByDescending { it.date }
             saleRateAdapter = SaleRateAdapter(mutableListOf())
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)

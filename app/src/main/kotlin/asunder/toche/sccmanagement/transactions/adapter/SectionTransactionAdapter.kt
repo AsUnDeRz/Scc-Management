@@ -1,11 +1,13 @@
 package asunder.toche.sccmanagement.transactions.adapter
 
+import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.transactions.TransactionListener
+import com.bumptech.glide.Glide
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters
 import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection
 
@@ -24,6 +26,7 @@ class SectionTransactionAdapter() : StatelessSection(SectionParameters.builder()
         transactions = data
         products = mapProduct
         listener = transactionListener
+        transactions.sortBy { it.product_name }
     }
     lateinit var listener: TransactionListener
     var transactions: MutableList<Model.Transaction> = mutableListOf()
@@ -64,20 +67,34 @@ class SectionTransactionAdapter() : StatelessSection(SectionParameters.builder()
         val txtVat = itemView.findViewById<TxtMedium>(R.id.txtVat)
         val txtValues = itemView.findViewById<TxtMedium>(R.id.txtValues)
         val txtDate = itemView.findViewById<TxtMedium>(R.id.txtDate)
+        val txtNote = itemView.findViewById<AppCompatImageView>(R.id.txtNote)
 
         fun bind(data: Model.Transaction,product:Model.Product,listener: TransactionListener){
             txtCompany.text = product.product_name
-            txtDate.text = data.date
+            txtDate.text = data.date.substring(0,7)
             txtVat.text = "A"
             if (data.sale_price.isNotEmpty()) {
                 txtPriceSale.text = data.sale_price[0].price
                 txtValues.text = data.sale_price[0].values
+                if (data.sale_price[0].note.isNotEmpty()){
+                    Glide.with(itemView)
+                            .load(android.R.drawable.stat_sys_warning)
+                            .into(txtNote)
+                    itemView.setOnLongClickListener {
+                        listener.onClickNote(data.sale_price[0].note)
+                        true
+                    }
+                }
             }
             itemView.setOnClickListener {
                 listener.onClickTransaction(data)
             }
+
+
         }
     }
+
+
 
 
 }

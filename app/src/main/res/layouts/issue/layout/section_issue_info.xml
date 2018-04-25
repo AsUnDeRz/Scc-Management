@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--
     <asunder.toche.sccmanagement.custom.button.BtnMedium
         android:id="@+id/btnAddIssueInfo"
         android:layout_width="0dp"
@@ -19,12 +20,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+        -->
+
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtProcess"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:focusable="false"
         android:focusableInTouchMode="false"
@@ -32,9 +37,9 @@
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/btnAddIssueInfo"
-        app:layout_constraintStart_toStartOf="@+id/btnAddIssueInfo"
-        app:layout_constraintTop_toBottomOf="@+id/btnAddIssueInfo" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtCompany"

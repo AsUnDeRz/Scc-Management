@@ -6,25 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnSaveProductOnTop"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="48dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/btn_confirm"
-        android:text="@string/save"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtProductName"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:focusable="false"
         android:focusableInTouchMode="false"
@@ -33,9 +23,9 @@
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/btnSaveProductOnTop"
-        app:layout_constraintStart_toStartOf="@+id/btnSaveProductOnTop"
-        app:layout_constraintTop_toBottomOf="@+id/btnSaveProductOnTop" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtProductDetail"

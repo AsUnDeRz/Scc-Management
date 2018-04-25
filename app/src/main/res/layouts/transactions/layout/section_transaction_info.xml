@@ -6,34 +6,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnSaveTransactionOnTop"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="48dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/btn_confirm"
-        android:text="@string/save"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtTransactionCompany"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:hint="เลือก บริษัท ..."
         android:inputType="text"
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/btnSaveTransactionOnTop"
-        app:layout_constraintStart_toStartOf="@+id/btnSaveTransactionOnTop"
-        app:layout_constraintTop_toBottomOf="@+id/btnSaveTransactionOnTop" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtTransactionProduct"
@@ -46,9 +34,35 @@
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/view"
+        app:layout_constraintStart_toStartOf="@+id/edtTransactionCompany"
+        app:layout_constraintTop_toBottomOf="@+id/edtTransactionCompany" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="1dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="@+id/edtTransactionCompany"
         app:layout_constraintStart_toStartOf="@+id/edtTransactionCompany"
         app:layout_constraintTop_toBottomOf="@+id/edtTransactionCompany" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnOpenHistory"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:background="@color/colorBgSection"
+        android:inputType="text"
+        android:maxLines="1"
+        android:paddingStart="8dp"
+        android:text="ขายให้ใครบ้าง"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/edtTransactionCompany"
+        app:layout_constraintStart_toEndOf="@+id/view"
+        app:layout_constraintTop_toTopOf="@+id/view" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtMediumPrice"
@@ -61,7 +75,7 @@
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/edtTransactionProduct"
+        app:layout_constraintEnd_toEndOf="@+id/btnOpenHistory"
         app:layout_constraintStart_toStartOf="@+id/edtTransactionProduct"
         app:layout_constraintTop_toBottomOf="@+id/edtTransactionProduct" />
 

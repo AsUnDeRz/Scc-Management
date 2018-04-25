@@ -56,7 +56,7 @@ class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>) :
 
         fun bind(mediumRate: Model.MediumRate){
             txtMediumPrice?.text = mediumRate.price
-            txtMediumDate?.text = mediumRate.date.substring(0,10)
+            txtMediumDate?.text = mediumRate.date.substring(0,7)
             txtMediumVat?.text = if(mediumRate.vat) "A" else "B"
 
         }

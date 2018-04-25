@@ -56,7 +56,6 @@ object Model{
                        val medium_rate:MutableList<MediumRate> = ArrayList())
     data class MediumRate(val price:String = "",
                           val vat:Boolean = false,
-                          val values:String = "",
                           val date:String = "",
                           val note:String = "",
                           var default:Boolean = false)

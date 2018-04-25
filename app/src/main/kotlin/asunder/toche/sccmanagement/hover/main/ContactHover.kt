@@ -10,6 +10,7 @@ import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.adapter.HistoryIssueAdapter
 import asunder.toche.sccmanagement.contact.adapter.HistoryTransactionAdapter
+import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.hover.HoverService
 import asunder.toche.sccmanagement.main.ActivityMain
 import asunder.toche.sccmanagement.preference.ROOT
@@ -39,6 +40,7 @@ class ContactHover(context: Context,
         TransactionService.TransactionCallback,
         TransactionListener,
         IssueListener{
+
 
     private var contactService :ContactService
     private var issueService : IssueService
@@ -137,7 +139,13 @@ class ContactHover(context: Context,
         val intent  = Intent()
         intent.putExtra(ROOT.CONTACTS,company)
         intent.putExtra(ROOT.TRANSACTIONS,transaction)
-        context.startActivity(intent.setClass(context,ActivityMain::class.java))    }
+        context.startActivity(intent.setClass(context,ActivityMain::class.java))
+    }
+
+    override fun onClickNote(message: String) {
+        val dialog = ConfirmDialog.newInstance(message,"Note",false)
+        //dialog.show(, ConfirmDialog::class.java.simpleName)
+    }
 
     override fun onClickIssue(issue: Model.Issue) {
         HoverService.mHoverView.collapse()
@@ -181,6 +189,8 @@ class ContactHover(context: Context,
 
     override fun onIssueFail() {
     }
+
+    
 
 
 }

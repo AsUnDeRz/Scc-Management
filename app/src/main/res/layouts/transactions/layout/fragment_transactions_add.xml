@@ -5,22 +5,65 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnAddTransaction"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/btn_confirm"
+        android:text="@string/save"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnCancelTransaction"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/btn_yellow"
+        android:text="@string/cancel"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toStartOf="@+id/btnAddTransaction"
+        app:layout_constraintStart_toEndOf="@+id/btnDeleteTransaction"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnDeleteTransaction"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/btn_red"
+        android:text="@string/delete"
+        android:textColor="@android:color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread" />
 
     <ScrollView
         android:id="@+id/transactionScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/btnAddTransaction">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <include layout="@layout/section_transaction_info"/>
-            <include layout="@layout/section_transaction_confirm"/>
+
+            <include layout="@layout/section_transaction_info" />
+
+            <include layout="@layout/section_transaction_confirm" />
         </LinearLayout>
     </ScrollView>
 

@@ -83,7 +83,7 @@ class NumberAdapter(var listener :ComponentListener):RecyclerView.Adapter<Number
                 txtTitle?.text = number.type
             }
             edtContent?.setText(number.number)
-            edtContent?.limitLength(10)
+            //edtContent?.limitLength(10)
             imageStateDelete?.isSelected = true
             imageStateDelete?.setOnClickListener {
                 listener.OnNumberClick(numbers[adapterPosition],false,adapterPosition)

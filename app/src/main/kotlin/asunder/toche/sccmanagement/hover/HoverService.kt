@@ -3,9 +3,12 @@ package asunder.toche.sccmanagement.hover
 import android.content.Context
 import android.content.Intent
 import android.support.v7.view.ContextThemeWrapper
+import android.util.Log
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.hover.main.ContactHover
 import asunder.toche.sccmanagement.hover.theme.HoverTheme
+import asunder.toche.sccmanagement.main.ActivityMain
+import asunder.toche.sccmanagement.preference.ROOT
 import io.mattcarroll.hover.HoverView
 import io.mattcarroll.hover.window.HoverMenuService
 import org.greenrobot.eventbus.EventBus
@@ -35,6 +38,7 @@ class HoverService : HoverMenuService() {
         mHoverView = hoverView
         mHoverView.setMenu(createHoverMenu())
         mHoverView.collapse()
+        observerHoverView()
     }
 
 
@@ -45,6 +49,41 @@ class HoverService : HoverMenuService() {
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+
+    }
+
+    fun observerHoverView(){
+        mHoverView.addOnExpandAndCollapseListener(object : HoverView.Listener{
+            override fun onExpanding() {
+                Log.d("TOCHE","expanding")
+                //HoverService.mHoverView.collapse()
+            }
+
+            override fun onExpanded() {
+                Log.d("TOCHE","expanded")
+            }
+
+            override fun onCollapsing() {
+                Log.d("TOCHE","collapsing")
+            }
+
+            override fun onCollapsed() {
+                Log.d("TOCHE","collapsed")
+            }
+
+            override fun onClosing() {
+            }
+
+            override fun onClosed() {
+            }
+
+            override fun onTap() {
+                Log.d("TOCHE","onTab")
+                val intent  = Intent()
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                applicationContext.startActivity(intent.setClass(this@HoverService, ActivityMain::class.java))
+            }
+        })
     }
 
 

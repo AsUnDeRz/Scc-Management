@@ -79,7 +79,7 @@ class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolea
                 }
             }
 
-            txtDate?.text = product.date.substring(0,10)
+            txtDate?.text = product.date.substring(0,7)
             swipeView?.swipeGestureListener = object : SwipeGestureListener {
                 override fun onSwipedLeft(swipeActionView: SwipeActionView): Boolean {
                     btnDelete?.setOnClickListener {
@@ -116,7 +116,7 @@ class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolea
                     txtVat?.text = "B"
                 }
             }
-            txtDate?.text = product.date.substring(0,10)
+            txtDate?.text = product.date.substring(0,7)
             itemView.setOnClickListener {
                 listener.onClickProduct(product)
             }

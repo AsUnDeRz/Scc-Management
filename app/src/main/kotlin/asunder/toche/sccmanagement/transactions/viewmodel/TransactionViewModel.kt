@@ -51,6 +51,12 @@ class TransactionViewModel : ViewModel(),
         }
     }
 
+    fun deleteTransaction(){
+        transaction.value?.let {
+            service.deleteTransactionInDb(it.id)
+            service.deleteTransaction(it)
+        }
+    }
 
 
 
@@ -155,7 +161,6 @@ class TransactionViewModel : ViewModel(),
         val data = service.getTransactionInDb()
         updateTransactions(data)
     }
-
 
     fun updateSalePriceLists(data : MutableList<Model.SalePrice>){
         salePriceLists.value = data

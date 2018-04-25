@@ -61,8 +61,8 @@ class TransactionService(var listener:TransactionCallback){
         pushNewTransactionToDb(updateTransactionFromDb(transaction,getTransactionInDb()))
     }
 
-    fun deleteTransaction(transaction : Model.Transaction, context: Context){
-        firebase.child("${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.TRANSACTIONS}/${transaction.id}")
+    fun deleteTransaction(transaction : Model.Transaction){
+        firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.TRANSACTIONS}/${transaction.id}")
                 .removeValue({ databaseError, _ ->
                     if (databaseError != null) {
                         Crashlytics.log(databaseError.message)

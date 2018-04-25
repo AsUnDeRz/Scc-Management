@@ -11,7 +11,7 @@ import asunder.toche.sccmanagement.transactions.fragment.TransactionListFragment
  */
 class TransactionPager(fm: FragmentManager?) : FragmentStatePagerAdapter(fm) {
 
-    val title = arrayListOf("ซื้อ / ขาย","ขายให้ใครบ้าง")
+    val title = arrayListOf("ซื้อ / ขาย","")
     override fun getItem(position: Int): Fragment = when(position){
         0 -> TransactionListFragment.newInstance()
         1 -> TransactionHistoryFragment.newInstance()

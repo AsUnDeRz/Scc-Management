@@ -236,9 +236,9 @@ public class DatePicker extends FrameLayout {
          * required order.
          */
         mPickerContainer.removeAllViews();
-        mPickerContainer.addView(mDayPicker);
-        mPickerContainer.addView(mMonthPicker);
         mPickerContainer.addView(mYearPicker);
+        mPickerContainer.addView(mMonthPicker);
+        mPickerContainer.addView(mDayPicker);
         mPickerContainer.addView(mHourPicker);
         mPickerContainer.addView(mMinutePicker);
     }

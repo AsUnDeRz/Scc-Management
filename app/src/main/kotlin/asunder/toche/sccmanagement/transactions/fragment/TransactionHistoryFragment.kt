@@ -31,6 +31,8 @@ import kotlinx.android.synthetic.main.fragment_transactions_history.*
  *Created by ToCHe on 18/3/2018 AD.
  */
 class TransactionHistoryFragment : Fragment(),TransactionListener {
+    override fun onClickNote(message: String) {
+    }
 
     private lateinit var historyAdapter: TransactionHistoryAdapter
     private lateinit var bottomSheetDialog: BottomSheetDialog

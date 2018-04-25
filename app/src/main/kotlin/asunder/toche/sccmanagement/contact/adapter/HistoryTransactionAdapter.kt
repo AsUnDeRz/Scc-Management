@@ -22,12 +22,14 @@ class HistoryTransactionAdapter : RecyclerView.Adapter<HistoryTransactionHolder>
         listener = newListener
         transactions = newData
         mapTransaction = map
+        sortTransaction()
         notifyDataSetChanged()
     }
     fun updateMapTransaction(map:MutableMap<Model.Transaction,Model.Product>,
                              newData:MutableList<Model.Transaction>){
         transactions = newData
         mapTransaction = map
+        sortTransaction()
         notifyDataSetChanged()
     }
 
@@ -44,6 +46,10 @@ class HistoryTransactionAdapter : RecyclerView.Adapter<HistoryTransactionHolder>
     override fun onBindViewHolder(holder: HistoryTransactionHolder, position: Int) {
             holder.bind(transactions[position], mapTransaction[transactions[position]]!!, listener)
 
+    }
+
+    fun sortTransaction(){
+        transactions.sortBy { it.product_name }
     }
 
 }

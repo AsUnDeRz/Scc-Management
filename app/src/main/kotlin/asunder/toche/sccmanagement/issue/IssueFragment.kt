@@ -10,6 +10,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.TabLayout
+import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
@@ -26,6 +27,7 @@ import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.adapter.CompanyAdapter
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.button.BtnMedium
+import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.issue.adapter.IssueAdapter
@@ -54,7 +56,10 @@ import java.util.*
 /**
  *Created by ToCHe on 26/2/2018 AD.
  */
-class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueAdapter.IssueItemListener{
+class IssueFragment : Fragment(),
+        CompanyAdapter.CompanyOnClickListener,
+        IssueAdapter.IssueItemListener,
+        ConfirmDialog.ConfirmDialogListener{
 
     companion object {
         fun newInstance(): IssueFragment = IssueFragment()
@@ -256,7 +261,13 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueAdap
         btnAddIssueInfo.setOnClickListener {
             if(validateInput()) saveIssue()
         }
-
+        btnCancelIssueInfo.setOnClickListener {
+            clearFormIssue()
+            showIssueList()
+        }
+        btnDeleteIssueInfo.setOnClickListener {
+            showConfirmDialog(edtIssue.text.toString(),issueVM.companyReference.value?.company)
+        }
 
         edtProcess.setOnClickListener {
             showSheetProcess()
@@ -402,7 +413,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueAdap
                     val dateSelect = Calendar.getInstance()
                     dateSelect.set(yearOf,monthOfYear,dayOfMonth,hourOf,minuteOf,0)
                     selectedDate = dateSelect.time
-                    edtIssueDate.setText(Utils.getDateStringWithDate(selectedDate))
+                    edtIssueDate.setText(Utils.getDateStringWithDate(selectedDate).substring(0,10))
                 }
                 .spinnerTheme(R.style.DatePickerSpinner)
                 .year(year)
@@ -458,7 +469,7 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueAdap
         edtIssueDetail.setText("")
         edtCompany.setText("")
         selectedDate = Utils.getCurrentDate()
-        edtIssueDate.setText(Utils.getCurrentDateString())
+        edtIssueDate.setText(Utils.getCurrentDateShort())
         val options = RequestOptions().centerCrop()
         Glide.with(context!!)
                 .load(R.drawable.mock_picture)
@@ -586,6 +597,19 @@ class IssueFragment : Fragment(),CompanyAdapter.CompanyOnClickListener,IssueAdap
 
     override fun onClickDelete(issue: Model.Issue) {
         issueVM.deleteIssue(issue)
+    }
+
+    fun showConfirmDialog(issue:String?,company:String?){
+        val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบประเด็น $issue \nจาก $company ใช่หรือไหม","แจ้งเตือน",true)
+        confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+        confirmDialog.customListener(this)
+        confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
+    }
+
+    override fun onClickConfirm() {
+    }
+
+    override fun onClickCancel() {
     }
 
 

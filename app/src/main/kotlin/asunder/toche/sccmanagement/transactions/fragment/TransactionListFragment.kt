@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.transactions.TransactionListener
 import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.adapter.MasterSectionAdapter
@@ -19,7 +20,9 @@ import kotlinx.android.synthetic.main.fragment_transactions_list.*
 /**
  *Created by ToCHe on 18/3/2018 AD.
  */
-class TransactionListFragment : Fragment(),TransactionListener {
+class TransactionListFragment : Fragment(),
+        TransactionListener,
+        ConfirmDialog.ConfirmDialogListener{
 
     companion object {
         fun newInstance(): TransactionListFragment = TransactionListFragment()
@@ -81,6 +84,18 @@ class TransactionListFragment : Fragment(),TransactionListener {
         transactionVM.updateStateView(TransactionState.SHOWTRANSACTION)
         transactionVM.updateTransaction(transaction)
 
+    }
+
+    override fun onClickNote(message: String) {
+        val dialog = ConfirmDialog.newInstance(message,"Note",false)
+        dialog.customListener(this)
+        dialog.show(fragmentManager,ConfirmDialog::class.java.simpleName)
+    }
+
+    override fun onClickConfirm() {
+    }
+
+    override fun onClickCancel() {
     }
 
 }

@@ -20,6 +20,7 @@ enum class TransactionState{
 
 interface TransactionListener{
     fun onClickTransaction(transaction: Model.Transaction)
+    fun onClickNote(message:String)
 }
 
 interface IssueListener{

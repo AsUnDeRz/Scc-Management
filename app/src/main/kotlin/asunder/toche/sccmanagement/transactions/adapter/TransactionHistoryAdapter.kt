@@ -60,15 +60,16 @@ class TransactionHistoryAdapter : RecyclerView.Adapter<TransactionHistoryAdapter
                 }
                 txtValues?.text = transaction.sale_price[0].values
             }
-            txtDate?.text = transaction.date.substring(0,10)
+            txtDate?.text = transaction.date.substring(0,7)
             itemView.setOnClickListener {
                 listner.onClickTransaction(transaction)
             }
         }
 
         fun checkDecimal(price:String):String{
-            return if(price[price.lastIndex-2].toString() == "."){
-                if (price[price.lastIndex].toString() != "0" || price[price.lastIndex-1].toString() != "0"){
+            return if(price.length > 2){
+                if (price[price.lastIndex].toString() != "0" || price[price.lastIndex-1].toString() != "0"
+                    || price[price.lastIndex-2].toString() == "."){
                     price
                 }else{
                     price.toDouble().toInt().toString()

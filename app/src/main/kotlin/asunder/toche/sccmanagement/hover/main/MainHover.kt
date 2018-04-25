@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.FrameLayout
 import asunder.toche.sccmanagement.BuildConfig
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.hover.HoverService
 import io.mattcarroll.hover.Content
 import kotlinx.android.synthetic.main.main_hover.view.*
 
@@ -31,6 +32,10 @@ class MainHover : FrameLayout,Content {
     fun initUI(){
         LayoutInflater.from(context).inflate(R.layout.main_hover, this, true)
         txtVersion.text = "Version ${BuildConfig.VERSION_NAME}"
+        this.setOnClickListener {
+            HoverService.mHoverView.collapse()
+        }
+
     }
 
 
@@ -61,7 +66,7 @@ class MainHover : FrameLayout,Content {
     }
 
     override fun isFullscreen(): Boolean {
-        return false
+        return true
     }
 
     override fun onShown() {

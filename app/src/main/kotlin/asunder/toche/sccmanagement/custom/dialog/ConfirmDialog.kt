@@ -17,7 +17,10 @@ class ConfirmDialog : DialogFragment() {
     private var listener: ConfirmDialogListener? = null
     private var title:String = ""
     private var message:String =""
+    private var txtPositive:String =""
+    private var txtNegative:String =""
     private var isCancel = false
+    private var isCustomTxtButton = false
 
     companion object {
         private const val MESSAGE = "message"
@@ -33,11 +36,15 @@ class ConfirmDialog : DialogFragment() {
             fragment.arguments = bundle
             return fragment
         }
+
     }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-         listener = activity as ConfirmDialogListener
+        listener?.let {
+            activity as ConfirmDialogListener
+        }
+         //listener = activity as ConfirmDialogListener
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,6 +85,26 @@ class ConfirmDialog : DialogFragment() {
         }else{
             btnCancel.visibility = View.GONE
         }
+
+        if (isCustomTxtButton){
+            setTextButton(txtPositive,txtNegative)
+        }
+    }
+
+    fun customTextButton(positive:String,negative:String){
+        txtNegative = negative
+        txtPositive = positive
+        isCustomTxtButton =true
+
+    }
+
+    fun customListener(listener: ConfirmDialogListener){
+        this.listener = listener
+    }
+
+    fun setTextButton(positive:String,negative:String){
+        btnCancel.text = negative
+        btnConfirm.text = positive
     }
 
     private fun initData() {

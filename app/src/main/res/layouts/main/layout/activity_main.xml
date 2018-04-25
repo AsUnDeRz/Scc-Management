@@ -37,6 +37,8 @@
                         android:background="@android:color/transparent"
                         android:gravity="center_vertical"
                         android:hint="ค้นหา ..."
+                        android:imeOptions="actionDone"
+                        android:maxLines="1"
                         android:textColor="@color/colorDark"
                         android:textColorHint="@color/colorDark"
                         android:textSize="20sp" />

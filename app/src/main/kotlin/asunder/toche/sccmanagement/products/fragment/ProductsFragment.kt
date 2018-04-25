@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.TabLayout
+import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
@@ -16,6 +17,7 @@ import android.widget.ScrollView
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.TriggerProduct
+import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.ShowKeyboard
@@ -42,7 +44,8 @@ import java.util.*
 /**
  *Created by ToCHe on 26/2/2018 AD.
  */
-class ProductsFragment : Fragment(){
+class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
+
 
     enum class CurrentInputState{
         PROD_NAME,
@@ -144,7 +147,7 @@ class ProductsFragment : Fragment(){
             showMediumPriceForm()
         }
 
-        btnSaveProductOnTop.setOnClickListener {
+        btnAddProduct.setOnClickListener {
             saveProduct()
         }
 
@@ -153,9 +156,10 @@ class ProductsFragment : Fragment(){
             setupForm(Model.Product())
         }
 
-        btnSaveProductOnBottom.setOnClickListener {
-            saveProduct()
+        btnDeleteProduct.setOnClickListener {
+            //productViewModel.deleteProduct()
         }
+
 
         rvMediumPrice.apply {
             mediumRateAdapter = MediumRateAdapter(mutableListOf())
@@ -206,8 +210,8 @@ class ProductsFragment : Fragment(){
         btnSaveRate.setOnClickListener {
             if(validateMediumRate()) {
                 addMediumPriceRate(Model.MediumRate(edtPrice.text.toString(), rdbVat.isChecked,
-                        edtPriceValues.text.toString(), Utils.getDateStringWithDate(selectedDate)
-                        , edtPriceNote.text.toString(), true))
+                        Utils.getDateStringWithDate(selectedDate), edtPriceNote.text.toString(),
+                        true))
                 clearMediumPriceRate()
                 showProductForm()
             }else{
@@ -250,6 +254,8 @@ class ProductsFragment : Fragment(){
         rootProductForm.visibility = View.GONE
         rootLayoutMediumRate.visibility = View.VISIBLE
         edtPriceDate.setText(Utils.getCurrentDateShort())
+        edtPriceValues.visibility = View.GONE
+        txtValues.visibility = View.GONE
 
     }
 
@@ -267,7 +273,7 @@ class ProductsFragment : Fragment(){
                     val dateSelect = Calendar.getInstance()
                     dateSelect.set(yearOf,monthOfYear,dayOfMonth,hourOf,minuteOf,0)
                     selectedDate = dateSelect.time
-                    edtPriceDate.setText(Utils.getDateStringWithDate(selectedDate).substring(0,10))
+                    edtPriceDate.setText(Utils.getDateStringWithDate(selectedDate).substring(0,7))
                 }
                 .spinnerTheme(R.style.DatePickerSpinner)
                 .year(year)
@@ -462,6 +468,19 @@ class ProductsFragment : Fragment(){
     @Subscribe
     fun triggerProduct(product: Model.Product){
         EventBus.getDefault().postSticky(TriggerProduct(product))
+    }
+
+    fun showConfirmDialog(product:String){
+        val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบสินค้า $product ใช่หรือไหม","แจ้งเตือน",true)
+        confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+        confirmDialog.customListener(this)
+        confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
+    }
+
+    override fun onClickConfirm() {
+    }
+
+    override fun onClickCancel() {
     }
 
 

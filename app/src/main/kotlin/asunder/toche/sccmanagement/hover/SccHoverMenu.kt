@@ -129,6 +129,8 @@ constructor(val mContext: Context?,
         return null
     }
 
+
+
     override fun getSections(): List<HoverMenu.Section> {
         return mSections.toList()
     }

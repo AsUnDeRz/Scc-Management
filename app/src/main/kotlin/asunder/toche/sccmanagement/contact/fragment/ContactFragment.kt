@@ -47,6 +47,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.karumi.dexter.Dexter
@@ -57,8 +58,10 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.thefinestartist.finestwebview.FinestWebView
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
+import io.fabric.sdk.android.services.settings.IconRequest.build
 import kotlinx.android.synthetic.main.fragment_contact.*
 import kotlinx.android.synthetic.main.fragment_contact_add.*
+import kotlinx.android.synthetic.main.fragment_product_add.*
 import kotlinx.android.synthetic.main.section_contact_address.*
 import kotlinx.android.synthetic.main.section_contact_confirm.*
 import kotlinx.android.synthetic.main.section_contact_info.*
@@ -162,18 +165,18 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
             Log.d(TAG,"Stub1 onInflate")
 
 
-            val btnCancel = v.findViewById<Button>(R.id.btnCancel)
+            val btnCancel = v.findViewById<Button>(R.id.btnCancelContact)
             btnCancel.setOnClickListener {
                 showContactList()
                 contactScrollView.fullScroll(ScrollView.FOCUS_UP)
             }
 
-            val btnInput = v.findViewById<Button>(R.id.btnInput)
+            val btnInput = v.findViewById<Button>(R.id.btnAddContact)
             btnInput.setOnClickListener {
-                if(validateInput()) {
+                //if(validateInput()) {
                     saveContact()
                     contactScrollView.fullScroll(ScrollView.FOCUS_UP)
-                }
+                //}
 
             }
 
@@ -254,11 +257,15 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
             webstieAdapter.addWebSite("")
         }
 
-        btnSave.setOnClickListener {
-            if (validateInput()) {
+        btnAddContact.setOnClickListener {
+            //if (validateInput()) {
                 saveContact()
                 contactScrollView.fullScroll(ScrollView.FOCUS_UP)
-            }
+            //}
+        }
+
+        btnDeleteContact.setOnClickListener {
+            contactVM.deleteContact()
         }
 
         observeStateInput()
@@ -470,6 +477,10 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
                 .load(R.drawable.mock_picture)
                 .apply(options)
                 .into(imgMap)
+        val cameraPosition = CameraPosition.Builder().target(LatLng((-33).toDouble(), 150.0)).zoom(13F).build()
+        map.clear()
+        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+
 
     }
 

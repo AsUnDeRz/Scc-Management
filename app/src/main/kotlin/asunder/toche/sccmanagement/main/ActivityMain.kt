@@ -368,6 +368,8 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     override fun onBackPressed() {
         val confirmDialog = ConfirmDialog.newInstance("คุณต้องการออกจากแอฟพลิเคชั่นใช่หรือไม่","แจ้งเตือน",true)
         confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+        confirmDialog.customListener(this)
+        confirmDialog.customTextButton("ออกจากโปรแกรม","ใช้ต่อ")
         confirmDialog.show(supportFragmentManager, ConfirmDialog::class.java.simpleName)
     }
 

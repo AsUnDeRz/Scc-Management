@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/priceRateScrollView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -30,7 +31,7 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/bg_round_table"
             android:hint="XXXX.XX"
-            android:inputType="text"
+            android:inputType="number"
             android:maxLines="1"
             android:paddingStart="8dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -66,7 +67,7 @@
                 android:buttonTint="@color/colorPrimary"
                 android:checked="true"
                 android:paddingStart="16dp"
-                android:text="VAT"
+                android:text="VAT (A)"
                 android:textColor="@color/colorDark" />
 
             <android.support.v7.widget.AppCompatRadioButton
@@ -76,12 +77,12 @@
                 android:layout_weight="1"
                 android:buttonTint="@color/colorPrimary"
                 android:paddingStart="16dp"
-                android:text="NO VAT"
+                android:text="NO VAT (B)"
                 android:textColor="@color/colorDark" />
         </RadioGroup>
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
-            android:id="@+id/txtMedium9"
+            android:id="@+id/txtValues"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="48dp"
@@ -97,12 +98,12 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/bg_round_table"
             android:hint="XXXX"
-            android:inputType="text"
+            android:inputType="number"
             android:maxLines="1"
             android:paddingStart="8dp"
             app:layout_constraintEnd_toEndOf="@+id/radioGroup"
-            app:layout_constraintStart_toStartOf="@+id/txtMedium9"
-            app:layout_constraintTop_toBottomOf="@+id/txtMedium9" />
+            app:layout_constraintStart_toStartOf="@+id/txtValues"
+            app:layout_constraintTop_toBottomOf="@+id/txtValues" />
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:id="@+id/txtMedium10"
@@ -110,7 +111,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="วันที่"
-            app:layout_constraintStart_toStartOf="@+id/edtPriceValues"
+            app:layout_constraintStart_toStartOf="@+id/radioGroup"
             app:layout_constraintTop_toBottomOf="@+id/edtPriceValues" />
 
         <asunder.toche.sccmanagement.custom.edittext.EdtMedium
@@ -124,8 +125,8 @@
             android:inputType="text"
             android:maxLines="1"
             android:paddingStart="8dp"
-            app:layout_constraintEnd_toEndOf="@+id/edtPriceValues"
-            app:layout_constraintStart_toStartOf="@+id/edtPriceValues"
+            app:layout_constraintEnd_toEndOf="@+id/radioGroup"
+            app:layout_constraintStart_toStartOf="@+id/radioGroup"
             app:layout_constraintTop_toBottomOf="@+id/txtMedium10" />
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium

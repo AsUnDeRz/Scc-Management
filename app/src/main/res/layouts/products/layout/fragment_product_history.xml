@@ -78,6 +78,18 @@
             android:text="วันที่"
             android:textColor="@android:color/black"
             android:textSize="12sp" />
+
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtMedium"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:background="@drawable/bg_round_table"
+            android:gravity="center"
+            android:text="Note"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
     </LinearLayout>
 
 

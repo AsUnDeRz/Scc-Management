@@ -48,6 +48,14 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
 
     }
 
+    fun deleteContact(){
+        contact.value?.let {
+            service.deleteContact(it)
+            service.deleteContactInDb(it.id)
+        }
+
+    }
+
 
     fun loadContacts(){
         val data = service.getContactInDb()

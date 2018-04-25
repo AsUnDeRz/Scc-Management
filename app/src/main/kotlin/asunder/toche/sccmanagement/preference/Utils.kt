@@ -30,21 +30,21 @@ object Utils{
     }
 
     fun getCurrentDateShort() :String{
-        val fmtOut = SimpleDateFormat("dd/MM/yyyy", Locale("th","TH"))
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd", Locale("th","TH"))
         return fmtOut.format(getCurrentDate())
     }
 
     fun getCurrentDateString() : String{
-            val fmtOut = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale("th","TH"))
+            val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale("th","TH"))
             return fmtOut.format(getCurrentDate())
     }
 
     fun getDateWithString(date :String) : Date{
-        val fmtOut = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale("th","TH"))
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale("th","TH"))
         return fmtOut.parse(date)
     }
     fun getDateString(date :String) : Date{
-        val fmtOut = SimpleDateFormat("dd/MM/yyyy", Locale("th","TH"))
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd", Locale("th","TH"))
         return fmtOut.parse(date)
     }
 
@@ -57,7 +57,7 @@ object Utils{
     }
 
     fun getDateStringWithDate(date: Date) : String{
-        val fmtOut = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale("th","TH"))
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale("th","TH"))
         return fmtOut.format(date)
     }
 

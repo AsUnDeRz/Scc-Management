@@ -37,6 +37,8 @@ import org.greenrobot.eventbus.ThreadMode
  *Created by ToCHe on 26/2/2018 AD.
  */
 class HistoryCompanyFragment : Fragment(),TransactionListener {
+    override fun onClickNote(message: String) {
+    }
 
     lateinit var contactVM : ContactViewModel
     lateinit var transactionVM : TransactionViewModel

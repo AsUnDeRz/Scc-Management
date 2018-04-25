@@ -34,7 +34,7 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
             }
 
             txtSaleValues.text = transaction.sale_price[0].values
-            txtSaleDate.text = transaction.sale_price[0].date.substring(0,10)
+            txtSaleDate.text = transaction.sale_price[0].date.substring(0,7)
 
         }
 
@@ -45,7 +45,7 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
                 txtMediumVat.text = "B"
             }
             txtMediumPrice.text = product.medium_rate[0].price
-            txtMediumDate.text = product.medium_rate[0].date.substring(0, 10)
+            txtMediumDate.text = product.medium_rate[0].date.substring(0,7)
         }
 
         itemView.rootView.setOnClickListener {
@@ -55,8 +55,9 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
     }
 
     fun checkDecimal(price:String):String{
-        return if(price[price.lastIndex-2].toString() == "."){
-            if (price[price.lastIndex].toString() != "0" || price[price.lastIndex-1].toString() != "0"){
+        return if(price.length > 2){
+            if (price[price.lastIndex].toString() != "0" || price[price.lastIndex-1].toString() != "0"
+                    || price[price.lastIndex-2].toString() == "."){
                 price
             }else{
                 price.toDouble().toInt().toString()

@@ -290,7 +290,8 @@ class HoverViewStateCollapsed extends BaseHoverViewState {
 
     private void onTap() {
         Log.d(TAG, "Floating tab was tapped.");
-        expand();
+        //expand();
+        mHoverView.notifyListenersTaped();
         if (null != mListener) {
             mListener.onTap();
         }

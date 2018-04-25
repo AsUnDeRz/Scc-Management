@@ -54,11 +54,11 @@ public class InWindowDragger implements Dragger {
                     Log.d(TAG, "ACTION_DOWN");
                     mIsDragging = false;
 
-                    mOriginalViewPosition = getDragViewCenterPosition();
-                    mCurrentViewPosition = new PointF(mOriginalViewPosition.x, mOriginalViewPosition.y);
-                    mOriginalTouchPosition.set(motionEvent.getRawX(), motionEvent.getRawY());
+                    //mOriginalViewPosition = getDragViewCenterPosition();
+                    //mCurrentViewPosition = new PointF(mOriginalViewPosition.x, mOriginalViewPosition.y);
+                    //mOriginalTouchPosition.set(motionEvent.getRawX(), motionEvent.getRawY());
 
-                    mDragListener.onPress(mCurrentViewPosition.x, mCurrentViewPosition.y);
+                    //mDragListener.onPress(mCurrentViewPosition.x, mCurrentViewPosition.y);
 
                     return true;
                 case MotionEvent.ACTION_MOVE:

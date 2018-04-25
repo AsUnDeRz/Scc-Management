@@ -114,6 +114,8 @@ public class HoverView extends RelativeLayout {
         if (null != attrs) {
             applyAttributes(attrs);
         }
+
+
     }
 
     @NonNull
@@ -260,7 +262,7 @@ public class HoverView extends RelativeLayout {
     }
 
     public void expand() {
-        mState.expand();
+        //mState.expand();
     }
 
     public void collapse() {
@@ -322,6 +324,13 @@ public class HoverView extends RelativeLayout {
         Log.d(TAG, "Notifying listeners that Hover is closed.");
         for (Listener listener : mListeners) {
             listener.onClosed();
+        }
+    }
+
+    void notifyListenersTaped(){
+        Log.d(TAG, "Notifying listeners that Hover is tabed.");
+        for (Listener listener : mListeners) {
+            listener.onTap();
         }
     }
 
@@ -516,6 +525,8 @@ public class HoverView extends RelativeLayout {
         void onClosing();
 
         void onClosed();
+
+        void onTap();
 
     }
 }
