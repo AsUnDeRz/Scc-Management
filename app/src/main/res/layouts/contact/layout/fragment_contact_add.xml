@@ -65,7 +65,7 @@
 
             <include layout="@layout/section_contact_info" />
 
-            <include layout="@layout/section_contact_address" />
+            <!--<include layout="@layout/section_contact_address" />-->
 
             <include layout="@layout/section_contact_confirm" />
 

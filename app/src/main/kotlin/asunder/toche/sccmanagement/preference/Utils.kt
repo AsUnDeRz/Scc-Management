@@ -48,12 +48,18 @@ object Utils{
         return fmtOut.parse(date)
     }
 
+    fun getDateWithNumberFromCurrent(number:Int):Date{
+        val calendar = Calendar.getInstance()
+        calendar.time = getCurrentDate()
+        calendar.add(Calendar.DATE,number)
+        return calendar.time
+    }
+
     fun getPreviusDate() :Date{
         val calendar = Calendar.getInstance()
         calendar.time = getCurrentDate()
         calendar.add(Calendar.DATE,-1)
         return calendar.time
-
     }
 
     fun getDateStringWithDate(date: Date) : String{
@@ -96,7 +102,8 @@ object Utils{
                             it.company.contains(constraint.toString()) ||
                                     it.contact_name.contains(constraint.toString()) ||
                                     it.numbers.any { it.number.contains(constraint.toString()) } ||
-                                    it.id.contains(constraint.toString())
+                                    it.id.contains(constraint.toString()) ||
+                                    it.numbers.any { it.type.contains(constraint.toString()) }
                         }
                     }
                     val results = FilterResults()

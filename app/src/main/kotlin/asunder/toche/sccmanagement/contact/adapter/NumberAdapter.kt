@@ -6,6 +6,7 @@ import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
+import android.text.InputType
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -83,6 +84,8 @@ class NumberAdapter(var listener :ComponentListener):RecyclerView.Adapter<Number
                 txtTitle?.text = number.type
             }
             edtContent?.setText(number.number)
+            edtContent?.inputType = InputType.TYPE_CLASS_PHONE
+
             //edtContent?.limitLength(10)
             imageStateDelete?.isSelected = true
             imageStateDelete?.setOnClickListener {

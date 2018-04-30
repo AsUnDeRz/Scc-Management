@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
 
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
@@ -16,8 +13,6 @@
         android:layout_marginStart="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
         android:hint="กรอกข้อมูล ชื่อสินค้า ..."
         android:inputType="text"
         android:maxLines="1"
@@ -134,6 +129,15 @@
             android:background="@drawable/bg_round_table"
             android:gravity="center"
             android:text="      วันที่      " />
+
+        <asunder.toche.sccmanagement.custom.textview.TxtMedium
+            android:id="@+id/txtMedium9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:background="@drawable/bg_round_table"
+            android:gravity="center"
+            android:text="Note" />
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

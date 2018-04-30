@@ -43,14 +43,13 @@
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:id="@+id/txtCompany"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="24dp"
             android:layout_marginStart="24dp"
             android:layout_toRightOf="@+id/iconUser"
             android:lines="1"
-            android:text="Email address auth"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
@@ -61,8 +60,8 @@
             android:layout_alignTop="@+id/txtCompany"
             android:layout_toRightOf="@+id/txtCompany"
             android:lines="1"
-            android:text="บริษัทสงวนชัย"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="gone" />
 
         <View
             android:layout_width="match_parent"

@@ -28,13 +28,14 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
 
 
     fun saveContact(data:Model.Contact){
-        val fileName = Uri.fromFile(File(pathPicture))
-        data.url_img_map = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${fileName.lastPathSegment}"
-        data.path_img_map = pathPicture
-        data.id = contactId
-        if(pathPicture != ""){
-            firebase.pushFileToFirebase(data.path_img_map,"")
+        data.addresses.forEach {
+            val fileName = Uri.fromFile(File(it.path_img_map))
+            it.url_img_map = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${fileName.lastPathSegment}"
+            if(it.path_img_map.isNotEmpty()){
+                firebase.pushFileToFirebase(it.path_img_map,"")
+            }
         }
+        data.id = contactId
         if(contactId == "") {
                 service.pushNewContact(data)
             }else{

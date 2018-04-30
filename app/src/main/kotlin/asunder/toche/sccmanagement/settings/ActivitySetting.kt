@@ -108,8 +108,7 @@ class ActivitySetting: AppCompatActivity(),ContactService.ContactCallBack{
                 val numbers = mutableListOf<Model.Number>()
                numbers.add(Model.Number(it.getPhone(ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE), ROOT.Mobile))
                 Model.Contact("","","", it.displayName,numbers
-                        , mutableListOf(), mutableListOf(),"","", mutableListOf(),"","",
-                        "","")
+                        , mutableListOf(), mutableListOf(), mutableListOf())
             }
 
             val groups = data.getSerializableExtra(ContactPickerActivity.RESULT_GROUP_DATA) as List<Contact>

@@ -20,14 +20,17 @@ object Model{
                        val numbers:MutableList<Number> = mutableListOf(),
                        val email:MutableList<String> = mutableListOf(),
                        val websites:MutableList<String> = mutableListOf(),
-                       val address_type:String = "",
+                       val addresses :MutableList<Address> = mutableListOf(),
+                       val type_number:MutableList<String> = mutableListOf()) : Parcelable
+
+    @SuppressLint("ParcelCreator")
+    @Parcelize
+    data class Address(val address_type:String = "",
                        val address_factory:String = "",
-                       val addresses :MutableList<String> = mutableListOf(),
                        var url_img_map:String = "",
                        var path_img_map:String ="",
                        val map_latitude:String = "",
-                       val map_longitude:String = "",
-                       val type_number:MutableList<String> = mutableListOf()) : Parcelable
+                       val map_longitude:String = "") :Parcelable
 
     @SuppressLint("ParcelCreator")
     @Parcelize
@@ -46,6 +49,9 @@ object Model{
                      var image_path:String = "",
                      var file_url:String = "",
                      var file_path:String = "") : Parcelable
+
+    @SuppressLint("ParcelCreator")
+    @Parcelize
     data class Product(var id:String = "",
                        val product_name:String = "",
                        val product_desc:String = "",
@@ -53,12 +59,15 @@ object Model{
                        val pack_size:String = "",
                        val desc:String = "",
                        val date:String ="",
-                       val medium_rate:MutableList<MediumRate> = ArrayList())
+                       val medium_rate:MutableList<MediumRate> = ArrayList()) : Parcelable
+
+    @SuppressLint("ParcelCreator")
+    @Parcelize
     data class MediumRate(val price:String = "",
                           val vat:Boolean = false,
                           val date:String = "",
                           val note:String = "",
-                          var default:Boolean = false)
+                          var default:Boolean = false) : Parcelable
 
     @SuppressLint("ParcelCreator")
     @Parcelize
@@ -75,7 +84,7 @@ object Model{
     @SuppressLint("ParcelCreator")
     @Parcelize
     data class SalePrice(val price:String ="",
-                         val vat:Boolean = false,
+                         val vat:String = "",
                          val values:String = "",
                          val date:String = "",
                          val note:String = "") : Parcelable

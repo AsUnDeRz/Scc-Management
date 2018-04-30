@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
+import asunder.toche.sccmanagement.preference.ROOT
 
 /**
  *Created by ToCHe on 18/3/2018 AD.
@@ -54,8 +55,25 @@ class SaleRateAdapter(var saleList: MutableList<Model.SalePrice>) :
             txtSaleDate?.text = salePrice.date.substring(0,7)
             txtSalePrice?.text = salePrice.price
             txtSaleValues?.text = salePrice.values
-            txtSaleVat?.text = if(salePrice.vat) "A" else "B"
+            txtSaleVat?.text = getSaleType(salePrice.vat)
 
+        }
+
+        fun getSaleType(typePrice:String):String{
+            return when(typePrice){
+                ROOT.NOVAT->{
+                    "B"
+                }
+                ROOT.VAT ->{
+                    "A"
+                }
+                ROOT.CASH->{
+                    "C"
+                }
+                else ->{
+                    ""
+                }
+            }
         }
 
     }

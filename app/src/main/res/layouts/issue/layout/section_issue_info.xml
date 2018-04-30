@@ -117,31 +117,4 @@
         app:layout_constraintStart_toStartOf="@+id/edtIssueDate"
         app:layout_constraintTop_toBottomOf="@+id/edtIssueDate" />
 
-    <asunder.toche.sccmanagement.custom.textview.TxtMedium
-        android:id="@+id/txtMedium19"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
-        android:gravity="right|center"
-        android:text="*"
-        android:textColor="@android:color/holo_red_light"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="@+id/edtCompany"
-        app:layout_constraintEnd_toStartOf="@+id/edtCompany"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/edtCompany" />
-
-    <asunder.toche.sccmanagement.custom.textview.TxtMedium
-        android:id="@+id/txtMedium20"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
-        android:gravity="right|center"
-        android:text="*"
-        android:textColor="@android:color/holo_red_light"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="@+id/edtIssue"
-        app:layout_constraintEnd_toStartOf="@+id/edtIssue"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/edtIssue" />
 </android.support.constraint.ConstraintLayout>

@@ -57,33 +57,12 @@
         app:layout_constraintTop_toBottomOf="@+id/edtBill" />
 
     <RelativeLayout
-        android:id="@+id/vNumber"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtContactName">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rvNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_round_table"></android.support.v7.widget.RecyclerView>
-    </RelativeLayout>
-
-    <RelativeLayout
         android:id="@+id/vPhone"
         android:layout_width="0dp"
         android:layout_height="36dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vNumber">
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/vNumber"
+        app:layout_constraintTop_toBottomOf="@+id/edtContactName">
 
         <ImageView
             android:id="@+id/imgPhone"
@@ -112,13 +91,9 @@
         android:id="@+id/vEmail"
         android:layout_width="0dp"
         android:layout_height="36dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rvEmail">
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/vNumber"
+        app:layout_constraintTop_toBottomOf="@+id/vNumber">
 
         <ImageView
             android:id="@+id/imgEmail"
@@ -147,13 +122,9 @@
         android:id="@+id/vWebsite"
         android:layout_width="0dp"
         android:layout_height="36dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rvWebsite">
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="@+id/rvEmail"
+        app:layout_constraintTop_toBottomOf="@+id/rvEmail">
 
         <ImageView
             android:id="@+id/imgWeb"
@@ -178,33 +149,6 @@
 
     </RelativeLayout>
 
-    <asunder.toche.sccmanagement.custom.textview.TxtMedium
-        android:id="@+id/txtMedium13"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
-        android:gravity="right|center"
-        android:text="*"
-        android:textColor="@android:color/holo_red_light"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="@+id/edtCompany"
-        app:layout_constraintEnd_toStartOf="@+id/edtCompany"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/edtCompany" />
-
-    <asunder.toche.sccmanagement.custom.textview.TxtMedium
-        android:id="@+id/txtMedium14"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:gravity="right|center"
-        android:text="*"
-        android:textColor="@android:color/holo_red_light"
-        android:textSize="30sp"
-        app:layout_constraintEnd_toStartOf="@+id/edtBill"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/edtContactName" />
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvEmail"
         android:layout_width="0dp"
@@ -212,11 +156,11 @@
         android:layout_alignStart="@+id/txtPhone"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vPhone" />
+        app:layout_constraintTop_toBottomOf="@+id/vEmail" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvWebsite"
@@ -224,11 +168,30 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vEmail" />
+        app:layout_constraintTop_toBottomOf="@+id/vWebsite" />
+
+    <RelativeLayout
+        android:id="@+id/vNumber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vPhone">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_round_table"></android.support.v7.widget.RecyclerView>
+    </RelativeLayout>
 
 
 </android.support.constraint.ConstraintLayout>

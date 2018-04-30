@@ -47,7 +47,7 @@
             android:layout_toRightOf="@+id/txtTitle"
             android:background="@drawable/bg_round_table"
             android:ems="10"
-            android:inputType="textPersonName"
+            android:inputType="text|textPersonName"
             android:maxLines="1"
             android:paddingStart="8dp" />
 

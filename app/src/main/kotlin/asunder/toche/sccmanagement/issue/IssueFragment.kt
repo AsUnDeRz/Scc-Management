@@ -92,6 +92,10 @@ class IssueFragment : Fragment(),
         controlViewModel.currentUI.observe(this, Observer {
             if (it == ROOT.ISSUE){
                 initViewCreated()
+            }else{
+                if (issueVM.isSaveIssueComplete.value == IssueState.SHOWFROM){
+                    saveIssue()
+                }
             }
         })
     }
@@ -252,14 +256,14 @@ class IssueFragment : Fragment(),
 
     fun initIssueForm(){
         btnSaveIssue.setOnClickListener {
-            if(validateInput()) saveIssue()
+             saveIssue()
         }
         btnCancelIssue.setOnClickListener {
             clearFormIssue()
             showIssueList()
         }
         btnAddIssueInfo.setOnClickListener {
-            if(validateInput()) saveIssue()
+            saveIssue()
         }
         btnCancelIssueInfo.setOnClickListener {
             clearFormIssue()
@@ -310,6 +314,7 @@ class IssueFragment : Fragment(),
 
     fun showIssueForm(){
         issueScrollView.fullScroll(ScrollView.FOCUS_UP)
+        issueVM.updateViewState(IssueState.SHOWFROM)
         rootIssueForm.visibility = View.VISIBLE
         rootLayoutInput.visibility = View.GONE
         imgNewIssue.visibility = View.GONE
@@ -429,6 +434,7 @@ class IssueFragment : Fragment(),
 
 
     fun setUpIssueForm(issue:Model.Issue){
+        issueVM.updateCurrentIssue(issue)
         edtProcess.setText(issue.status)
         edtIssue.setText(issue.issue_name)
         edtIssueDetail.setText(issue.issue_desc)
@@ -439,7 +445,7 @@ class IssueFragment : Fragment(),
             //filter company with id
             issueVM.findCompanyWithKey(issue.company_id)
         }
-        edtIssueDate.setText(issue.date)
+        edtIssueDate.setText(issue.date.substring(0,7))
         selectedDate = Utils.getDateWithString(issue.date)
         if(issue.image_path == ""){
             Glide.with(context!!)
@@ -607,6 +613,10 @@ class IssueFragment : Fragment(),
     }
 
     override fun onClickConfirm() {
+        issueVM.currentIssue.value?.let {
+            issueVM.deleteIssue(it)
+
+        }
     }
 
     override fun onClickCancel() {

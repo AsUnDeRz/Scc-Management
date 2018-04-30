@@ -23,7 +23,14 @@ object ROOT{
     const val FACEBOOK = "facebook"
     const val TWITTER = "twitter"
     const val EMAIL ="email"
+    const val ADDRESS ="address"
+    const val POSITION = "position"
     val listAdmin = mutableListOf<String>()
+
+    //type sale rate
+    const val VAT = "vat"
+    const val NOVAT = "novat"
+    const val CASH = "cash"
 
     //type number
     const val HOME = "Home"

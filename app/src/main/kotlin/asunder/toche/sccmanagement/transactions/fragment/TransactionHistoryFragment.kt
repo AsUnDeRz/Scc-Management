@@ -21,6 +21,7 @@ import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.products.adapter.ProductAdapter
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
+import asunder.toche.sccmanagement.transactions.ActivityHistory
 import asunder.toche.sccmanagement.transactions.TransactionListener
 import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.adapter.TransactionHistoryAdapter
@@ -40,10 +41,18 @@ class TransactionHistoryFragment : Fragment(),TransactionListener {
     private lateinit var productAdapter: ProductAdapter
     private lateinit var transactionVM: TransactionViewModel
     private lateinit var productVM: ProductViewModel
+    var filter:String? = null
 
 
     companion object {
-        fun newInstance(): TransactionHistoryFragment = TransactionHistoryFragment()
+        fun newInstance(productFilter:String): TransactionHistoryFragment{
+            val fragment = TransactionHistoryFragment()
+            val bundle = Bundle()
+            bundle.putString(ROOT.PRODUCTS, productFilter)
+            fragment.arguments = bundle
+            return fragment
+        }
+
     }
 
 
@@ -51,18 +60,27 @@ class TransactionHistoryFragment : Fragment(),TransactionListener {
         super.onCreate(savedInstanceState)
         transactionVM = ViewModelProviders.of(activity!!).get(TransactionViewModel::class.java)
         productVM = ViewModelProviders.of(activity!!).get(ProductViewModel::class.java)
+        arguments?.getString(ROOT.PRODUCTS)?.let {
+            filter = it
+        }
+        println("Transaction onCreate")
     }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = LayoutInflater.from(context).inflate(R.layout.fragment_transactions_history,container,false)
+        println("Transaction onCreateView")
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        println("Transaction onViewCreated")
         setUpSelectProduct()
-
+        productAdapter = ProductAdapter(mutableListOf(),false)
+        historyAdapter = TransactionHistoryAdapter()
+        val activity = activity as ActivityHistory
+        filterTransaction(activity.getProductID())
     }
 
     fun setUpAdapter(mapTransaction:MutableMap<Model.Transaction,Model.Contact>,
@@ -86,6 +104,8 @@ class TransactionHistoryFragment : Fragment(),TransactionListener {
         }
 
     }
+
+
 
     fun setUpAdapterProduct(){
         productAdapter = ProductAdapter(productVM.service.getProductsInDb(),false)
@@ -152,6 +172,29 @@ class TransactionHistoryFragment : Fragment(),TransactionListener {
             bottomSheetDialog.dismiss()
         }
 
+    }
+
+    fun filterTransaction(id:String){
+        if (id.isNotEmpty()) {
+            Utils.findTransaction(id, object : Utils.OnFindTransactionsListener {
+                override fun onResults(results: MutableList<Model.Transaction>) {
+                    val mapTransaction: MutableMap<Model.Transaction, Model.Contact> = mutableMapOf()
+                    val contacts = transactionVM.getContact()
+                    results.forEach { transac ->
+                        val company = contacts.first { transac.company_id == it.id }
+                        mapTransaction[transac] = company
+                    }
+                    setUpAdapter(mapTransaction, results)
+                }
+            }, transactionVM.service.getTransactionInDb(), ROOT.PRODUCTS)
+            Utils.findProduct(id, object : Utils.OnFindProductListener {
+                override fun onResults(results: MutableList<Model.Product>) {
+                    if (results.isNotEmpty()) {
+                        edtSelectProduct.setText(results.first().product_name.trim())
+                    }
+                }
+            }, productVM.service.getProductsInDb())
+        }
     }
 
 

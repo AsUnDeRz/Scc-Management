@@ -57,6 +57,7 @@ class TransactionsFragment : Fragment(){
     companion object {
         fun newInstance(): TransactionsFragment = TransactionsFragment()
     }
+    private lateinit var rootLayoutPriceForm : ConstraintLayout
     private lateinit var rootLayoutPriceRate : ScrollView
     private lateinit var rootTransactionForm : ConstraintLayout
     private lateinit var bottomSheetDialog: BottomSheetDialog
@@ -83,6 +84,10 @@ class TransactionsFragment : Fragment(){
         controlViewModel.currentUI.observe(this, Observer {
             if (it == ROOT.TRANSACTIONS){
                 initViewCreated()
+            }else{
+                if (transactionVM.stateView.value == TransactionState.SHOWFORM){
+                    saveOrUpdateTransaction()
+                }
             }
         })
     }
@@ -177,8 +182,9 @@ class TransactionsFragment : Fragment(){
 
     fun inflateStubLayoutPriceRate(){
         stubPriceRate.setOnInflateListener { _, v ->
-            rootLayoutPriceRate = v as ScrollView
-            rootLayoutPriceRate.visibility = View.GONE
+            rootLayoutPriceForm = v as ConstraintLayout
+            rootLayoutPriceForm.visibility = View.GONE
+            rootLayoutPriceRate = v.findViewById(R.id.priceRateScrollView)
         }
         stubPriceRate.inflate()
         initViewInStubPriceRate()
@@ -226,7 +232,9 @@ class TransactionsFragment : Fragment(){
         setupRalePriceAdapter()
 
         btnOpenHistory.setOnClickListener {
-            startActivity(Intent().setClass(activity,ActivityHistory::class.java))
+            val intent = Intent()
+            intent.putExtra(ROOT.PRODUCTS,transactionVM.product.value?.id)
+            startActivity(intent.setClass(activity,ActivityHistory::class.java))
         }
     }
 
@@ -239,18 +247,38 @@ class TransactionsFragment : Fragment(){
         }
     }
 
-    fun initViewInStubPriceRate(){
+    fun getSaleType():String{
+        return when(radioGroup.checkedRadioButtonId){
+            rdbNoVat.id ->{
+                ROOT.NOVAT
+            }
+            rdbVat.id ->{
+                ROOT.VAT
+            }
+            rdbCash.id ->{
+                ROOT.CASH
+            }
+            else ->{
+                ""
+            }
+        }
+    }
 
-        btnSaveRate.setOnClickListener {
+    fun initViewInStubPriceRate(){
+        btnAddPrice.setOnClickListener {
             if(validateSaleRate()) {
-                addSalePrice(Model.SalePrice(edtPrice.text.toString(),rdbVat.isChecked,
+                addSalePrice(Model.SalePrice(edtPrice.text.toString(),getSaleType(),
                         edtPriceValues.text.toString(),Utils.getDateStringWithDate(selectedDate),edtPriceNote.text.toString()))
                 showTransactionForm()
             }
         }
 
-        btnCancelRate.setOnClickListener {
+        btnCancelPrice.setOnClickListener {
             showTransactionForm()
+        }
+
+        btnDeletePrice.setOnClickListener {
+
         }
 
         edtPriceDate.setOnClickListener {
@@ -261,15 +289,16 @@ class TransactionsFragment : Fragment(){
 
     fun showTransactionList(){
         rootTransactionForm.visibility = View.GONE
-        rootLayoutPriceRate.visibility = View.GONE
+        rootLayoutPriceForm.visibility = View.GONE
         imgNewTransaction.visibility = View.VISIBLE
         clearTransaction()
-
+        transactionScrollView.fullScroll(ScrollView.FOCUS_UP)
     }
     fun showTransactionForm(){
+        transactionVM.updateStateView(TransactionState.SHOWFORM)
         transactionScrollView.fullScroll(ScrollView.FOCUS_UP)
         rootTransactionForm.visibility = View.VISIBLE
-        rootLayoutPriceRate.visibility = View.GONE
+        rootLayoutPriceForm.visibility = View.GONE
         imgNewTransaction.visibility = View.GONE
 
     }
@@ -277,7 +306,7 @@ class TransactionsFragment : Fragment(){
     fun showSalePriceForm(){
         rootLayoutPriceRate.fullScroll(ScrollView.FOCUS_UP)
         rootTransactionForm.visibility = View.GONE
-        rootLayoutPriceRate.visibility = View.VISIBLE
+        rootLayoutPriceForm.visibility = View.VISIBLE
         clearPriceForm()
 
     }
@@ -396,6 +425,7 @@ class TransactionsFragment : Fragment(){
 
                 }
                 TransactionState.SHOWLIST ->{
+                    showTransactionList()
                     loading.dismiss()
                 }
                 TransactionState.SHOWSALEFORM ->{

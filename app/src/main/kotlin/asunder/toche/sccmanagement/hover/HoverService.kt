@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.support.v7.view.ContextThemeWrapper
 import android.util.Log
+import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.hover.main.ContactHover
 import asunder.toche.sccmanagement.hover.theme.HoverTheme
@@ -19,6 +20,8 @@ import java.io.IOException
  *Created by ToCHe on 26/3/2018 AD.
  */
 class HoverService : HoverMenuService() {
+
+
 
     override fun onStart(intent: Intent, startId: Int) {
         super.onStart(intent, startId)
@@ -79,9 +82,12 @@ class HoverService : HoverMenuService() {
 
             override fun onTap() {
                 Log.d("TOCHE","onTab")
-                val intent  = Intent()
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                applicationContext.startActivity(intent.setClass(this@HoverService, ActivityMain::class.java))
+                currentContact?.let {
+                    val intent = Intent()
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    intent.putExtra(ROOT.CONTACTS, currentContact)
+                    applicationContext.startActivity(intent.setClass(this@HoverService, ActivityMain::class.java))
+                }
             }
         })
     }
@@ -101,7 +107,12 @@ class HoverService : HoverMenuService() {
         }
         lateinit var mHoverView: HoverView
         lateinit var mHoverMenu: SccHoverMenu
+        var currentContact: Model.Contact? = null
 
+        fun updateCurrent(contact: Model.Contact){
+            currentContact = contact
+            println("Update CurrentContact $currentContact")
+        }
 
         @Subscribe
         fun expenHover(number: String?,name:String) {

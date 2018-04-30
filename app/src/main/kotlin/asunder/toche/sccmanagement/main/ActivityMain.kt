@@ -85,23 +85,35 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
         controlViewModel.updateCurrentUI(ROOT.CONTACTS)
         checkDataFromService(intent)
         setupCurrentUser()
+
+        if (intent.hasExtra(ROOT.CONTACTS)){
+            val contact = intent.getParcelableExtra<Model.Contact>(ROOT.CONTACTS)
+            selectContact(contact)
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         intent?.let {
-            if (intent.hasExtra(ROOT.MOBILE)){
-                Utils.findCompany(intent.getStringExtra(ROOT.MOBILE),
+            when {
+                intent.hasExtra(ROOT.CONTACTS) -> {
+                    val contact = intent.getParcelableExtra<Model.Contact>(ROOT.CONTACTS)
+                    selectContact(contact)
+                }
+                intent.hasExtra(ROOT.MOBILE) -> Utils.findCompany(intent.getStringExtra(ROOT.MOBILE),
                         object : Utils.OnFindCompanyListener{
                             override fun onResults(results: MutableList<Model.Contact>) {
-                                contactVM.updateContact(results.first())
-                                contactVM.updateViewState(ContactState.SELECTCONTACT)
+                                selectContact(results.first())
                             }
                         },contactVM.service.getContactInDb())
-            }else {
-                checkDataFromService(it)
+                else -> checkDataFromService(it)
             }
         }
+    }
+
+    fun selectContact(contact: Model.Contact){
+        contactVM.updateContact(contact)
+        contactVM.updateViewState(ContactState.SELECTCONTACT)
     }
 
     private fun checkDataFromService(intent: Intent){

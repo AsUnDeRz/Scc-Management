@@ -109,7 +109,12 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/FinestWebViewTheme.Light" />
-        <activity android:name=".transactions.ActivityHistory" />
+        <activity android:name=".transactions.ActivityHistory"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".contact.ActivityEditContact"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

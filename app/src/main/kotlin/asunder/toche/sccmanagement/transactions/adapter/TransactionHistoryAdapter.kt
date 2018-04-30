@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.transactions.TransactionListener
 
 /**
@@ -52,11 +53,19 @@ class TransactionHistoryAdapter : RecyclerView.Adapter<TransactionHistoryAdapter
             txtCompany?.text = contact.company
             if(transaction.sale_price.isNotEmpty()) {
                 txtPriceSale?.text = checkDecimal(transaction.sale_price[0].price)
-
-                if(transaction.sale_price[0].vat){
-                    txtVat?.text = "A"
-                }else{
-                    txtVat?.text = "B"
+                txtVat?.text = when(transaction.sale_price[0].vat){
+                    ROOT.VAT ->{
+                        "A"
+                    }
+                    ROOT.NOVAT ->{
+                        "B"
+                    }
+                    ROOT.CASH ->{
+                        "C"
+                    }
+                    else ->{
+                        ""
+                    }
                 }
                 txtValues?.text = transaction.sale_price[0].values
             }

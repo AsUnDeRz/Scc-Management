@@ -31,7 +31,7 @@ class CompanyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
     fun bindWithEditable(contact: Model.Contact,listener: CompanyAdapter.CompanyListener){
         txtCompany.text = validateCompany(contact)
-        txtContact.text = validateContact(contact)
+        //txtContact.text = validateContact(contact)
         val btnEdt = swipeView.findViewById<BtnMedium>(R.id.btnEdit)
         val btnDelete = swipeView.findViewById<BtnMedium>(R.id.btnDelete)
 

@@ -3,6 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -75,9 +77,28 @@
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/btnOpenHistory"
+        app:layout_constraintEnd_toStartOf="@+id/view2"
         app:layout_constraintStart_toStartOf="@+id/edtTransactionProduct"
         app:layout_constraintTop_toBottomOf="@+id/edtTransactionProduct" />
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="1dp"
+        android:layout_height="48dp"
+        app:layout_constraintEnd_toEndOf="@+id/btnOpenHistory"
+        app:layout_constraintStart_toStartOf="@+id/edtTransactionProduct"
+        app:layout_constraintTop_toTopOf="@+id/edtMediumPrice" />
+
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+        android:id="@+id/titleMediumRate"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_round_table"
+        android:gravity="center"
+        android:text="ราคากลาง"
+        app:layout_constraintEnd_toEndOf="@+id/btnOpenHistory"
+        app:layout_constraintStart_toEndOf="@+id/view2"
+        app:layout_constraintTop_toTopOf="@+id/edtMediumPrice" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
         android:id="@+id/txtMedium2"

@@ -5,6 +5,7 @@ import android.view.View
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtThin
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.transactions.TransactionListener
 
 /**
@@ -26,11 +27,19 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
         txtProdName.text = product.product_name
         if (transaction.sale_price.isNotEmpty()) {
             txtSalePrice.text = checkDecimal(transaction.sale_price[0].price)
-
-            if(transaction.sale_price[0].vat){
-                txtSaleVat.text = "A"
-            }else{
-                txtSaleVat.text = "B"
+            txtSaleVat.text = when(transaction.sale_price[0].vat){
+                ROOT.VAT ->{
+                    "A"
+                }
+                ROOT.NOVAT ->{
+                    "B"
+                }
+                ROOT.CASH ->{
+                    "C"
+                }
+                else ->{
+                    ""
+                }
             }
 
             txtSaleValues.text = transaction.sale_price[0].values

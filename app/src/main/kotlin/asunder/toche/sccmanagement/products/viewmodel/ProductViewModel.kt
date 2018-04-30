@@ -18,9 +18,11 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
     val firebase = FirebaseManager()
     val product : MutableLiveData<Model.Product> = MutableLiveData()
     val products : MutableLiveData<MutableList<Model.Product>> = MutableLiveData()
+    val mediumRate : MutableLiveData<Model.MediumRate> = MutableLiveData()
     val mediumRateLists : MutableLiveData<MutableList<Model.MediumRate>> = MutableLiveData()
     val stateView : MutableLiveData<ProductState> = MutableLiveData()
     var productId  =""
+    var mediumPosition:Int = 0
 
 
 
@@ -52,6 +54,11 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
 
     fun updateMediumRateList(data : MutableList<Model.MediumRate>){
         mediumRateLists.value = data
+    }
+
+    fun updateMediumRate(data:Model.MediumRate,position:Int){
+        mediumRate.value = data
+        mediumPosition = position
     }
 
     fun updateProduct(product: Model.Product){

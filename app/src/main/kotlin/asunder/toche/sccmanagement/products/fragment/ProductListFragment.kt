@@ -98,7 +98,7 @@ class ProductListFragment : Fragment(),ProductAdapter.ProductListener{
 
     override fun onClickEdit(product: Model.Product) {
         productViewModel.updateProduct(product)
-        productViewModel.updateStateView(ProductState.SHOWFORM)
+        productViewModel.updateStateView(ProductState.SHOWFORMWITHPRODUCT)
 
     }
 

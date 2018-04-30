@@ -1,12 +1,10 @@
 package asunder.toche.sccmanagement.contact.fragment
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
@@ -18,9 +16,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.ScrollView
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.contact.ActivityEditContact
 import asunder.toche.sccmanagement.contact.ComponentListener
 import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.adapter.AddressAdapter
@@ -35,45 +35,22 @@ import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
-import asunder.toche.sccmanagement.main.ActivityCamera
-import asunder.toche.sccmanagement.preference.Utils
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import asunder.toche.sccmanagement.main.ControlViewModel
+import asunder.toche.sccmanagement.preference.KEY
+import asunder.toche.sccmanagement.preference.ROOT
 import com.thefinestartist.finestwebview.FinestWebView
-import droidninja.filepicker.FilePickerBuilder
-import droidninja.filepicker.FilePickerConst
-import io.fabric.sdk.android.services.settings.IconRequest.build
 import kotlinx.android.synthetic.main.fragment_contact.*
 import kotlinx.android.synthetic.main.fragment_contact_add.*
-import kotlinx.android.synthetic.main.fragment_product_add.*
-import kotlinx.android.synthetic.main.section_contact_address.*
 import kotlinx.android.synthetic.main.section_contact_confirm.*
 import kotlinx.android.synthetic.main.section_contact_info.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import java.io.File
 
 
 /**
  *Created by ToCHe on 26/2/2018 AD.
  */
-class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
+class ContactFragment  : Fragment(),ComponentListener{
 
     private val TAG = this::class.java.simpleName
     companion object {
@@ -86,14 +63,10 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
         ContactName,
         Address
     }
-    private lateinit var map: GoogleMap
     private lateinit var rootInput : ScrollView
     lateinit var root : ConstraintLayout
     private lateinit var titleInput : TxtMedium
     private lateinit var edtInput : EdtMedium
-    var location: Location? = null
-    private lateinit var mLocationRequest: LocationRequest
-    private lateinit var locationCallback: LocationCallback
     private var stateInput : CurrentInputState = CurrentInputState.Company
     lateinit var contactVM : ContactViewModel
     private var loading = LoadingDialog.newInstance()
@@ -101,15 +74,27 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
     private lateinit var emailAdapter: EmailAdapter
     private lateinit var webstieAdapter: WebsiteAdapter
     private lateinit var addressAdapter: AddressAdapter
-    val selectedPhoto = arrayListOf<String>()
+    private lateinit var controlViewModel: ControlViewModel
+
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         contactVM = ViewModelProviders.of(activity!!).get(ContactViewModel::class.java)
-        enableMyLocation()
-        setupGoogleClient()
+        controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
+        initControllState()
+    }
+
+    fun initControllState(){
+        controlViewModel.currentUI.observe(this, Observer {
+            if (it == ROOT.CONTACTS){
+            }else{
+                if (contactVM.isSaveContactComplete.value == ContactState.SHOWFORM){
+                    saveContact()
+                }
+            }
+        })
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = LayoutInflater.from(context).inflate(R.layout.fragment_contact,container,false)
@@ -177,53 +162,13 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
                     saveContact()
                     contactScrollView.fullScroll(ScrollView.FOCUS_UP)
                 //}
-
             }
-
             initViewAdd(v)
         }
         stubContactAdd.inflate()
     }
 
     fun initViewAdd(v:View){
-        val imageView = v.findViewById<ImageView>(R.id.imgMap)
-        imageView.setOnClickListener {
-            selectedPhoto.clear()
-            FilePickerBuilder.getInstance().setMaxCount(1)
-                    .setSelectedFiles(selectedPhoto)
-                    .setActivityTheme(R.style.AppTheme)
-                    .pickPhoto(this)
-            //startActivityForResult(Intent().setClass(activity, ActivityCamera::class.java),666)
-        }
-        val mapFragment : SupportMapFragment? =
-                fragmentManager?.findFragmentById(R.id.mapView) as? SupportMapFragment
-        if(contactVM.isGranted) {
-            mapFragment?.getMapAsync(this@ContactFragment)
-        }
-
-        val searchView = v.findViewById<SearchView>(R.id.searchView)
-        val id = searchView.context.resources.getIdentifier("android:id/search_src_text", null, null)
-        val searchText = searchView.findViewById<TextView>(id)
-        searchText.typeface = Utils.getTypeFaceMedium(v.context)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(result: String?): Boolean {
-                if(result != null){
-                    val latlng = result.split(",")
-                    if(latlng.size >= 2) {
-                        val location = Location("")
-                        location.latitude = latlng[0].toDouble()
-                        location.longitude = latlng[1].toDouble()
-                        handleNewLocation(location)
-                    }
-                }
-                return false
-            }
-
-            override fun onQueryTextChange(p0: String?): Boolean {
-                return false
-            }
-        })
-
         edtCompany.DisableClick()
         edtCompany.setOnClickListener {
             updateState(CurrentInputState.Company)
@@ -240,9 +185,11 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
             showFormInput()
         }
         imgStateAdd.setOnClickListener {
-            updateState(CurrentInputState.Address)
-            showFormInput()
-            updateInputForm("ที่อยู่","")
+            val intent = Intent()
+            startActivityForResult(intent.setClass(activity,ActivityEditContact::class.java),KEY.NEW_ADDRESS)
+            //updateState(CurrentInputState.Address)
+            //showFormInput()
+            //updateInputForm("ที่อยู่","")
         }
 
         imgPhone.setOnClickListener {
@@ -335,77 +282,30 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == 666 && data?.getStringExtra("IMAGE") != null) {
-                val path = data.getStringExtra("IMAGE")
-                val image = File(path)
-                contactVM.updatePathPicture(path)
-            Glide.with(this@ContactFragment)
-                    .load(image)
-                    .into(imgMap)
-        }
         when (requestCode) {
-            FilePickerConst.REQUEST_CODE_PHOTO -> if (resultCode == Activity.RESULT_OK && data != null) {
-                selectedPhoto.clear()
-                selectedPhoto.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA))
-                if(selectedPhoto.size > 0) {
-                    contactVM.updatePathPicture(selectedPhoto[0])
-                    Glide.with(context!!)
-                            .load(File(selectedPhoto[0]))
-                            .into(imgMap)
+            KEY.NEW_ADDRESS -> if (resultCode == Activity.RESULT_OK && data != null){
+                //update address
+                addressAdapter.addAddress(data.getParcelableExtra(ROOT.ADDRESS))
+                contactScrollView.fullScroll(ScrollView.FOCUS_DOWN)
+            }
+            KEY.EDIT_ADDRESS -> if (resultCode == Activity.RESULT_OK && data != null){
+                if (data.hasExtra(KEY.DELETE)){
+                    addressAdapter.remove(data.getIntExtra(ROOT.POSITION,0))
+                }else{
+                    addressAdapter.updateAddress(data.getParcelableExtra(ROOT.ADDRESS),
+                            data.getIntExtra(ROOT.POSITION,0))
                 }
             }
         }
-    }
-
-
-
-    @SuppressLint("MissingPermission")
-    override fun onMapReady(googlemap: GoogleMap?) {
-        if(googlemap != null){
-            map = googlemap
-            map.isMyLocationEnabled = true
-
-            val task = LocationServices.getFusedLocationProviderClient(activity!!).lastLocation
-            task.addOnCompleteListener {
-                if(it.isComplete){
-                    location = it.result
-                }
-            }
-            if (location == null) {
-                val taskUpdate = LocationServices.
-                        getFusedLocationProviderClient(activity!!)
-                        .requestLocationUpdates(mLocationRequest,locationCallback,null)
-                if(taskUpdate.isComplete){
-                    taskUpdate.result
-                }
-            }
-        }
-    }
-
-    fun handleNewLocation(location: Location) {
-        this.location = location
-        val zoomLevel = 14f
-        val latLng = LatLng(location.latitude, location.longitude)
-        map.clear()
-        val current = MarkerOptions()
-                .position(latLng)
-        map.addMarker(current)
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel))
     }
 
     fun saveContact(){
         val data = Model.Contact("",edtCompany.text.toString().capitalize(),edtBill.text.toString()
                 ,edtContactName.text.toString(),numberAdapter.numbers,emailAdapter.emails,
-                webstieAdapter.websites, edtTypeAddress.text.toString(),edtFactoryAddress.text.toString(),
-                addressAdapter.addresses, "", "",
-                "${location?.latitude}","${location?.longitude}",numberAdapter.typeList)
-
-
+                webstieAdapter.websites, addressAdapter.addresses,numberAdapter.typeList)
         contactVM.saveContact(data)
         loading.show(fragmentManager, LoadingDialog.TAG)
     }
-
-
 
     fun validateInput() : Boolean{
         if(TextUtils.isEmpty(edtCompany.text)){
@@ -431,6 +331,7 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
         numberAdapter.updateTypeList(contact.type_number)
         emailAdapter.updateEmails(contact.email)
         webstieAdapter.updateWebsites(contact.websites)
+        /*
         addressAdapter.updateAddress(contact.addresses)
         edtTypeAddress.setText(contact.address_type)
         edtFactoryAddress.setText(contact.address_factory)
@@ -446,11 +347,13 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
             location?.longitude = contact.map_longitude.toDouble()
             handleNewLocation(location!!)
         }
+        */
 
     }
 
     fun showFormContact(){
-        //contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+        contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+        contactVM.updateViewState(ContactState.SHOWFORM)
         root.visibility = View.VISIBLE
         rootInput.visibility = View.GONE
         imgEdit.visibility = View.GONE
@@ -469,9 +372,10 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
         edtCompany.setText(contact.company)
         edtBill.setText(contact.bill)
         edtContactName.setText(contact.contact_name)
-        edtTypeAddress.setText(contact.address_type)
-        edtFactoryAddress.setText(contact.address_factory)
+        //edtTypeAddress.setText(contact.address_type)
+        //edtFactoryAddress.setText(contact.address_factory)
 
+        /*
         val options = RequestOptions().centerCrop()
         Glide.with(this@ContactFragment)
                 .load(R.drawable.mock_picture)
@@ -480,6 +384,7 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
         val cameraPosition = CameraPosition.Builder().target(LatLng((-33).toDouble(), 150.0)).zoom(13F).build()
         map.clear()
         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        */
 
 
     }
@@ -517,7 +422,7 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
                 edtCompany.text = edtInput.text
             }
             CurrentInputState.Address ->{
-                addressAdapter.addAddress(edtInput.text.toString())
+                //addressAdapter.addAddress(edtInput.text.toString())
             }
             CurrentInputState.Bill ->{
                 edtBill.text = edtInput.text
@@ -621,41 +526,6 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
         startActivity(Intent.createChooser(intent, "Email via..."))
     }
 
-
-    fun setupGoogleClient(){
-        mLocationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(10 * 1000)        // 10 seconds, in milliseconds
-                .setFastestInterval(1 * 1000)
-
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult?) {
-                locationResult ?: return
-                for (location in locationResult.locations){
-                    this@ContactFragment.location = location
-
-                }
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    fun enableMyLocation() {
-        Dexter.withActivity(activity)
-                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-                .withListener(object : MultiplePermissionsListener {
-                    override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                        contactVM.updateGranted(!report!!.isAnyPermissionPermanentlyDenied)
-                    }
-
-                    override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?,
-                                                                    token: PermissionToken?) {
-                    }
-                }).check()
-    }
-
-
-
     fun observerContacts(){
         contactVM.isSaveContactComplete.observe(this, Observer {
             when(it){
@@ -695,13 +565,16 @@ class ContactFragment  : Fragment(),OnMapReadyCallback,ComponentListener{
 
     }
 
-    override fun OnAddressClick(address: String, isAction: Boolean,position:Int) {
-
+    override fun OnAddressClick(address: Model.Address, isAction: Boolean,position:Int) {
         if (isAction){
-            updateState(CurrentInputState.Address)
-            showFormInput()
-            updateInputForm("ที่อยู่",address)
-            addressAdapter.remove(position)
+            val intent = Intent()
+            intent.putExtra(ROOT.ADDRESS,address)
+            intent.putExtra(ROOT.POSITION,position)
+            startActivityForResult(intent.setClass(activity,ActivityEditContact::class.java),KEY.EDIT_ADDRESS)
+            //updateState(CurrentInputState.Address)
+            //showFormInput()
+            //updateInputForm("ที่อยู่",address)
+            //addressAdapter.remove(position)
         }else{
             addressAdapter.remove(position)
         }

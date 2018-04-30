@@ -44,9 +44,10 @@
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:id="@+id/txtIssue"
-            android:layout_width="144dp"
+            android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:gravity="left|center_vertical"
@@ -55,23 +56,22 @@
             android:textColor="@android:color/black"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/txtCompany"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:id="@+id/txtCompany"
-            android:layout_width="0dp"
+            android:layout_width="100dp"
             android:layout_height="40dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:maxLines="1"
             android:paddingStart="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/txtIssue"
             app:layout_constraintTop_toTopOf="parent" />
     </android.support.constraint.ConstraintLayout>
 </me.thanel.swipeactionview.SwipeActionView>

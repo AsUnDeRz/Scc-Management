@@ -33,6 +33,7 @@ import asunder.toche.sccmanagement.products.pager.ProductsPager
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
 import kotlinx.android.synthetic.main.fragment_product_add.*
 import kotlinx.android.synthetic.main.fragment_products.*
+import kotlinx.android.synthetic.main.item_product.*
 import kotlinx.android.synthetic.main.layout_input.*
 import kotlinx.android.synthetic.main.layout_price_rate.*
 import kotlinx.android.synthetic.main.section_product_confirm.*
@@ -44,8 +45,9 @@ import java.util.*
 /**
  *Created by ToCHe on 26/2/2018 AD.
  */
-class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
-
+class ProductsFragment : Fragment(),
+        ConfirmDialog.ConfirmDialogListener,
+        MediumRateAdapter.MediumListener {
 
     enum class CurrentInputState{
         PROD_NAME,
@@ -60,9 +62,9 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
     }
     private lateinit var productViewModel: ProductViewModel
     private lateinit var controlViewModel: ControlViewModel
-
     private lateinit var rootLayoutInput : ScrollView
     private lateinit var rootLayoutMediumRate : ScrollView
+    private lateinit var rootLayoutMediumForm : ConstraintLayout
     private lateinit var rootProductForm : ConstraintLayout
     private lateinit var mediumRateAdapter: MediumRateAdapter
     private var stateInput :CurrentInputState = CurrentInputState.PROD_NAME
@@ -83,6 +85,10 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
         controlViewModel.currentUI.observe(this, Observer {
             if (it == ROOT.PRODUCTS){
                 initViewCreated()
+            }else{
+                if (productViewModel.stateView.value == ProductState.SHOWFORM){
+                    saveProduct()
+                }
             }
         })
     }
@@ -134,9 +140,9 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
 
     fun inflateStubLayoutMediumRate(){
         stubMediumRate.setOnInflateListener { _, v ->
-            rootLayoutMediumRate = v as ScrollView
-            rootLayoutMediumRate.visibility = View.GONE
-
+            rootLayoutMediumForm = v as ConstraintLayout
+            rootLayoutMediumForm.visibility = View.GONE
+            rootLayoutMediumRate = v.findViewById(R.id.priceRateScrollView)
         }
         stubMediumRate.inflate()
         initViewInStubMediumRate()
@@ -144,7 +150,9 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
 
     fun initViewInStubProduct(){
         imgNewMediumRate.setOnClickListener {
+            productViewModel.updateStateView(ProductState.NEWMEDIUM)
             showMediumPriceForm()
+            clearMediumPriceRate()
         }
 
         btnAddProduct.setOnClickListener {
@@ -157,12 +165,15 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
         }
 
         btnDeleteProduct.setOnClickListener {
+            productViewModel.product.value?.let {
+                showConfirmDialog(it.product_name)
+            }
             //productViewModel.deleteProduct()
         }
 
 
         rvMediumPrice.apply {
-            mediumRateAdapter = MediumRateAdapter(mutableListOf())
+            mediumRateAdapter = MediumRateAdapter(mutableListOf(),this@ProductsFragment)
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
             adapter = mediumRateAdapter
@@ -203,11 +214,11 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
     }
 
     fun initViewInStubMediumRate(){
-        btnCancelRate.setOnClickListener {
+        btnCancelPrice.setOnClickListener {
             showProductForm()
         }
 
-        btnSaveRate.setOnClickListener {
+        btnAddPrice.setOnClickListener {
             if(validateMediumRate()) {
                 addMediumPriceRate(Model.MediumRate(edtPrice.text.toString(), rdbVat.isChecked,
                         Utils.getDateStringWithDate(selectedDate), edtPriceNote.text.toString(),
@@ -218,6 +229,9 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
                 rootLayoutMediumRate.fullScroll(ScrollView.FOCUS_UP)
             }
         }
+        btnDeletePrice.setOnClickListener {
+
+        }
 
         edtPriceDate.setOnClickListener {
             showSpinner()
@@ -227,15 +241,16 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
     fun showProductList(){
         rootProductForm.visibility = View.GONE
         rootLayoutInput.visibility = View.GONE
-        rootLayoutMediumRate.visibility = View.GONE
+        rootLayoutMediumForm.visibility = View.GONE
         imgNewProduct.visibility = View.VISIBLE
 
     }
     fun showProductForm(){
+        productViewModel.updateStateView(ProductState.SHOWFORM)
         productScrollView.fullScroll(ScrollView.FOCUS_UP)
         rootProductForm.visibility = View.VISIBLE
         rootLayoutInput.visibility = View.GONE
-        rootLayoutMediumRate.visibility = View.GONE
+        rootLayoutMediumForm.visibility = View.GONE
         imgNewProduct.visibility = View.GONE
 
 
@@ -243,7 +258,7 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
     fun showLayoutInput(){
         rootLayoutInput.visibility = View.VISIBLE
         rootProductForm.visibility = View.GONE
-        rootLayoutMediumRate.visibility = View.GONE
+        rootLayoutMediumForm.visibility = View.GONE
         checkState()
         edtInput.ShowKeyboard()
     }
@@ -252,11 +267,22 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
         rootLayoutMediumRate.fullScroll(ScrollView.FOCUS_UP)
         rootLayoutInput.visibility = View.GONE
         rootProductForm.visibility = View.GONE
-        rootLayoutMediumRate.visibility = View.VISIBLE
+        rootLayoutMediumForm.visibility = View.VISIBLE
         edtPriceDate.setText(Utils.getCurrentDateShort())
         edtPriceValues.visibility = View.GONE
+        rdbCash.visibility = View.GONE
         txtValues.visibility = View.GONE
+    }
 
+    fun setMediumPriceForm(mediumRate: Model.MediumRate){
+        edtPriceDate.setText(mediumRate.date.substring(0,7))
+        edtPrice.setText(mediumRate.price)
+        edtPriceNote.setText(mediumRate.note)
+        if (mediumRate.vat){
+            radioGroup.check(rdbVat.id)
+        }else{
+            radioGroup.check(rdbNoVat.id)
+        }
     }
 
     fun showSpinner(){
@@ -379,13 +405,17 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
     }
 
     fun addMediumPriceRate(mediumRate: Model.MediumRate){
-        mediumRateAdapter.addMediumList(mediumRate)
+        if (productViewModel.stateView.value == ProductState.SELECTMEDIUM){
+            mediumRateAdapter.updateMedium(productViewModel.mediumPosition,mediumRate)
+        }else {
+            mediumRateAdapter.addMediumList(mediumRate)
+        }
         productViewModel.updateMediumRateList(mediumRateAdapter.mediumList)
     }
 
     fun clearMediumPriceRate(){
         edtPrice.setText("")
-        edtPriceDate.setText("")
+        edtPriceDate.setText(Utils.getCurrentDateShort())
         edtPriceNote.setText("")
         rdbVat.isChecked = true
         edtPriceValues.setText("")
@@ -439,6 +469,9 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
         productViewModel.products.observe(this, Observer {
         })
 
+        productViewModel.mediumRate.observe(this, Observer {
+        })
+
         productViewModel.stateView.observe(this, Observer {
             when(it){
                 ProductState.SHOWLIST ->{
@@ -446,8 +479,7 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
                     loading.dismiss()
                 }
                 ProductState.SHOWFORM ->{
-                    showProductForm()
-                    setupForm(productViewModel.product.value!!)
+
                 }
                 ProductState.SHOWINPUT ->{
 
@@ -459,6 +491,10 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
                     tabProduct.setScrollPosition(1,0f,true)
                     vpProduct.currentItem = 1
                     triggerProduct(productViewModel.product.value!!)
+                }
+                ProductState.SHOWFORMWITHPRODUCT ->{
+                    showProductForm()
+                    setupForm(productViewModel.product.value!!)
                 }
             }
         })
@@ -478,10 +514,27 @@ class ProductsFragment : Fragment(), ConfirmDialog.ConfirmDialogListener {
     }
 
     override fun onClickConfirm() {
+        productViewModel.product.value?.let {
+            productViewModel.deleteProduct(it)
+        }
     }
 
     override fun onClickCancel() {
     }
+
+    override fun onClickMedium(mediumRate: Model.MediumRate,position:Int) {
+        productViewModel.updateMediumRate(mediumRate,position)
+        showMediumPriceForm()
+        setMediumPriceForm(mediumRate)
+        productViewModel.updateStateView(ProductState.SELECTMEDIUM)
+
+    }
+    override fun onClickLongMedium(mediumRate: Model.MediumRate) {
+        val dialog = ConfirmDialog.newInstance(mediumRate.note,"Note",false)
+        dialog.customListener(this)
+        dialog.show(fragmentManager,ConfirmDialog::class.java.simpleName)
+    }
+
 
 
 }

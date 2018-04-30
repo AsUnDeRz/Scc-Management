@@ -130,7 +130,8 @@ class TransactionViewModel : ViewModel(),
     fun sortTomorrow(listener: TransactionListener):Model.MasterGroup{
         val masterGroup = tranformFormat()
         val companyList = masterGroup.groupCompany
-        val newDate = masterGroup.groupDate.filter { Utils.getDateString(it).time > Utils.getCurrentDate().time }
+        val newDate = masterGroup.groupDate.filter { Utils.getDateString(it).time > Utils.getCurrentDate().time
+                && Utils.getDateString(it).time <= Utils.getDateWithNumberFromCurrent(2).time }
         val result = separateSection(newDate,companyList,listener)
         return if(result.isNotEmpty()) {
             masterGroup.resultMap = result
@@ -145,7 +146,8 @@ class TransactionViewModel : ViewModel(),
     fun sortYesterday(listener: TransactionListener):Model.MasterGroup{
         val masterGroup = tranformFormat()
         val companyList = masterGroup.groupCompany
-        val newDate = masterGroup.groupDate.filter { Utils.getDateString(it).time < Utils.getPreviusDate().time }
+        val newDate = masterGroup.groupDate.filter { Utils.getDateString(it).time < Utils.getPreviusDate().time
+                && Utils.getDateString(it).time >= Utils.getDateWithNumberFromCurrent(-2).time }
         val result = separateSection(newDate
                 ,companyList,listener)
         return if(result.isNotEmpty()) {

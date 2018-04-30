@@ -6,6 +6,7 @@ import android.content.Intent
 import android.provider.ContactsContract
 import android.telephony.TelephonyManager
 import android.util.Log
+import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.main.ActivityMain
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.service.ContactService
@@ -31,7 +32,6 @@ class PhoneStateReceive : BroadcastReceiver() {
             } else if (stateStr == TelephonyManager.EXTRA_STATE_RINGING) {
                 state = TelephonyManager.CALL_STATE_RINGING
             }
-
             onCallStateChanged(context, state, number)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -79,10 +79,14 @@ class PhoneStateReceive : BroadcastReceiver() {
 
     protected fun onIncomingCallReceived(ctx: Context, number: String?, start: Date?) {
             if (number != null) {
-                val displayname = filterContact(number, ctx)
+                //val displayname = filterContact(number, ctx)
+                val displayname = filterContact(ctx,number)
+                /*
                 if(!displayname.number.isEmpty()){
                     checkActivity(displayname,ctx)
                 }
+                */
+                HoverService.updateCurrent(displayname)
 
             }
 
@@ -148,6 +152,31 @@ class PhoneStateReceive : BroadcastReceiver() {
             PlaceholderContent.User("","")
         }
     }
+
+
+    private fun filterContact(context: Context,numberReceive: String): Model.Contact {
+        var users :Model.Contact? = null
+        val service = ContactService(object : ContactService.ContactCallBack{
+            override fun onSuccess() {
+            }
+            override fun onFail() {
+            }
+        })
+        val contacts = service.getContactInDb()
+        contacts.asSequence().forEach {
+            val result = it.numbers.filter { it.number == numberReceive }
+            if (result.isNotEmpty()) {
+                users = it
+            }
+        }
+
+        return if(users == null){
+            Model.Contact()
+        }else{
+            users!!
+        }
+    }
+
 
     companion object {
 

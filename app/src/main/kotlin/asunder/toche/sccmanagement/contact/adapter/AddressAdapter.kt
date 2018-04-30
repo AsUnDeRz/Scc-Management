@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.ComponentListener
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
@@ -20,16 +21,22 @@ import com.bumptech.glide.Glide
  */
 class AddressAdapter(var listener : ComponentListener): RecyclerView.Adapter<AddressAdapter.AddressHolder>(){
 
-    val addresses:MutableList<String> =  mutableListOf()
+    val addresses:MutableList<Model.Address> =  mutableListOf()
 
-    fun updateAddress(data:MutableList<String>){
+    fun updateAddress(data:MutableList<Model.Address>){
         addresses.clear()
         addresses.addAll(data)
         notifyDataSetChanged()
     }
 
-    fun addAddress(data:String){
+    fun addAddress(data:Model.Address){
         addresses.add(data)
+        notifyDataSetChanged()
+    }
+
+    fun updateAddress(data: Model.Address,position: Int){
+        addresses.removeAt(position)
+        addresses.add(position,data)
         notifyDataSetChanged()
     }
 
@@ -58,36 +65,31 @@ class AddressAdapter(var listener : ComponentListener): RecyclerView.Adapter<Add
         val imageStateDelete = itemView?.findViewById<ImageView>(R.id.imageStateDelete)
         val imageAction = itemView?.findViewById<AppCompatImageView>(R.id.imageAction)
 
-        fun bind(address: String,listener: ComponentListener){
+        fun bind(address: Model.Address,listener: ComponentListener){
             imageAction?.visibility = View.GONE
             txtTitle?.text = "ที่อยู่"
-            edtContent?.setText(address)
+            edtContent?.setText(address.address_type)
             imageStateDelete?.isSelected = true
             imageStateDelete?.setOnClickListener {
-                listener.OnAddressClick(addresses[adapterPosition],false,adapterPosition)
+                listener.OnAddressClick(Model.Address(),false,adapterPosition)
             }
             edtContent?.DisableClick()
             edtContent?.setOnClickListener {
-                listener.OnAddressClick(addresses[adapterPosition],true,adapterPosition)
+                listener.OnAddressClick(address,true,adapterPosition)
+            }
+            imageAction?.setOnClickListener {
+                //listener.OnAddressClick(address,true,adapterPosition)
             }
             imageStateDelete?.let {
                 Glide.with(itemView.context)
                         .load(R.drawable.ic_remove_white_24dp)
                         .into(it)
             }
-            edtContent?.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {
-                }
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    if(!s.isNullOrEmpty() && !s.isNullOrBlank()){
-                        addresses[adapterPosition] = s.toString()
-                    }else{
-                        addresses[adapterPosition] = ""
-                    }
-                }
-            })
+            imageAction?.let {
+                Glide.with(itemView.context)
+                        .load(R.drawable.ic_edit_black_24dp)
+                        .into(it)
+            }
         }
     }
 }

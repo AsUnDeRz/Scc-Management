@@ -14,12 +14,12 @@ class TransactionPager(fm: FragmentManager?) : FragmentStatePagerAdapter(fm) {
     val title = arrayListOf("ซื้อ / ขาย","")
     override fun getItem(position: Int): Fragment = when(position){
         0 -> TransactionListFragment.newInstance()
-        1 -> TransactionHistoryFragment.newInstance()
+        //1 -> TransactionHistoryFragment.newInstance("")
         else -> throw NullPointerException("fragment not attach to view pager")
     }
 
     override fun getCount(): Int {
-        return 2
+        return 1
     }
 
     override fun getPageTitle(position: Int): CharSequence {

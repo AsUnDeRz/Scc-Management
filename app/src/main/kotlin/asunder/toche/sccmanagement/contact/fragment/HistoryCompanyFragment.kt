@@ -115,6 +115,7 @@ class HistoryCompanyFragment : Fragment(),TransactionListener {
     }
 
     fun updateTransactionAdapter(contact: Model.Contact?){
+        txtBill.text = contact?.bill
         historyTransactionAdapter = HistoryTransactionAdapter()
         rvHistoryTransaction.adapter = historyTransactionAdapter
         Utils.findTransaction(contact?.id!!,object : Utils.OnFindTransactionsListener{

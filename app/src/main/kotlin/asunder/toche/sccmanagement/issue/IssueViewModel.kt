@@ -119,13 +119,15 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
         return setSectionAdapter(sectionList,resultIssue,listener)
     }
     fun sortTomorrow(listener: IssueAdapter.IssueItemListener): SectionedRecyclerViewAdapter{
-        val sectionList = tranformFormat().filter { Utils.getDateString(it).time > Utils.getCurrentDate().time }
+        val sectionList = tranformFormat().filter { Utils.getDateString(it).time > Utils.getCurrentDate().time
+                && Utils.getDateString(it).time <= Utils.getDateWithNumberFromCurrent(2).time }
                 .sortedByDescending { Utils.getDateString(it).time }
         val resultIssue = separateSection(sectionList,false)
         return setSectionAdapter(sectionList,resultIssue,listener)
     }
     fun sortYesterday(listener: IssueAdapter.IssueItemListener): SectionedRecyclerViewAdapter{
-        val sectionList = tranformFormat().filter { Utils.getDateString(it).time < Utils.getPreviusDate().time }
+        val sectionList = tranformFormat().filter { Utils.getDateString(it).time < Utils.getPreviusDate().time
+                && Utils.getDateString(it).time >= Utils.getDateWithNumberFromCurrent(-2).time }
                 .sortedByDescending { Utils.getDateString(it).time }
         val resultIssue = separateSection(sectionList,false)
         return setSectionAdapter(sectionList,resultIssue,listener)

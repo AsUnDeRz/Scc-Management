@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
+import asunder.toche.sccmanagement.preference.ROOT
 
 /**
  *Created by ToCHe on 18/3/2018 AD.
@@ -49,14 +50,25 @@ ProductHistoryOnClickListener)
 
         fun bind(transaction: Model.Transaction,contact:Model.Contact,listener:ProductHistoryOnClickListener){
             txtCompany?.text = contact.company
-            txtPriceSale?.text = transaction.sale_price[0].price
-            if(transaction.sale_price[0].vat) {
-                txtVat?.text = "A"
-            }else{
-                txtVat?.text = "B"
+            if (transaction.sale_price.isNotEmpty()) {
+                txtPriceSale?.text = transaction.sale_price[0].price
+                txtVat?.text = when(transaction.sale_price[0].vat){
+                    ROOT.VAT ->{
+                        "A"
+                    }
+                    ROOT.NOVAT ->{
+                        "B"
+                    }
+                    ROOT.CASH ->{
+                        "C"
+                    }
+                    else ->{
+                        ""
+                    }
+                }
+                txtValues?.text = transaction.sale_price[0].values
+                txtDate?.text = transaction.date
             }
-            txtValues?.text = transaction.sale_price[0].values
-            txtDate?.text = transaction.date
 
             txtCompany?.setOnClickListener {
                 listener.OnClickHistoryProduct(transaction)
