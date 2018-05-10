@@ -6,6 +6,7 @@ import android.view.View
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
+import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.transactions.TransactionListener
 import com.bumptech.glide.Glide
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters
@@ -71,7 +72,7 @@ class SectionTransactionAdapter() : StatelessSection(SectionParameters.builder()
 
         fun bind(data: Model.Transaction,product:Model.Product,listener: TransactionListener){
             txtCompany.text = product.product_name
-            txtDate.text = data.date.substring(0,7)
+            txtDate.text = Utils.format2DigiYMD(data.date)
             txtVat.text = "A"
             if (data.sale_price.isNotEmpty()) {
                 txtPriceSale.text = data.sale_price[0].price

@@ -48,6 +48,11 @@ object Utils{
         return fmtOut.parse(date)
     }
 
+    fun format2DigiYMD(date: String):String{
+        val fmtOut = SimpleDateFormat("yy/MM/dd", Locale("th","TH"))
+        return fmtOut.format(getDateWithString(date))
+    }
+
     fun getDateWithNumberFromCurrent(number:Int):Date{
         val calendar = Calendar.getInstance()
         calendar.time = getCurrentDate()
@@ -100,8 +105,10 @@ object Utils{
                     if (!(constraint == null || constraint.isEmpty())) {
                         masterData.filterTo(suggestionList) {
                             it.company.contains(constraint.toString()) ||
+                                    it.bill.contains(constraint.toString()) ||
                                     it.contact_name.contains(constraint.toString()) ||
-                                    it.numbers.any { it.number.contains(constraint.toString()) } ||
+                                    it.contact_name.contains(constraint.toString()) ||
+                                    it.numbers.any { it.data.contains(constraint.toString()) } ||
                                     it.id.contains(constraint.toString()) ||
                                     it.numbers.any { it.type.contains(constraint.toString()) }
                         }

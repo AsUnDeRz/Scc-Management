@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.button.BtnMedium
@@ -12,6 +13,7 @@ import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.service.ContactService
 import asunder.toche.sccmanagement.transactions.IssueListener
+import kotlinx.android.synthetic.main.item_issue.view.*
 import me.thanel.swipeactionview.SwipeActionView
 import me.thanel.swipeactionview.SwipeGestureListener
 
@@ -36,10 +38,10 @@ class IssueAdapter : RecyclerView.Adapter<IssueAdapter.IssueHolder>(){
     class IssueHolder(itemView: View) : RecyclerView.ViewHolder(itemView),ContactService.ContactCallBack {
 
 
-        val txtIssue :TxtMedium = itemView.findViewById(R.id.txtIssue)
-        val txtCompany:TxtMedium = itemView.findViewById(R.id.txtCompany)
-        private val swipeView : SwipeActionView = itemView.findViewById(R.id.swipeIssue)
-        private val rootContent :ConstraintLayout = itemView.findViewById(R.id.rootIssue)
+        val txtIssue :TxtMedium = itemView.txtIssue
+        val txtCompany:TxtMedium = itemView.txtCompany
+        //private val swipeView : SwipeActionView = itemView.findViewById(R.id.swipeIssue)
+        private val rootContent :RelativeLayout = itemView.rootIssue
 
         fun bind(issue:Model.Issue,listener: IssueItemListener){
             txtIssue.text = issue.issue_name
@@ -51,16 +53,13 @@ class IssueAdapter : RecyclerView.Adapter<IssueAdapter.IssueHolder>(){
                 }
             },ContactService(this).getContactInDb())
 
-            rootContent.setOnClickListener {
-                listener.onSelectIssue(issue)
-            }
-            txtIssue.setOnClickListener {
-                listener.onSelectIssue(issue)
-            }
-            txtCompany.setOnClickListener {
-                listener.onSelectIssue(issue)
+            itemView.setOnClickListener {
+                println("ItemView ONClick")
+                listener.onClickEdit(issue)
+                //listener.onSelectIssue(issue)
             }
 
+            /*
             val btnEdt = swipeView.findViewById<BtnMedium>(R.id.btnEdit)
             val btnDelete = swipeView.findViewById<BtnMedium>(R.id.btnDelete)
             swipeView.swipeGestureListener = object : SwipeGestureListener {
@@ -78,6 +77,7 @@ class IssueAdapter : RecyclerView.Adapter<IssueAdapter.IssueHolder>(){
                     return true
                 }
             }
+            */
         }
         override fun onSuccess() {}
 

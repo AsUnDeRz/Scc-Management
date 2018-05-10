@@ -93,7 +93,7 @@ class CompanyFragment : Fragment(),CompanyAdapter.CompanyListener {
 
     override fun onSelectContact(contact: Model.Contact) {
         contactVM.updateContact(contact)
-        contactVM.updateViewState(ContactState.SELECTCONTACT)
+        contactVM.updateViewState(ContactState.EDITCONTACT)
     }
 
     override fun onClickEdit(contact: Model.Contact) {
@@ -104,5 +104,10 @@ class CompanyFragment : Fragment(),CompanyAdapter.CompanyListener {
 
     override fun onClickDelete(contact: Model.Contact) {
         contactVM.deleteContact(contact)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        println("Company onResume")
     }
 }

@@ -72,6 +72,10 @@ class ProductsFragment : Fragment(),
     private lateinit var edtInput : EdtMedium
     private var selectedDate : Date = Utils.getCurrentDate()
     private var loading = LoadingDialog.newInstance()
+    private var isInitView = false
+    private val productListFragment = ProductListFragment.newInstance()
+    private val productHistoryFragment = ProductHistoryFragment.newInstance()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,7 +88,10 @@ class ProductsFragment : Fragment(),
     fun initControllState(){
         controlViewModel.currentUI.observe(this, Observer {
             if (it == ROOT.PRODUCTS){
-                initViewCreated()
+                if (!isInitView) {
+                    initViewCreated()
+                }
+                displayProductList()
             }else{
                 if (productViewModel.stateView.value == ProductState.SHOWFORM){
                     saveProduct()
@@ -94,8 +101,9 @@ class ProductsFragment : Fragment(),
     }
 
     fun initViewCreated(){
-        setUpPager()
-        setUpTablayout()
+        isInitView = true
+        //setUpPager()
+        //setUpTablayout()
         setEditAction()
         observProductViewModel()
     }
@@ -104,6 +112,7 @@ class ProductsFragment : Fragment(),
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = LayoutInflater.from(context).inflate(R.layout.fragment_products,container,false)
+        initFragment()
         return view
     }
 
@@ -112,6 +121,46 @@ class ProductsFragment : Fragment(),
         inflateStubProductAdd()
         inflateStubLayoutInput()
         inflateStubLayoutMediumRate()
+    }
+
+    fun initFragment(){
+        val ft = fragmentManager?.beginTransaction()
+        ft?.add(R.id.vpProduct, productHistoryFragment, ProductHistoryFragment::class.java.simpleName)
+        ft?.add(R.id.vpProduct, productListFragment, ProductListFragment::class.java.simpleName)
+        ft?.hide(productHistoryFragment)
+        ft?.commit()
+
+    }
+    // Replace the switch method
+    fun displayProductList(){
+        val ft = fragmentManager?.beginTransaction()
+        if (productListFragment.isAdded) { // if the fragment is already in container
+            ft?.show(productListFragment)
+        } else { // fragment needs to be added to frame container
+            //ft?.add(R.id.rvContact, companyFragment, companyFragment::class.java.simpleName)
+        }
+        // Hide fragment History
+        if (productHistoryFragment.isAdded) {
+            ft?.hide(productHistoryFragment)
+        }
+        // Commit changes
+        ft?.commit()
+    }
+
+    // Replace the switch method
+    fun displayHistory(){
+        val ft = fragmentManager?.beginTransaction()
+        if (productHistoryFragment.isAdded) { // if the fragment is already in container
+            ft?.show(productHistoryFragment)
+        } else { // fragment needs to be added to frame container
+            //ft?.add(R.id.rvContact, historyCompanyFragment, historyCompanyFragment::class.java.simpleName)
+        }
+        // Hide fragment History
+        if (productListFragment.isAdded) {
+            ft?.hide(productListFragment)
+        }
+        // Commit changes
+        ft?.commit()
     }
 
 
@@ -200,6 +249,13 @@ class ProductsFragment : Fragment(),
             showLayoutInput()
         }
 
+        btnHistorySell.setOnClickListener {
+            productViewModel.updateStateView(ProductState.SHOWPRODUCT)
+            rootProductForm.visibility = View.GONE
+            rootLayoutInput.visibility = View.GONE
+            rootLayoutMediumForm.visibility = View.GONE
+        }
+
     }
 
     fun initViewInStubLayoutInput(){
@@ -230,7 +286,9 @@ class ProductsFragment : Fragment(),
             }
         }
         btnDeletePrice.setOnClickListener {
-
+            deleteMediumPriceRate()
+            clearMediumPriceRate()
+            showProductForm()
         }
 
         edtPriceDate.setOnClickListener {
@@ -239,6 +297,7 @@ class ProductsFragment : Fragment(),
     }
 
     fun showProductList(){
+        displayProductList()
         rootProductForm.visibility = View.GONE
         rootLayoutInput.visibility = View.GONE
         rootLayoutMediumForm.visibility = View.GONE
@@ -248,6 +307,7 @@ class ProductsFragment : Fragment(),
     fun showProductForm(){
         productViewModel.updateStateView(ProductState.SHOWFORM)
         productScrollView.fullScroll(ScrollView.FOCUS_UP)
+        edtProductName.requestFocus()
         rootProductForm.visibility = View.VISIBLE
         rootLayoutInput.visibility = View.GONE
         rootLayoutMediumForm.visibility = View.GONE
@@ -275,7 +335,7 @@ class ProductsFragment : Fragment(),
     }
 
     fun setMediumPriceForm(mediumRate: Model.MediumRate){
-        edtPriceDate.setText(mediumRate.date.substring(0,7))
+        edtPriceDate.setText(mediumRate.date.substring(0,10))
         edtPrice.setText(mediumRate.price)
         edtPriceNote.setText(mediumRate.note)
         if (mediumRate.vat){
@@ -299,7 +359,7 @@ class ProductsFragment : Fragment(),
                     val dateSelect = Calendar.getInstance()
                     dateSelect.set(yearOf,monthOfYear,dayOfMonth,hourOf,minuteOf,0)
                     selectedDate = dateSelect.time
-                    edtPriceDate.setText(Utils.getDateStringWithDate(selectedDate).substring(0,7))
+                    edtPriceDate.setText(Utils.getDateStringWithDate(selectedDate).substring(0,10))
                 }
                 .spinnerTheme(R.style.DatePickerSpinner)
                 .year(year)
@@ -313,13 +373,12 @@ class ProductsFragment : Fragment(),
     }
 
 
+    /*
     fun setUpPager(){
         Log.d(TAG,"SetupPager")
         vpProduct.adapter = ProductsPager(childFragmentManager)
         vpProduct.setAllowedSwipeDirection(CustomViewPager.SwipeDirection.none)
         vpProduct.offscreenPageLimit = 2
-
-
     }
 
     fun setUpTablayout(){
@@ -341,6 +400,7 @@ class ProductsFragment : Fragment(),
             }
         })
     }
+    */
 
 
     fun setEditAction(){
@@ -413,6 +473,12 @@ class ProductsFragment : Fragment(),
         productViewModel.updateMediumRateList(mediumRateAdapter.mediumList)
     }
 
+    fun deleteMediumPriceRate(){
+        if (productViewModel.stateView.value == ProductState.SELECTMEDIUM){
+            mediumRateAdapter.deleteMedium(productViewModel.mediumPosition)
+        }
+        productViewModel.updateMediumRateList(mediumRateAdapter.mediumList)
+    }
     fun clearMediumPriceRate(){
         edtPrice.setText("")
         edtPriceDate.setText(Utils.getCurrentDateShort())
@@ -488,8 +554,9 @@ class ProductsFragment : Fragment(),
 
                 }
                 ProductState.SHOWPRODUCT ->{
-                    tabProduct.setScrollPosition(1,0f,true)
-                    vpProduct.currentItem = 1
+                    displayHistory()
+                    //tabProduct.setScrollPosition(1,0f,true)
+                    //vpProduct.currentItem = 1
                     triggerProduct(productViewModel.product.value!!)
                 }
                 ProductState.SHOWFORMWITHPRODUCT ->{

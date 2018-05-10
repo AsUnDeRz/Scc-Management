@@ -8,6 +8,7 @@ import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.preference.ROOT
+import asunder.toche.sccmanagement.preference.Utils
 
 /**
  *Created by ToCHe on 18/3/2018 AD.
@@ -67,7 +68,7 @@ ProductHistoryOnClickListener)
                     }
                 }
                 txtValues?.text = transaction.sale_price[0].values
-                txtDate?.text = transaction.date
+                txtDate?.text = Utils.format2DigiYMD(transaction.date)
             }
 
             txtCompany?.setOnClickListener {

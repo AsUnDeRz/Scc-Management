@@ -32,13 +32,18 @@ import asunder.toche.sccmanagement.preference.Utils
  */
 class NumberAdapter(var listener :ComponentListener):RecyclerView.Adapter<NumberAdapter.NumberHolder>(){
 
-    val numbers:MutableList<Model.Number> =  mutableListOf()
+    val numbers:MutableList<Model.Channel> =  mutableListOf()
     val typeList:MutableList<String> = mutableListOf()
     val defaultType = arrayListOf("Home","Work","Mobile")
 
-    fun updateNumbers(data:MutableList<Model.Number>){
+    fun updateNumbers(data:MutableList<Model.Channel>){
         numbers.clear()
         numbers.addAll(data)
+        notifyDataSetChanged()
+    }
+
+    fun addType(type:String){
+        typeList.add(0,type)
         notifyDataSetChanged()
     }
 
@@ -47,7 +52,7 @@ class NumberAdapter(var listener :ComponentListener):RecyclerView.Adapter<Number
         typeList.addAll(data)
     }
 
-    fun addNumber(data:Model.Number){
+    fun addNumber(data:Model.Channel){
         numbers.add(data)
         notifyDataSetChanged()
     }
@@ -77,13 +82,13 @@ class NumberAdapter(var listener :ComponentListener):RecyclerView.Adapter<Number
         val imageStateDelete = itemView?.findViewById<ImageView>(R.id.imageStateDelete)
         val imageAction = itemView?.findViewById<AppCompatImageView>(R.id.imageAction)
 
-        fun bind(number: Model.Number,listener:ComponentListener){
+        fun bind(number: Model.Channel,listener:ComponentListener){
             if(number.type == "" || number.type == "เลือก"){
                 txtTitle?.text = "เลือก"
             }else {
                 txtTitle?.text = number.type
             }
-            edtContent?.setText(number.number)
+            edtContent?.setText(number.data)
             edtContent?.inputType = InputType.TYPE_CLASS_PHONE
 
             //edtContent?.limitLength(10)
@@ -107,9 +112,9 @@ class NumberAdapter(var listener :ComponentListener):RecyclerView.Adapter<Number
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     if(!s.isNullOrEmpty() && !s.isNullOrBlank()){
-                        numbers[adapterPosition].number = s.toString()
+                        numbers[adapterPosition].data = s.toString()
                     }else{
-                        numbers[adapterPosition].number = ""
+                        numbers[adapterPosition].data = ""
                     }
                 }
             })
@@ -154,6 +159,7 @@ class NumberAdapter(var listener :ComponentListener):RecyclerView.Adapter<Number
                     typeNumber.clear()
                     typeNumber.addAll(typeList)
                     typeNumber.addAll(defaultType)
+                    listener.updateTypeList(edtType.text.toString())
                 }
             }
         }

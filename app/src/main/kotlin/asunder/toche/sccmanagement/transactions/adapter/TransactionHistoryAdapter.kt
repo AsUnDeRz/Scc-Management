@@ -69,7 +69,7 @@ class TransactionHistoryAdapter : RecyclerView.Adapter<TransactionHistoryAdapter
                 }
                 txtValues?.text = transaction.sale_price[0].values
             }
-            txtDate?.text = transaction.date.substring(0,7)
+            txtDate?.text = transaction.date.substring(0,10)
             itemView.setOnClickListener {
                 listner.onClickTransaction(transaction)
             }

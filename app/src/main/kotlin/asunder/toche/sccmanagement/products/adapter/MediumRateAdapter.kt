@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
+import asunder.toche.sccmanagement.preference.Utils
 import com.bumptech.glide.Glide
 
 /**
@@ -22,10 +23,15 @@ class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>,val listen
         notifyDataSetChanged()
     }
 
+    fun deleteMedium(position: Int){
+        mediumList.removeAt(position)
+        notifyDataSetChanged()
+    }
+
 
     fun updateMediumList(newData : MutableList<Model.MediumRate>){
         mediumList = newData
-        mediumList.sortByDescending { it.date }
+        //mediumList.sortByDescending { Utils.getDateWithString(it.date).time }
         notifyDataSetChanged()
     }
 
@@ -35,8 +41,13 @@ class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>,val listen
                 it.default = false
             }
         }
-        mediumList.add(mediumRate)
-        mediumList.sortByDescending { it.date }
+        mediumList.add(0,mediumRate)
+        //mediumList.sortByDescending { Utils.getDateWithString(it.date).time }
+        if (mediumList.isNotEmpty()){
+            if (mediumList.size > 20){
+                mediumList.removeAt(mediumList.lastIndex)
+            }
+        }
         notifyDataSetChanged()
     }
 
@@ -69,7 +80,7 @@ class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>,val listen
 
         fun bind(mediumRate: Model.MediumRate){
             txtMediumPrice?.text = mediumRate.price
-            txtMediumDate?.text = mediumRate.date.substring(0,7)
+            txtMediumDate?.text = Utils.format2DigiYMD(mediumRate.date)
             txtMediumVat?.text = if(mediumRate.vat) "A" else "B"
 
             if (mediumRate.note.isNotEmpty()){

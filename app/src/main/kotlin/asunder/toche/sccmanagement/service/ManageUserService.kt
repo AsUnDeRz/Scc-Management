@@ -186,6 +186,24 @@ class ManageUserService{
                 }
     }
 
+    fun authWithAnymously(listener:Auth){
+        mAuth.signInAnonymously()
+                .addOnCompleteListener { it ->
+                    if(it.isSuccessful){
+                        val user = mAuth.currentUser
+                        if (user != null) {
+                            pushRequestSignUp(Model.UserAuth(user.uid,ROOT.REQUEST,
+                                    Utils.getCurrentDateString(),"",
+                                    "test_email",ROOT.EMAIL),listener)
+                        }
+                    }else{
+                        Log.w(TAG, "signIn:failure", it.exception)
+                        listener.authFail(it.exception?.message.toString())
+                        Crashlytics.log(it.exception?.message)
+                    }
+                }
+    }
+
     fun signOut(){
         val user = mAuth.currentUser
         Log.d(TAG,"Error with "+user?.email)

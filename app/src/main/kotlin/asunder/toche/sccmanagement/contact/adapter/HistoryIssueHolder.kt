@@ -32,10 +32,10 @@ class HistoryIssueHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             txtCircleState.isSelected = false
             txtCircleState.text = "P"
         }
-        txtDate.text = issue.date.substring(0,7)
+        txtDate.text = issue.date.substring(0,10)
         txtIssue.text = issue.issue_name
 
-        itemView.rootView.setOnClickListener {
+        itemView.setOnClickListener {
             listener.onClickIssue(issue)
         }
     }
@@ -48,7 +48,7 @@ class HistoryIssueHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             txtCircleState.isSelected = false
             txtCircleState.text = "P"
         }
-        txtDate.text = issue.date.substring(0,7)
+        txtDate.text = issue.date.substring(0,10)
         txtIssue.text = issue.issue_name
     }
 

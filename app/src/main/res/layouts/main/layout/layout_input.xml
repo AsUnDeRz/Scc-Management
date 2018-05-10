@@ -22,12 +22,13 @@
         android:text="title"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtInput"
         android:layout_width="0dp"
         android:layout_height="250dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="48dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_round_table"
@@ -35,35 +36,10 @@
         android:gravity="left"
         android:inputType="textMultiLine|textPersonName"
         android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/titleForm"
         app:layout_constraintTop_toBottomOf="@+id/titleForm" />
-
-    <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnSaveInput"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/btn_confirm"
-        android:text="@string/save"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="@+id/edtInput"
-        app:layout_constraintStart_toStartOf="@+id/edtInput"
-        app:layout_constraintTop_toBottomOf="@+id/edtInput" />
-
-    <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnCancelInput"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/btn_cancel"
-        android:text="@string/cancel"
-        android:textColor="@color/colorDark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/btnSaveInput"
-        app:layout_constraintStart_toStartOf="@+id/btnSaveInput"
-        app:layout_constraintTop_toBottomOf="@+id/btnSaveInput" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
         android:id="@+id/txtMedium15"
@@ -77,5 +53,42 @@
         app:layout_constraintEnd_toStartOf="@+id/edtInput"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/edtInput" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <asunder.toche.sccmanagement.custom.button.BtnMedium
+            android:id="@+id/btnCancelInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_yellow"
+            android:text="@string/cancel"
+            android:textColor="@android:color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+        <asunder.toche.sccmanagement.custom.button.BtnMedium
+            android:id="@+id/btnSaveInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_confirm"
+            android:text="@string/save"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread" />
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>
 </ScrollView>

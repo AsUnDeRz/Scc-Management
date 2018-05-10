@@ -28,11 +28,13 @@ import asunder.toche.sccmanagement.contact.adapter.CompanyAdapter
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
+import asunder.toche.sccmanagement.custom.extension.EnableClick
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.main.ControlViewModel
 import asunder.toche.sccmanagement.main.FilterViewPager
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
+import asunder.toche.sccmanagement.products.ProductState
 import asunder.toche.sccmanagement.products.adapter.ProductAdapter
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
 import asunder.toche.sccmanagement.transactions.ActivityHistory
@@ -51,7 +53,8 @@ import java.util.*
 /**
  *Created by ToCHe on 26/2/2018 AD.
  */
-class TransactionsFragment : Fragment(){
+class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
+
 
     private val TAG = this::class.java.simpleName
     companion object {
@@ -70,6 +73,7 @@ class TransactionsFragment : Fragment(){
     private lateinit var productAdapter: ProductAdapter
     private var loading = LoadingDialog.newInstance()
     private var selectedDate = Utils.getCurrentDate()
+    private var isInitView = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,7 +87,10 @@ class TransactionsFragment : Fragment(){
     fun initControllState(){
         controlViewModel.currentUI.observe(this, Observer {
             if (it == ROOT.TRANSACTIONS){
-                initViewCreated()
+                if (!isInitView){
+                    initViewCreated()
+                }
+
             }else{
                 if (transactionVM.stateView.value == TransactionState.SHOWFORM){
                     saveOrUpdateTransaction()
@@ -93,6 +100,7 @@ class TransactionsFragment : Fragment(){
     }
 
     fun initViewCreated(){
+        isInitView = true
         setUpPager()
         setUpTablayout()
         setEditAction()
@@ -160,19 +168,20 @@ class TransactionsFragment : Fragment(){
         tabLayoutFilterTransaction.addOnTabSelectedListener(object :TabLayout.OnTabSelectedListener{
             override fun onTabReselected(tab: TabLayout.Tab?) {
             }
-
             override fun onTabUnselected(tab: TabLayout.Tab?) {
             }
-
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when(tab?.position){
                     0 ->{
+                        println("Tabl filter transaction select")
                         transactionVM.updateStateView(TransactionState.SORTALL)
                     }
                     1 ->{
+                        println("Tabl filter transaction select")
                         transactionVM.updateStateView(TransactionState.SORTTOMORROW)
                     }
                     2 ->{
+                        println("Tabl filter transaction select")
                         transactionVM.updateStateView(TransactionState.SORTYESTERDAY)
                     }
                 }
@@ -188,7 +197,6 @@ class TransactionsFragment : Fragment(){
         }
         stubPriceRate.inflate()
         initViewInStubPriceRate()
-
     }
 
     fun inflateStubTransactionAdd(){
@@ -240,7 +248,7 @@ class TransactionsFragment : Fragment(){
 
     fun setupRalePriceAdapter(){
         rvSalePrice.apply {
-            saleRateAdapter = SaleRateAdapter(mutableListOf())
+            saleRateAdapter = SaleRateAdapter(mutableListOf(),this@TransactionsFragment)
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
             adapter = saleRateAdapter
@@ -267,18 +275,22 @@ class TransactionsFragment : Fragment(){
     fun initViewInStubPriceRate(){
         btnAddPrice.setOnClickListener {
             if(validateSaleRate()) {
-                addSalePrice(Model.SalePrice(edtPrice.text.toString(),getSaleType(),
-                        edtPriceValues.text.toString(),Utils.getDateStringWithDate(selectedDate),edtPriceNote.text.toString()))
+                addSaleRate(Model.SalePrice(edtPrice.text.toString(), getSaleType(),
+                        edtPriceValues.text.toString(), Utils.getDateStringWithDate(selectedDate), edtPriceNote.text.toString()))
+                clearPriceForm()
                 showTransactionForm()
+            }else{
+
             }
+        }
+        btnDeletePrice.setOnClickListener {
+            deleteSaleRate()
+            clearSaleRate()
+            showTransactionForm()
         }
 
         btnCancelPrice.setOnClickListener {
             showTransactionForm()
-        }
-
-        btnDeletePrice.setOnClickListener {
-
         }
 
         edtPriceDate.setOnClickListener {
@@ -296,6 +308,9 @@ class TransactionsFragment : Fragment(){
     }
     fun showTransactionForm(){
         transactionVM.updateStateView(TransactionState.SHOWFORM)
+        edtTransactionCompany.EnableClick()
+        edtTransactionCompany.requestFocus()
+        edtTransactionCompany.DisableClick()
         transactionScrollView.fullScroll(ScrollView.FOCUS_UP)
         rootTransactionForm.visibility = View.VISIBLE
         rootLayoutPriceForm.visibility = View.GONE
@@ -408,9 +423,16 @@ class TransactionsFragment : Fragment(){
 
     fun observeTransaction(){
         transactionVM.transaction.observe(this, Observer {
+            println("OnTransaction values change ${transactionVM.stateView.value}")
             if (transactionVM.stateView.value == TransactionState.SHOWTRANSACTION){
                 //vpTransaction.currentItem = 1
                 setupTransaction(it!!)
+                println("OnTransaction setup with showTransaction")
+            }
+            if (transactionVM.stateView.value == TransactionState.SHOWFORM){
+                //vpTransaction.currentItem = 1
+                setupTransaction(it!!)
+                println("OnTransaction setup with showfrom")
             }
         })
         transactionVM.stateView.observe(this, Observer {
@@ -436,6 +458,9 @@ class TransactionsFragment : Fragment(){
                     edtTransactionCompany.setText(transactionVM.contact.value?.company)
 
                 }
+                TransactionState.SORTALL ->{
+                    println(it)
+                }
             }
         })
     }
@@ -453,7 +478,7 @@ class TransactionsFragment : Fragment(){
                 .context(context)
                 .callback { _, yearOf, monthOfYear, dayOfMonth, hourOf, minuteOf ->
                     val dateSelect = Calendar.getInstance()
-                    dateSelect.set(yearOf,monthOfYear,dayOfMonth,hourOf,minuteOf,0)
+                    dateSelect.set(yearOf,monthOfYear,dayOfMonth,hour,minute,0)
                     selectedDate = dateSelect.time
                     edtPriceDate.setText(Utils.getDateStringWithDate(selectedDate).substring(0,10))
                 }
@@ -481,7 +506,9 @@ class TransactionsFragment : Fragment(){
     }
 
     fun setUpAdapterProduct(){
-        productAdapter = ProductAdapter(productVM.service.getProductsInDb(),false)
+        val products = productVM.service.getProductsInDb()
+        products.sortBy { it.product_name }
+        productAdapter = ProductAdapter(products,false)
         productAdapter.setUpOnClickListener(object : ProductAdapter.ProductOnClickListener{
             override fun onClickProduct(product: Model.Product) {
                 edtTransactionProduct.setText(product.product_name)
@@ -568,6 +595,71 @@ class TransactionsFragment : Fragment(){
             }
         })
 
+    }
+
+    fun setSaleRateForm(salePrice: Model.SalePrice){
+        /*
+        txtSaleDate?.text = Utils.format2DigiYMD(salePrice.date)
+            txtSalePrice?.text = salePrice.price
+            txtSaleValues?.text = salePrice.values
+            txtSaleVat?.text = getSaleType(salePrice.vat)
+         */
+        edtPriceDate.setText(Utils.format2DigiYMD(salePrice.date))
+        edtPrice.setText(salePrice.price)
+        edtPriceValues.setText(salePrice.values)
+        getSaleType(salePrice.vat)
+    }
+
+    fun getSaleType(typePrice:String){
+        when(typePrice){
+            ROOT.NOVAT->{
+                radioGroup.check(rdbNoVat.id)
+            }
+            ROOT.VAT ->{
+                radioGroup.check(rdbVat.id)
+            }
+            ROOT.CASH->{
+                radioGroup.check(rdbCash.id)
+            }
+            else ->{
+            }
+        }
+    }
+
+    fun addSaleRate(salePrice: Model.SalePrice){
+        if (transactionVM.stateView.value == TransactionState.SELECTSALEPRICE){
+            saleRateAdapter.updateSaleRate(transactionVM.salePricePosition,salePrice)
+        }else {
+            saleRateAdapter.addSaleList(salePrice)
+        }
+        transactionVM.updateSalePriceLists(saleRateAdapter.saleList)
+    }
+
+    fun deleteSaleRate(){
+        if (transactionVM.stateView.value == TransactionState.SELECTSALEPRICE){
+            saleRateAdapter.deleteSaleRate(transactionVM.salePricePosition)
+        }
+        transactionVM.updateSalePriceLists(saleRateAdapter.saleList)
+    }
+
+    fun clearSaleRate(){
+        edtPrice.setText("")
+        edtPriceDate.setText(Utils.getCurrentDateShort())
+        edtPriceNote.setText("")
+        rdbVat.isChecked = true
+        edtPriceValues.setText("")
+        selectedDate = Utils.getCurrentDate()
+    }
+
+    override fun onClickSaleRate(salePrice: Model.SalePrice, position: Int) {
+        transactionVM.updateSalePrice(salePrice,position)
+        showSalePriceForm()
+        setSaleRateForm(salePrice)
+        transactionVM.updateStateView(TransactionState.SELECTSALEPRICE)
+
+    }
+
+    override fun onClickLongSaleRate(salePrice: Model.SalePrice) {
     }
 
 }

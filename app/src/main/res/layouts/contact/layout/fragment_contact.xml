@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -14,32 +15,40 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_edit_black_24dp" />
-
-    <asunder.toche.sccmanagement.custom.pager.CustomViewPager
-        android:id="@+id/vpContact"
+    <FrameLayout
+        android:id="@+id/rvContact"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tabContact" />
-
-    <asunder.toche.sccmanagement.custom.tablayout.CustomTabLayout
+    <asunder.toche.sccmanagement.custom.textview.TxtBold
         android:id="@+id/tabContact"
-        android:layout_width="0dp"
+        android:layout_width="110dp"
         android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="32dp"
-        app:layout_constraintEnd_toStartOf="@+id/imgEdit"
+        android:background="@drawable/bg_round"
+        android:gravity="center"
+        android:text=" บริษัท"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tabBackground="@drawable/tab_round"
-        app:tabIndicatorColor="@android:color/transparent"
-        app:tabMinWidth="110dp"
-        app:tabMode="scrollable"
-        app:tabSelectedTextColor="@android:color/white">
+        app:layout_constraintTop_toTopOf="parent" />
 
-    </asunder.toche.sccmanagement.custom.tablayout.CustomTabLayout>
+    <asunder.toche.sccmanagement.custom.textview.TxtBold
+        android:id="@+id/tabContactHistory"
+        android:layout_width="110dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_round"
+        android:gravity="center"
+        android:text="ย้อนกลับ"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@+id/tabContact"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ViewStub
         android:id="@+id/stubContactAdd"

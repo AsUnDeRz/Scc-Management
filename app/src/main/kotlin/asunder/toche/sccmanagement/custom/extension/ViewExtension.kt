@@ -52,6 +52,10 @@ fun SwipeRefreshLayout.hideRefresh() {
         this.isRefreshing = false
     }
 }
+fun EditText.EnableClick(){
+    this.isFocusable = true
+    this.isFocusableInTouchMode = true
+}
 
 fun EditText.DisableClick(){
     this.isFocusable = false

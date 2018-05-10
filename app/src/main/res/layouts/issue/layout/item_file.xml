@@ -6,43 +6,41 @@
     android:layout_height="wrap_content">
 
     <RelativeLayout
-        android:id="@+id/vAddress"
+        android:id="@+id/vRoot"
         android:layout_width="0dp"
         android:layout_height="36dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imgStateAdd"
+            android:id="@+id/imageStateDelete"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
             android:background="@drawable/bg_circle_input"
             app:srcCompat="@drawable/ic_add_white_24dp" />
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
-            android:id="@+id/txtAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@+id/imgStateAdd"
-            android:text="เพิ่มที่อยู่"
-            android:textColor="@color/colorDark"
-            android:textSize="16sp" />
+            android:id="@+id/txtFile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@+id/imageStateDelete"
+            android:background="@drawable/bg_round_table"
+            android:ems="10"
+            android:gravity="center_vertical"
+            android:inputType="text|textPersonName"
+            android:maxLines="1"
+            android:paddingStart="8dp" />
 
 
     </RelativeLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvAddress"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vAddress" />
 </android.support.constraint.ConstraintLayout>

@@ -10,11 +10,10 @@ import asunder.toche.sccmanagement.transactions.TransactionListener
 /**
  *Created by ToCHe on 12/3/2018 AD.
  */
-class HistoryTransactionAdapter : RecyclerView.Adapter<HistoryTransactionHolder>() {
+class HistoryTransactionAdapter(var listener : TransactionListener?) : RecyclerView.Adapter<HistoryTransactionHolder>() {
 
     var mapTransaction : MutableMap<Model.Transaction,Model.Product> = mutableMapOf()
     var transactions : MutableList<Model.Transaction> = mutableListOf()
-    var listener : TransactionListener? = null
 
     fun updateMapTransaction(map:MutableMap<Model.Transaction,Model.Product>,
                              newData:MutableList<Model.Transaction>,

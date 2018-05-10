@@ -16,7 +16,7 @@
         android:background="@drawable/bg_round_table"
         android:gravity="left"
         android:hint="กรอกข้อมูล รายละเอียด ซื้อ/ขาย ..."
-        android:inputType="text"
+        android:inputType="text|textMultiLine"
         android:padding="8dp"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"

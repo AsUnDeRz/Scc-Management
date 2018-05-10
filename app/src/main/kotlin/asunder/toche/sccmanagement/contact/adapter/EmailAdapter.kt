@@ -1,34 +1,52 @@
 package asunder.toche.sccmanagement.contact.adapter
 
+import android.support.design.widget.BottomSheetBehavior
+import android.support.design.widget.BottomSheetDialog
 import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.ImageView
+import android.widget.ListView
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.ComponentListener
+import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.item_component_info.view.*
 
 /**
  *Created by ToCHe on 3/4/2018 AD.
  */
 class EmailAdapter(var listener: ComponentListener): RecyclerView.Adapter<EmailAdapter.EmailHolder>(){
 
-    val emails:MutableList<String> =  mutableListOf()
+    val emails:MutableList<Model.Channel> =  mutableListOf()
+    val typeList:MutableList<String> = mutableListOf()
+    val defaultType = arrayListOf("Home","Work","Mobile")
 
-    fun updateEmails(data:MutableList<String>){
+    fun addType(type:String){
+        typeList.add(0,type)
+        notifyDataSetChanged()
+    }
+    fun updateTypeList(data: MutableList<String>){
+        typeList.clear()
+        typeList.addAll(data)
+    }
+
+    fun updateEmails(data:MutableList<Model.Channel>){
         emails.clear()
         emails.addAll(data)
         notifyDataSetChanged()
     }
 
-    fun addEmail(data:String){
+    fun addEmail(data:Model.Channel){
         emails.add(data)
         notifyDataSetChanged()
     }
@@ -52,15 +70,20 @@ class EmailAdapter(var listener: ComponentListener): RecyclerView.Adapter<EmailA
     }
 
 
-    inner class EmailHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
-        val txtTitle = itemView?.findViewById<TxtMedium>(R.id.txtTitle)
-        val edtContent = itemView?.findViewById<EdtMedium>(R.id.edtContent)
-        val imageStateDelete = itemView?.findViewById<ImageView>(R.id.imageStateDelete)
-        val imageAction = itemView?.findViewById<AppCompatImageView>(R.id.imageAction)
+    inner class EmailHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(email: String,listener: ComponentListener){
-            txtTitle?.text = "อีเมล"
-            edtContent?.setText(email)
+        val txtTitle = itemView.txtTitle
+        val edtContent = itemView.edtContent
+        val imageStateDelete = itemView.imageStateDelete
+        val imageAction = itemView.imageAction
+
+        fun bind(email: Model.Channel,listener: ComponentListener){
+            if(email.type == "" || email.type == "เลือก"){
+                txtTitle?.text = "เลือก"
+            }else {
+                txtTitle?.text = email.type
+            }
+            edtContent?.setText(email.data)
             imageStateDelete?.isSelected = true
             imageStateDelete?.setOnClickListener {
                 listener.OnEmailClick(emails[adapterPosition],false,adapterPosition)
@@ -85,13 +108,59 @@ class EmailAdapter(var listener: ComponentListener): RecyclerView.Adapter<EmailA
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     if(!s.isNullOrEmpty() && !s.isNullOrBlank()){
-                        emails[adapterPosition] = s.toString()
+                        emails[adapterPosition].data = s.toString()
                     }else{
-                        emails[adapterPosition] = ""
+                        emails[adapterPosition].data = ""
                     }
                 }
             })
 
+            txtTitle?.setOnClickListener {
+                showSheetCompany(adapterPosition,txtTitle)
+            }
+
+        }
+
+        fun showSheetCompany(itemPosition: Int,txtTitle:TxtMedium){
+            val bottomSheetView = LayoutInflater.from(itemView.context).inflate(R.layout.bottom_sheet_product,null)
+            val rvFilterType = bottomSheetView.findViewById<ListView>(R.id.rvFilterType)
+            val btnCancel = bottomSheetView.findViewById<BtnMedium>(R.id.btnCancel)
+            val btnAddType = bottomSheetView.findViewById<BtnMedium>(R.id.btnAddType)
+            val edtType = bottomSheetView.findViewById<EdtMedium>(R.id.edtType)
+            val bottomSheetDialog = BottomSheetDialog(itemView.context)
+            bottomSheetDialog.setContentView(bottomSheetView)
+            val sheetDisableCard = BottomSheetBehavior.from(bottomSheetView.parent as View)
+            if (sheetDisableCard.state != BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetDialog.show()
+
+            } else {
+                bottomSheetDialog.dismiss()
+            }
+            btnCancel.setOnClickListener {
+                bottomSheetDialog.dismiss()
+            }
+            val typeNumber = ArrayAdapter<String>(itemView.context,
+                    android.R.layout.simple_list_item_1, android.R.id.text1, mutableListOf())
+            typeNumber.addAll(typeList)
+            typeNumber.addAll(defaultType)
+            rvFilterType.adapter = typeNumber
+            rvFilterType.setOnItemClickListener { parent, view, position, id ->
+                emails[itemPosition].type = parent.getItemAtPosition(position) as String
+                txtTitle?.text = parent.getItemAtPosition(position) as String
+                bottomSheetDialog.dismiss()
+                notifyDataSetChanged()
+            }
+
+            btnAddType.setOnClickListener {
+                if (!TextUtils.isEmpty(edtType.text)){
+                    typeList.add(0,edtType.text.toString())
+                    typeNumber.clear()
+                    typeNumber.addAll(typeList)
+                    typeNumber.addAll(defaultType)
+                    listener.updateTypeList(edtType.text.toString())
+
+                }
+            }
         }
     }
 }

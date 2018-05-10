@@ -30,11 +30,14 @@ class TransactionViewModel : ViewModel(),
     val firebase = FirebaseManager()
     val transaction: MutableLiveData<Model.Transaction> = MutableLiveData()
     val transactions : MutableLiveData<MutableList<Model.Transaction>> = MutableLiveData()
+    val salePrice:MutableLiveData<Model.SalePrice> = MutableLiveData()
     val salePriceLists : MutableLiveData<MutableList<Model.SalePrice>> = MutableLiveData()
     val stateView : MutableLiveData<TransactionState> = MutableLiveData()
     val product: MutableLiveData<Model.Product> = MutableLiveData()
     val contact: MutableLiveData<Model.Contact> = MutableLiveData()
     var transactionId  =""
+    var salePricePosition:Int = 0
+
 
 
 
@@ -162,6 +165,11 @@ class TransactionViewModel : ViewModel(),
     fun loadTransaction(){
         val data = service.getTransactionInDb()
         updateTransactions(data)
+    }
+
+    fun updateSalePrice(data:Model.SalePrice,position:Int){
+        salePrice.value = data
+        salePricePosition = position
     }
 
     fun updateSalePriceLists(data : MutableList<Model.SalePrice>){

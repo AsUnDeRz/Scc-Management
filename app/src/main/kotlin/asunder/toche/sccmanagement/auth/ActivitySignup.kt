@@ -64,7 +64,7 @@ class ActivitySignup : AppCompatActivity(),
                         edtPassword.text.toString(),
                         this@ActivitySignup)
                 showLoading()
-            }
+           }
         }
 
 

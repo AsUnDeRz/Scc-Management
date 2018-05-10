@@ -48,6 +48,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+
+
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:id="@+id/textView10"
             android:layout_width="80dp"
@@ -69,7 +71,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:layout_weight="2">
+                android:layout_weight="3">
 
                 <asunder.toche.sccmanagement.custom.textview.TxtMedium
                     android:id="@+id/textView20"
@@ -139,7 +141,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_weight="3">
+                android:layout_weight="4">
 
                 <asunder.toche.sccmanagement.custom.textview.TxtMedium
                     android:id="@+id/textView21"
@@ -190,6 +192,15 @@
                 </LinearLayout>
 
             </RelativeLayout>
+
+            <asunder.toche.sccmanagement.custom.textview.TxtMedium
+                android:id="@+id/txtMedium13"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_weight="6"
+                android:background="@drawable/bg_round_table"
+                android:gravity="center"
+                android:text="NOTE" />
         </LinearLayout>
 
     </LinearLayout>

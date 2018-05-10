@@ -62,15 +62,19 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
     fun saveIssue(data:Model.Issue) = async(UI) {
         try {
             val job = async(CommonPool) {
-                if(data.file_path != ""){
-                    val filePath = Uri.fromFile(File(data.file_path))
-                    data.file_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${filePath.lastPathSegment}"
-                    firebase.pushFileToFirebase(data.file_path,"")
+                if(data.files.isNotEmpty()){
+                    data.files.forEach {
+                        val filePath = Uri.fromFile(File(it.local_path))
+                        it.cloud_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${filePath.lastPathSegment}"
+                        firebase.pushFileToFirebase(it.local_path,"")
+                    }
                 }
-                if(data.image_path != ""){
-                    val imgPath = Uri.fromFile(File(data.image_path))
-                    data.image_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${imgPath.lastPathSegment}"
-                    firebase.pushFileToFirebase(data.image_path,"")
+                if(data.pictures.isNotEmpty()){
+                    data.pictures.forEach {
+                        val imgPath = Uri.fromFile(File(it.local_path))
+                        it.cloud_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${imgPath.lastPathSegment}"
+                        firebase.pushFileToFirebase(it.local_path, "")
+                    }
                 }
                 data.company_id = companyReference.value!!.id
             }
@@ -80,6 +84,7 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
             }else{
                 service.updateIssue(data)
             }
+
         }
         catch (e: Exception) {
         }

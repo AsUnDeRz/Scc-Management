@@ -16,8 +16,9 @@ enum class ContactState{
 }
 
 interface ComponentListener{
-    fun OnNumberClick(number: Model.Number,isAction:Boolean,position:Int)
+    fun OnNumberClick(number: Model.Channel,isAction:Boolean,position:Int)
     fun OnAddressClick(address:Model.Address,isAction: Boolean,position:Int)
-    fun OnEmailClick(email:String,isAction: Boolean,position:Int)
-    fun OnWebsiteClick(web:String,isAction: Boolean,position:Int)
+    fun OnEmailClick(email:Model.Channel,isAction: Boolean,position:Int)
+    fun OnWebsiteClick(web:Model.Channel,isAction: Boolean,position:Int)
+    fun updateTypeList(type:String)
 }

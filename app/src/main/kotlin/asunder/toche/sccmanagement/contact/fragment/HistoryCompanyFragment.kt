@@ -15,13 +15,17 @@ import asunder.toche.sccmanagement.contact.adapter.HistoryIssueAdapter
 import asunder.toche.sccmanagement.contact.adapter.HistoryTransactionAdapter
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.TriggerContact
+import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
+import asunder.toche.sccmanagement.issue.IssueState
 import asunder.toche.sccmanagement.issue.IssueViewModel
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.service.IssueService
 import asunder.toche.sccmanagement.service.ProductService
 import asunder.toche.sccmanagement.service.TransactionService
+import asunder.toche.sccmanagement.transactions.IssueListener
 import asunder.toche.sccmanagement.transactions.TransactionListener
+import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
 import kotlinx.android.synthetic.main.layout_history_issue.*
 import kotlinx.android.synthetic.main.layout_history_issue.view.*
@@ -36,9 +40,9 @@ import org.greenrobot.eventbus.ThreadMode
 /**
  *Created by ToCHe on 26/2/2018 AD.
  */
-class HistoryCompanyFragment : Fragment(),TransactionListener {
-    override fun onClickNote(message: String) {
-    }
+class HistoryCompanyFragment : Fragment(),TransactionListener, IssueListener, ConfirmDialog.ConfirmDialogListener {
+
+
 
     lateinit var contactVM : ContactViewModel
     lateinit var transactionVM : TransactionViewModel
@@ -102,7 +106,7 @@ class HistoryCompanyFragment : Fragment(),TransactionListener {
             override fun onIssueFail() {
             }
         }).getIssueInDb()
-        historyIssueAdapter = HistoryIssueAdapter(mutableListOf())
+        historyIssueAdapter = HistoryIssueAdapter(mutableListOf(),this@HistoryCompanyFragment)
         rvHistoryIssue.adapter = historyIssueAdapter
         async(UI) {
             val filterResult = async {
@@ -116,7 +120,7 @@ class HistoryCompanyFragment : Fragment(),TransactionListener {
 
     fun updateTransactionAdapter(contact: Model.Contact?){
         txtBill.text = contact?.bill
-        historyTransactionAdapter = HistoryTransactionAdapter()
+        historyTransactionAdapter = HistoryTransactionAdapter(this)
         rvHistoryTransaction.adapter = historyTransactionAdapter
         Utils.findTransaction(contact?.id!!,object : Utils.OnFindTransactionsListener{
             override fun onResults(results: MutableList<Model.Transaction>) {
@@ -170,6 +174,15 @@ class HistoryCompanyFragment : Fragment(),TransactionListener {
     }
 
     override fun onClickTransaction(transaction: Model.Transaction) {
+        println("OnClickTransaction")
+        transactionVM.updateStateView(TransactionState.SHOWTRANSACTION)
+        transactionVM.updateTransaction(transaction)
+    }
+
+    override fun onClickIssue(issue: Model.Issue) {
+        issueVM.updateViewState(IssueState.TRIGGERFROMSERVICE)
+        issueVM.updateCurrentIssue(issue)
+
     }
 
     fun obseverDBupdate(){
@@ -183,5 +196,23 @@ class HistoryCompanyFragment : Fragment(),TransactionListener {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        println("HistoryContact onResume")
+
+    }
+
+
+    override fun onClickNote(message: String) {
+        val dialog = ConfirmDialog.newInstance(message,"Note",false)
+        dialog.customListener(this)
+        dialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
+    }
+
+    override fun onClickConfirm() {
+    }
+
+    override fun onClickCancel() {
+    }
 
 }

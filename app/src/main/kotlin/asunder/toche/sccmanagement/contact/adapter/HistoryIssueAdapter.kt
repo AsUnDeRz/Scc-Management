@@ -10,10 +10,7 @@ import asunder.toche.sccmanagement.transactions.IssueListener
 /**
  *Created by ToCHe on 12/3/2018 AD.
  */
-class HistoryIssueAdapter(var issues:MutableList<Model.Issue>): RecyclerView.Adapter<HistoryIssueHolder>() {
-
-
-    var listener : IssueListener? = null
+class HistoryIssueAdapter(var issues:MutableList<Model.Issue>,var listener : IssueListener?): RecyclerView.Adapter<HistoryIssueHolder>() {
 
     fun updateIssues(newIssues : MutableList<Model.Issue>,newListener: IssueListener){
         issues = newIssues

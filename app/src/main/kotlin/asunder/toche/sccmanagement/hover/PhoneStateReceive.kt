@@ -140,7 +140,7 @@ class PhoneStateReceive : BroadcastReceiver() {
         })
         val contacts = service.getContactInDb()
         contacts.asSequence().forEach {
-            val result = it.numbers.filter { it.number == numberReceive }
+            val result = it.numbers.filter { it.data == numberReceive }
             if (result.isNotEmpty()) {
                 val user = PlaceholderContent.User(numberReceive, it.contact_name)
                 users.add(user)
@@ -164,7 +164,7 @@ class PhoneStateReceive : BroadcastReceiver() {
         })
         val contacts = service.getContactInDb()
         contacts.asSequence().forEach {
-            val result = it.numbers.filter { it.number == numberReceive }
+            val result = it.numbers.filter { it.data == numberReceive }
             if (result.isNotEmpty()) {
                 users = it
             }

@@ -4,6 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <asunder.toche.sccmanagement.custom.textview.TxtBold
+        android:id="@+id/tabProduct"
+        android:layout_width="110dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="32dp"
+        android:background="@drawable/bg_round"
+        android:gravity="center"
+        android:text="สินค้า"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/imgNewProduct"
         android:layout_width="wrap_content"
@@ -15,7 +28,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_edit_black_24dp" />
 
-    <asunder.toche.sccmanagement.custom.pager.CustomViewPager
+    <android.support.v4.app.FragmentTabHost
         android:id="@+id/vpProduct"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -23,7 +36,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tabProduct" />
-
+<!--
     <asunder.toche.sccmanagement.custom.tablayout.CustomTabLayout
         android:id="@+id/tabProduct"
         android:layout_width="0dp"
@@ -39,8 +52,8 @@
         app:tabMinWidth="110dp"
         app:tabMode="scrollable"
         app:tabSelectedTextColor="@android:color/white">
-
     </asunder.toche.sccmanagement.custom.tablayout.CustomTabLayout>
+    -->
 
     <ViewStub
         android:id="@+id/stubProductAdd"

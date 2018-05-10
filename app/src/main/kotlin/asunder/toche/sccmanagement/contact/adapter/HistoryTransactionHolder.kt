@@ -6,6 +6,7 @@ import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtThin
 import asunder.toche.sccmanagement.preference.ROOT
+import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.transactions.TransactionListener
 
 /**
@@ -43,7 +44,7 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
             }
 
             txtSaleValues.text = transaction.sale_price[0].values
-            txtSaleDate.text = transaction.sale_price[0].date.substring(0,7)
+            txtSaleDate.text = Utils.format2DigiYMD(transaction.sale_price[0].date)
 
         }
 
@@ -54,11 +55,15 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
                 txtMediumVat.text = "B"
             }
             txtMediumPrice.text = product.medium_rate[0].price
-            txtMediumDate.text = product.medium_rate[0].date.substring(0,7)
+            txtMediumDate.text = Utils.format2DigiYMD(product.medium_rate[0].date)
         }
 
         itemView.rootView.setOnClickListener {
             listener?.onClickTransaction(transaction)
+        }
+        itemView.rootView.setOnLongClickListener {
+            listener?.onClickNote(transaction.desc)
+            return@setOnLongClickListener true
         }
 
     }

@@ -33,6 +33,7 @@ import asunder.toche.sccmanagement.custom.TriggerContact
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
+import asunder.toche.sccmanagement.custom.extension.EnableClick
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.main.ControlViewModel
@@ -75,6 +76,9 @@ class ContactFragment  : Fragment(),ComponentListener{
     private lateinit var webstieAdapter: WebsiteAdapter
     private lateinit var addressAdapter: AddressAdapter
     private lateinit var controlViewModel: ControlViewModel
+    private val companyFragment = CompanyFragment.newInstance()
+    private val historyCompanyFragment = HistoryCompanyFragment.newInstance()
+    private lateinit var filterFirstContact:Model.Contact
 
 
 
@@ -86,9 +90,19 @@ class ContactFragment  : Fragment(),ComponentListener{
         initControllState()
     }
 
+
+
     fun initControllState(){
         controlViewModel.currentUI.observe(this, Observer {
             if (it == ROOT.CONTACTS){
+                when (contactVM.isSaveContactComplete.value){
+                    ContactState.SHOWFORM ->{
+                        saveContact()
+                    }
+                    ContactState.SELECTCONTACT ->{
+                        showContactList()
+                    }
+                }
             }else{
                 if (contactVM.isSaveContactComplete.value == ContactState.SHOWFORM){
                     saveContact()
@@ -99,14 +113,61 @@ class ContactFragment  : Fragment(),ComponentListener{
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = LayoutInflater.from(context).inflate(R.layout.fragment_contact,container,false)
         Log.d(TAG,"CreateView")
+        initFragment()
         return view
+    }
+
+    fun initFragment(){
+        val ft = fragmentManager?.beginTransaction()
+        ft?.add(R.id.rvContact, historyCompanyFragment, historyCompanyFragment::class.java.simpleName)
+        ft?.add(R.id.rvContact, companyFragment, companyFragment::class.java.simpleName)
+        ft?.hide(historyCompanyFragment)
+        ft?.commit()
+
+    }
+    // Replace the switch method
+    fun displayCompany(){
+        tabContactHistory.visibility = View.GONE
+        val ft = fragmentManager?.beginTransaction()
+        if (companyFragment.isAdded) { // if the fragment is already in container
+            ft?.show(companyFragment)
+        } else { // fragment needs to be added to frame container
+            //ft?.add(R.id.rvContact, companyFragment, companyFragment::class.java.simpleName)
+        }
+        // Hide fragment History
+        if (historyCompanyFragment.isAdded) {
+            ft?.hide(historyCompanyFragment)
+        }
+        // Commit changes
+        ft?.commit()
+    }
+
+    // Replace the switch method
+    fun displayHistory(){
+        tabContactHistory.visibility = View.VISIBLE
+        tabContactHistory.setOnClickListener {
+            displayCompany()
+            showFormContactWithData(filterFirstContact)
+        }
+        val ft = fragmentManager?.beginTransaction()
+        if (historyCompanyFragment.isAdded) { // if the fragment is already in container
+            ft?.show(historyCompanyFragment)
+        } else { // fragment needs to be added to frame container
+            //ft?.add(R.id.rvContact, historyCompanyFragment, historyCompanyFragment::class.java.simpleName)
+        }
+        // Hide fragment History
+        if (companyFragment.isAdded) {
+            ft?.hide(companyFragment)
+        }
+        // Commit changes
+        ft?.commit()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG,"onViewCreated")
-        setUpPager()
-        setUpTablayout()
+        //setUpPager()
+        //setUpTablayout()
         setEditAction()
         setUpStub1()
         setUpStub2()
@@ -148,21 +209,6 @@ class ContactFragment  : Fragment(),ComponentListener{
             root = v as ConstraintLayout
             root.visibility = View.GONE
             Log.d(TAG,"Stub1 onInflate")
-
-
-            val btnCancel = v.findViewById<Button>(R.id.btnCancelContact)
-            btnCancel.setOnClickListener {
-                showContactList()
-                contactScrollView.fullScroll(ScrollView.FOCUS_UP)
-            }
-
-            val btnInput = v.findViewById<Button>(R.id.btnAddContact)
-            btnInput.setOnClickListener {
-                //if(validateInput()) {
-                    saveContact()
-                    contactScrollView.fullScroll(ScrollView.FOCUS_UP)
-                //}
-            }
             initViewAdd(v)
         }
         stubContactAdd.inflate()
@@ -193,15 +239,15 @@ class ContactFragment  : Fragment(),ComponentListener{
         }
 
         imgPhone.setOnClickListener {
-            numberAdapter.addNumber(Model.Number("",""))
+            numberAdapter.addNumber(Model.Channel("",""))
         }
 
         imgEmail.setOnClickListener {
-            emailAdapter.addEmail("")
+            emailAdapter.addEmail(Model.Channel())
         }
 
         imgWeb.setOnClickListener {
-            webstieAdapter.addWebSite("")
+            webstieAdapter.addWebSite(Model.Channel())
         }
 
         btnAddContact.setOnClickListener {
@@ -211,11 +257,21 @@ class ContactFragment  : Fragment(),ComponentListener{
             //}
         }
 
+        btnCancelContact.setOnClickListener {
+            contactVM.updateViewState(ContactState.ALLCONTACT)
+            contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+        }
+
         btnDeleteContact.setOnClickListener {
             contactVM.deleteContact()
         }
 
-        observeStateInput()
+        btnHistory.setOnClickListener {
+            showContactList()
+            displayHistory()
+            triggerContact(filterFirstContact)
+            //contactVM.updateViewState(ContactState.SELECTCONTACT)
+        }
     }
 
     fun setUpStub2(){
@@ -241,7 +297,7 @@ class ContactFragment  : Fragment(),ComponentListener{
     }
 
 
-
+/*
     fun setUpPager(){
         Log.d(TAG,"SetupPager")
         vpContact.adapter = ContactPager(childFragmentManager)
@@ -270,7 +326,7 @@ class ContactFragment  : Fragment(),ComponentListener{
             }
         })
     }
-
+*/
 
 
     fun setEditAction(){
@@ -322,6 +378,7 @@ class ContactFragment  : Fragment(),ComponentListener{
     }
 
     fun showFormContactWithData(contact :Model.Contact){
+        filterFirstContact = contact
         showFormContact()
         contactVM.updateContactId(contact.id)
         edtCompany.setText(contact.company)
@@ -330,29 +387,17 @@ class ContactFragment  : Fragment(),ComponentListener{
         numberAdapter.updateNumbers(contact.numbers)
         numberAdapter.updateTypeList(contact.type_number)
         emailAdapter.updateEmails(contact.email)
+        emailAdapter.updateTypeList(contact.type_number)
+        webstieAdapter.updateTypeList(contact.type_number)
         webstieAdapter.updateWebsites(contact.websites)
-        /*
-        addressAdapter.updateAddress(contact.addresses)
-        edtTypeAddress.setText(contact.address_type)
-        edtFactoryAddress.setText(contact.address_factory)
-
-        val image = File(contact.path_img_map)
-        Glide.with(this@ContactFragment)
-                .load(image)
-                .into(imgMap)
-        if(contact.map_latitude != "" && contact.map_longitude != ""
-                && contact.map_latitude != "null" && contact.map_longitude != "null") {
-            location = Location("")
-            location?.latitude = contact.map_latitude.toDouble()
-            location?.longitude = contact.map_longitude.toDouble()
-            handleNewLocation(location!!)
-        }
-        */
-
+        addressAdapter.updateTypeList(contact.type_number)
     }
 
     fun showFormContact(){
         contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+        edtCompany.EnableClick()
+        edtCompany.requestFocus()
+        edtCompany.DisableClick()
         contactVM.updateViewState(ContactState.SHOWFORM)
         root.visibility = View.VISIBLE
         rootInput.visibility = View.GONE
@@ -372,21 +417,6 @@ class ContactFragment  : Fragment(),ComponentListener{
         edtCompany.setText(contact.company)
         edtBill.setText(contact.bill)
         edtContactName.setText(contact.contact_name)
-        //edtTypeAddress.setText(contact.address_type)
-        //edtFactoryAddress.setText(contact.address_factory)
-
-        /*
-        val options = RequestOptions().centerCrop()
-        Glide.with(this@ContactFragment)
-                .load(R.drawable.mock_picture)
-                .apply(options)
-                .into(imgMap)
-        val cameraPosition = CameraPosition.Builder().target(LatLng((-33).toDouble(), 150.0)).zoom(13F).build()
-        map.clear()
-        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-        */
-
-
     }
 
     fun showFormInput(){
@@ -396,6 +426,7 @@ class ContactFragment  : Fragment(),ComponentListener{
     }
 
     fun showContactList(){
+        displayCompany()
         root.visibility = View.GONE
         imgEdit.visibility = View.VISIBLE
     }
@@ -446,63 +477,6 @@ class ContactFragment  : Fragment(),ComponentListener{
         stateInput = current
     }
 
-    fun observeStateInput(){
-        /*
-        val actionState = arrayListOf(actionMobile,null,actionPhone,actionEmail,actionWebsite,null)
-        val circleState = arrayListOf(imgCircleMobile,imgFax,imgPhone,imgEmail,imgWeb,imgStateAdd)
-        val edtObserver = arrayListOf(edtMobile,edtFax,edtPhone,edtEmail,edtWeb,edtAddress)
-        for (i in 0 until edtObserver.size){
-            edtObserver[i].addTextChangedListener(object : TextWatcher{
-                override fun afterTextChanged(text: Editable?) {
-                    if(!text.isNullOrEmpty()) {
-                        circleState[i].isSelected = true
-                        Glide.with(this@ContactFragment)
-                                .load(R.drawable.ic_remove_white_24dp)
-                                .into(circleState[i])
-                        actionState[i]?.let {
-                            it.visibility = View.VISIBLE
-                        }
-                    }else{
-                        circleState[i].isSelected = false
-                        Glide.with(this@ContactFragment)
-                                .load(R.drawable.ic_add_white_24dp)
-                                .into(circleState[i])
-                        actionState[i]?.let {
-                            it.visibility = View.GONE
-                        }
-                    }
-                }
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-            })
-
-        }
-        setAction()
-        */
-    }
-
-    fun setAction(){
-        /*
-        actionMobile.setOnClickListener {
-            callPhone(edtMobile.text.toString())
-
-        }
-        actionPhone.setOnClickListener {
-            callPhone(edtPhone.text.toString())
-        }
-        actionEmail.setOnClickListener {
-            sendEmail(edtEmail.text.toString())
-
-        }
-        actionWebsite.setOnClickListener {
-            openWeb(edtWeb.text.toString())
-
-        }
-        */
-
-    }
 
     fun openWeb(url:String){
         if(url.startsWith("www",true)){
@@ -542,12 +516,50 @@ class ContactFragment  : Fragment(),ComponentListener{
                     showFormContactWithData(contactVM.contact.value!!)
                 }
                 ContactState.SELECTCONTACT ->{
-                    tabContact.setScrollPosition(1,0f,true)
-                    vpContact.currentItem = 1
+                    //tabContact.setScrollPosition(1,0f,true)
+                    //vpContact.currentItem = 1
+                    displayHistory()
                     triggerContact(contactVM.contact.value!!)
                 }
             }
         })
+        contactVM.contacts.observe(this, Observer {
+            if (contactVM.isSaveContactComplete.value == ContactState.SHOWFORM){
+                it?.let {
+                    if (it.isNotEmpty()){
+                        filterContactForm(it.first())
+                    }
+                }
+            }
+        })
+    }
+
+    fun filterContactForm(contact :Model.Contact){
+        filterFirstContact = contact
+        contactVM.updateViewState(ContactState.SHOWFORM)
+        root.visibility = View.VISIBLE
+        rootInput.visibility = View.GONE
+        imgEdit.visibility = View.GONE
+        contactVM.updateContactId(contact.id)
+        edtCompany.setText(contact.company)
+        edtBill.setText(contact.bill)
+        edtContactName.setText(contact.contact_name)
+        numberAdapter.updateNumbers(contact.numbers)
+        numberAdapter.updateTypeList(contact.type_number)
+        emailAdapter.updateEmails(contact.email)
+        emailAdapter.updateTypeList(contact.type_number)
+        webstieAdapter.updateTypeList(contact.type_number)
+        webstieAdapter.updateWebsites(contact.websites)
+        addressAdapter.updateTypeList(contact.type_number)
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (contactVM.isSaveContactComplete.value == ContactState.SELECTCONTACT){
+            displayHistory()
+            triggerContact(contactVM.contact.value!!)
+        }
     }
 
 
@@ -556,9 +568,9 @@ class ContactFragment  : Fragment(),ComponentListener{
         EventBus.getDefault().postSticky(TriggerContact(contact))
     }
 
-    override fun OnNumberClick(number: Model.Number, isAction: Boolean,position:Int) {
+    override fun OnNumberClick(number: Model.Channel, isAction: Boolean,position:Int) {
         if (isAction){
-            callPhone(number.number)
+            callPhone(number.data)
         }else{
             numberAdapter.remove(position)
         }
@@ -581,19 +593,38 @@ class ContactFragment  : Fragment(),ComponentListener{
 
     }
 
-    override fun OnEmailClick(email: String, isAction: Boolean,position:Int) {
+    override fun OnEmailClick(email: Model.Channel, isAction: Boolean,position:Int) {
         if(isAction){
-            sendEmail(email)
+            sendEmail(email.data)
         }else{
             emailAdapter.remove(position)
         }
     }
 
-    override fun OnWebsiteClick(web: String, isAction: Boolean,position:Int) {
+    override fun OnWebsiteClick(web: Model.Channel, isAction: Boolean,position:Int) {
         if(isAction){
-            openWeb(web)
+            openWeb(web.data)
         }else{
             webstieAdapter.remove(position)
+        }
+    }
+
+    override fun updateTypeList(type: String) {
+        val numberTypeList = numberAdapter.typeList.filter { it == type }
+        if (numberTypeList.isEmpty()){
+            numberAdapter.addType(type)
+        }
+        val emailTypeList = emailAdapter.typeList.filter { it == type }
+        if (emailTypeList.isEmpty()){
+            emailAdapter.addType(type)
+        }
+        val webTypeList = webstieAdapter.typeList.filter { it == type }
+        if (webTypeList.isEmpty()){
+            webstieAdapter.addType(type)
+        }
+        val addressList = addressAdapter.typeList.filter { it == type }
+        if (addressList.isEmpty()){
+            addressAdapter.addType(type)
         }
     }
 

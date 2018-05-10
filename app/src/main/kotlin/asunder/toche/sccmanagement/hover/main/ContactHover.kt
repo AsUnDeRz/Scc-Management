@@ -93,7 +93,7 @@ class ContactHover(context: Context,
 
     fun updateIssueAdapter(contact: Model.Contact?){
         val result = issueService.getIssueInDb()
-        historyIssueAdapter = HistoryIssueAdapter(mutableListOf())
+        historyIssueAdapter = HistoryIssueAdapter(mutableListOf(),null)
         rvHistoryIssue.adapter = historyIssueAdapter
         async(UI) {
             val filterResult = async {
@@ -108,7 +108,7 @@ class ContactHover(context: Context,
     }
 
     fun updateTransactionAdapter(contact: Model.Contact?){
-        historyTransactionAdapter = HistoryTransactionAdapter()
+        historyTransactionAdapter = HistoryTransactionAdapter(null)
         rvHistoryTransaction.adapter = historyTransactionAdapter
         Utils.findTransaction(contact?.id!!,object : Utils.OnFindTransactionsListener{
             override fun onResults(results: MutableList<Model.Transaction>) {

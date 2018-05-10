@@ -17,9 +17,9 @@ object Model{
                        val company:String = "",
                        val bill:String = "",
                        val contact_name:String = "",
-                       val numbers:MutableList<Number> = mutableListOf(),
-                       val email:MutableList<String> = mutableListOf(),
-                       val websites:MutableList<String> = mutableListOf(),
+                       val numbers:MutableList<Channel> = mutableListOf(),
+                       val email:MutableList<Channel> = mutableListOf(),
+                       val websites:MutableList<Channel> = mutableListOf(),
                        val addresses :MutableList<Address> = mutableListOf(),
                        val type_number:MutableList<String> = mutableListOf()) : Parcelable
 
@@ -29,12 +29,13 @@ object Model{
                        val address_factory:String = "",
                        var url_img_map:String = "",
                        var path_img_map:String ="",
-                       val map_latitude:String = "",
-                       val map_longitude:String = "") :Parcelable
+                       val map_longitude:String = "",
+                       val map_latitude:String ="",
+                       var type:String ="") :Parcelable
 
     @SuppressLint("ParcelCreator")
     @Parcelize
-    data class Number(var number:String ="",
+    data class Channel(var data:String ="",
                       var type:String ="") : Parcelable
 
     @SuppressLint("ParcelCreator")
@@ -45,10 +46,13 @@ object Model{
                      val issue_name:String = "",
                      val issue_desc:String = "",
                      val date:String = "",
-                     var image_url:String = "",
-                     var image_path:String = "",
-                     var file_url:String = "",
-                     var file_path:String = "") : Parcelable
+                     var pictures:MutableList<Content> = mutableListOf(),
+                     var files:MutableList<Content> = mutableListOf()) : Parcelable
+
+    @SuppressLint("ParcelCreator")
+    @Parcelize
+    data class Content(var local_path:String = "",
+                       var cloud_url:String = "") : Parcelable
 
     @SuppressLint("ParcelCreator")
     @Parcelize

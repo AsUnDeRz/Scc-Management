@@ -4,7 +4,7 @@ import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.net.Uri
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomSheetBehavior
@@ -30,13 +30,21 @@ import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
+import asunder.toche.sccmanagement.issue.adapter.FileAdapter
 import asunder.toche.sccmanagement.issue.adapter.IssueAdapter
+import asunder.toche.sccmanagement.issue.adapter.PictureAdapter
 import asunder.toche.sccmanagement.main.ControlViewModel
 import asunder.toche.sccmanagement.main.FilterViewPager
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
+import com.facebook.share.model.ShareLinkContent
+import com.facebook.share.model.SharePhoto
+import com.facebook.share.model.SharePhotoContent
+import com.facebook.share.widget.ShareDialog
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
@@ -59,7 +67,8 @@ import java.util.*
 class IssueFragment : Fragment(),
         CompanyAdapter.CompanyOnClickListener,
         IssueAdapter.IssueItemListener,
-        ConfirmDialog.ConfirmDialogListener{
+        ConfirmDialog.ConfirmDialogListener, ComponentListener {
+
 
     companion object {
         fun newInstance(): IssueFragment = IssueFragment()
@@ -79,6 +88,12 @@ class IssueFragment : Fragment(),
     private lateinit var adapter: CompanyAdapter
     private var loading = LoadingDialog.newInstance()
     private lateinit var sectionIssueAdapter : SectionedRecyclerViewAdapter
+    private var isInitView = false
+    private val pictures = mutableListOf<Model.Content>()
+    private val files = mutableListOf<Model.Content>()
+    private lateinit var pictureAdapter:PictureAdapter
+    private lateinit var fileAdapter:FileAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,7 +106,10 @@ class IssueFragment : Fragment(),
     fun initControllState(){
         controlViewModel.currentUI.observe(this, Observer {
             if (it == ROOT.ISSUE){
-                initViewCreated()
+                if (!isInitView) {
+                    initViewCreated()
+                }
+                tabLayoutFilterIssue.setScrollPosition(1,0f,true)
             }else{
                 if (issueVM.isSaveIssueComplete.value == IssueState.SHOWFROM){
                     saveIssue()
@@ -101,6 +119,7 @@ class IssueFragment : Fragment(),
     }
 
     fun initViewCreated(){
+        isInitView = true
         issueVM.loadIssue()
         async(UI) {
             val data = async(CommonPool) {
@@ -137,16 +156,22 @@ class IssueFragment : Fragment(),
                 selectedPhoto.clear()
                 selectedPhoto.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA))
                 if(selectedPhoto.size > 0) {
-                    Glide.with(context!!)
-                            .load(File(selectedPhoto[0]))
-                            .into(imgIssue)
+                    val pictureList= mutableListOf<Model.Content>()
+                    selectedPhoto.forEach {
+                        pictureList.add(Model.Content(it))
+                    }
+                    pictureAdapter.addPictures(pictureList)
                 }
             }
             FilePickerConst.REQUEST_CODE_DOC -> if (resultCode == Activity.RESULT_OK && data != null) {
                 selectedFile.clear()
                 selectedFile.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS))
-                if(selectedFile.size > 0){
-                    edtFileIssue.setText(Uri.fromFile(File(selectedFile[0])).lastPathSegment)
+                if(selectedFile.size > 0) {
+                    val fileList = mutableListOf<Model.Content>()
+                    selectedFile.forEach {
+                        fileList.add(Model.Content(it))
+                    }
+                    fileAdapter.addFiles(fileList)
                 }
             }
         }
@@ -255,19 +280,13 @@ class IssueFragment : Fragment(),
     }
 
     fun initIssueForm(){
-        btnSaveIssue.setOnClickListener {
-             saveIssue()
-        }
-        btnCancelIssue.setOnClickListener {
-            clearFormIssue()
-            showIssueList()
-        }
+        initContentAdapter()
         btnAddIssueInfo.setOnClickListener {
             saveIssue()
         }
         btnCancelIssueInfo.setOnClickListener {
             clearFormIssue()
-            showIssueList()
+            issueVM.updateViewState(IssueState.ALLISSUE)
         }
         btnDeleteIssueInfo.setOnClickListener {
             showConfirmDialog(edtIssue.text.toString(),issueVM.companyReference.value?.company)
@@ -285,17 +304,17 @@ class IssueFragment : Fragment(),
             showSpinner()
         }
 
-        edtFileIssue.setOnClickListener {
+        addFile.setOnClickListener {
             selectedFile.clear()
-            FilePickerBuilder.getInstance().setMaxCount(1)
+            FilePickerBuilder.getInstance()
                     .setSelectedFiles(selectedFile)
                     .setActivityTheme(R.style.AppTheme)
                     .pickFile(this)
         }
 
-        imgIssue.setOnClickListener {
+        addPicture.setOnClickListener {
             selectedPhoto.clear()
-            FilePickerBuilder.getInstance().setMaxCount(1)
+            FilePickerBuilder.getInstance()
                     .setSelectedFiles(selectedPhoto)
                     .setActivityTheme(R.style.AppTheme)
                     .pickPhoto(this)
@@ -313,7 +332,9 @@ class IssueFragment : Fragment(),
     }
 
     fun showIssueForm(){
+        println("Show Issue Form")
         issueScrollView.fullScroll(ScrollView.FOCUS_UP)
+        edtCompany.requestFocus()
         issueVM.updateViewState(IssueState.SHOWFROM)
         rootIssueForm.visibility = View.VISIBLE
         rootLayoutInput.visibility = View.GONE
@@ -434,7 +455,9 @@ class IssueFragment : Fragment(),
 
 
     fun setUpIssueForm(issue:Model.Issue){
-        issueVM.updateCurrentIssue(issue)
+        if(issueVM.currentIssue.value?.id != issue.id){
+            issueVM.updateCurrentIssue(issue)
+        }
         edtProcess.setText(issue.status)
         edtIssue.setText(issue.issue_name)
         edtIssueDetail.setText(issue.issue_desc)
@@ -445,28 +468,18 @@ class IssueFragment : Fragment(),
             //filter company with id
             issueVM.findCompanyWithKey(issue.company_id)
         }
-        edtIssueDate.setText(issue.date.substring(0,7))
+        edtIssueDate.setText(issue.date.substring(0,10))
         selectedDate = Utils.getDateWithString(issue.date)
-        if(issue.image_path == ""){
-            Glide.with(context!!)
-                    .load("")
-                    .into(imgIssue)
+        if (issue.pictures.isNotEmpty()){
+            pictureAdapter.updatePictures(issue.pictures)
+        }else{
             selectedPhoto.clear()
-        }else{
-            Glide.with(context!!)
-                    .load(File(issue.image_path))
-                    .into(imgIssue)
-            selectedPhoto.add(issue.image_path)
         }
-
-        if(issue.file_path == ""){
-            edtFileIssue.setText("")
+        if (issue.files.isNotEmpty()){
+            fileAdapter.updateFiles(issue.files)
+        }else{
             selectedFile.clear()
-        }else{
-            edtFileIssue.setText(Uri.fromFile(File(issue.file_path)).lastPathSegment)
-            selectedFile.add(issue.file_path)
         }
-
     }
 
     fun clearFormIssue(){
@@ -477,15 +490,12 @@ class IssueFragment : Fragment(),
         selectedDate = Utils.getCurrentDate()
         edtIssueDate.setText(Utils.getCurrentDateShort())
         val options = RequestOptions().centerCrop()
-        Glide.with(context!!)
-                .load(R.drawable.mock_picture)
-                .apply(options)
-                .into(imgIssue)
-        edtFileIssue.setText("")
         selectedPhoto.clear()
         selectedFile.clear()
         issueVM.updateCompany(Model.Contact())
         issueVM.currentIssueId = ""
+        pictureAdapter.pictures.clear()
+        fileAdapter.files.clear()
     }
 
     override fun onClickCompany(contact: Model.Contact) {
@@ -499,6 +509,10 @@ class IssueFragment : Fragment(),
             if (issueVM.isSaveIssueComplete.value == IssueState.TRIGGERFROMSERVICE){
                 it?.let { it1 -> setUpIssueForm(it1) }
             }
+            if (issueVM.isSaveIssueComplete.value == IssueState.SHOWFROM){
+                println("Setup IssueFrom with $it")
+                it?.let { it1 -> setUpIssueForm(it1) }
+            }
         })
 
         issueVM.companyReference.observe(this, Observer {
@@ -509,7 +523,9 @@ class IssueFragment : Fragment(),
             when (it){
                 IssueState.ALLISSUE ->{
                     showIssueList()
-                    loading.dismiss()
+                    if (loading.isShow){
+                        loading.dismiss()
+                    }
                 }
                 IssueState.NEWISSUE ->{
 
@@ -520,6 +536,7 @@ class IssueFragment : Fragment(),
                     issueVM.updateCompany(contactVm.contact.value!!)
                 }
                 IssueState.TRIGGERFROMSERVICE ->{
+                    println("Trigger from service")
                     showIssueForm()
                 }
 
@@ -568,12 +585,11 @@ class IssueFragment : Fragment(),
     }
 
     fun saveIssue(){
-        System.out.println("Check selected $selectedPhoto  $selectedFile")
-        val photoPath = if (selectedPhoto.isEmpty()) "" else selectedPhoto[0]
-        val filePath = if (selectedFile.isEmpty()) "" else selectedFile[0]
-        val data = Model.Issue(issueVM.currentIssueId,edtProcess.text.toString(),"",edtIssue.text.toString()
-                ,edtIssueDetail.text.toString(),Utils.getDateStringWithDate(selectedDate),"",
-                photoPath,"",filePath)
+        val data = Model.Issue(issueVM.currentIssueId,edtProcess.text.toString()
+                ,"",edtIssue.text.toString()
+                ,edtIssueDetail.text.toString()
+                ,Utils.getDateStringWithDate(selectedDate)
+                ,pictureAdapter.pictures,fileAdapter.files)
         async(UI) {
             issueVM.saveIssue(data).await()
         }
@@ -615,12 +631,53 @@ class IssueFragment : Fragment(),
     override fun onClickConfirm() {
         issueVM.currentIssue.value?.let {
             issueVM.deleteIssue(it)
-
         }
     }
 
     override fun onClickCancel() {
     }
+
+    override fun OnFileClick(file: Model.Content, position: Int) {
+        fileAdapter.remove(position)
+    }
+    override fun OnPictureClick(picture: Model.Content,isDeleteOrShare:Boolean, position: Int) {
+        if (isDeleteOrShare) {
+            pictureAdapter.remove(position)
+        }else{
+            Glide.with(activity!!)
+                    .asBitmap()
+                    .load(File(picture.local_path))
+                    .into(object : SimpleTarget<Bitmap>() {
+                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                            val photo = SharePhoto.Builder()
+                                    .setBitmap(resource)
+                                    .build()
+                            val content = SharePhotoContent.Builder()
+                                    .addPhoto(photo)
+                                    .build()
+                            if (ShareDialog.canShow(ShareLinkContent::class.java)) {
+                                ShareDialog.show(activity,content)
+                            }
+                        }
+                    })
+        }
+    }
+    fun initContentAdapter(){
+        pictureAdapter = PictureAdapter(this@IssueFragment)
+        fileAdapter = FileAdapter(this@IssueFragment)
+        rvFile.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(activity)
+            adapter = fileAdapter
+        }
+        rvPicture.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(activity)
+            adapter = pictureAdapter
+        }
+    }
+
+
 
 
 

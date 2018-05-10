@@ -20,36 +20,18 @@ class CompanyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private val txtCompany: TxtMedium
     private val txtContact: TxtThin
-    private val swipeView : SwipeActionView
+    //private val swipeView : SwipeActionView
     private val rootContent :RelativeLayout
 
     init {
         txtContact = itemView.findViewById(R.id.txtContact)
         txtCompany = itemView.findViewById(R.id.txtCompany)
-        swipeView = itemView.findViewById(R.id.swipeCompany)
+        //swipeView = itemView.findViewById(R.id.swipeCompany)
         rootContent = itemView.findViewById(R.id.rootContentCompany)
     }
     fun bindWithEditable(contact: Model.Contact,listener: CompanyAdapter.CompanyListener){
         txtCompany.text = validateCompany(contact)
         //txtContact.text = validateContact(contact)
-        val btnEdt = swipeView.findViewById<BtnMedium>(R.id.btnEdit)
-        val btnDelete = swipeView.findViewById<BtnMedium>(R.id.btnDelete)
-
-        swipeView.swipeGestureListener = object : SwipeGestureListener {
-            override fun onSwipedLeft(swipeActionView: SwipeActionView): Boolean {
-                btnDelete.setOnClickListener {
-                    listener.onClickDelete(contact)
-                }
-                btnEdt.setOnClickListener {
-                    listener.onClickEdit(contact)
-                }
-                return false
-            }
-
-            override fun onSwipedRight(swipeActionView: SwipeActionView): Boolean {
-                return true
-            }
-        }
 
         rootContent.setOnClickListener {
             listener.onSelectContact(contact)
@@ -63,9 +45,9 @@ class CompanyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     fun bind(contact: Model.Contact,listener: CompanyAdapter.CompanyOnClickListener){
-        txtCompany.text = validateCompany(contact)
-        txtContact.text = validateContact(contact)
-        swipeView.setDirectionEnabled(SwipeDirection.Left, false)
+        txtCompany.text = contact.company
+        //txtContact.text = validateContact(contact)
+        //swipeView.setDirectionEnabled(SwipeDirection.Left, false)
 
         rootContent.setOnClickListener {
             listener.onClickCompany(contact)

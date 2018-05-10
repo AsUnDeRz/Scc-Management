@@ -58,10 +58,10 @@
 
     <RelativeLayout
         android:id="@+id/vPhone"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="36dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/vNumber"
+        app:layout_constraintStart_toStartOf="@+id/edtContactName"
         app:layout_constraintTop_toBottomOf="@+id/edtContactName">
 
         <ImageView
@@ -92,7 +92,7 @@
         android:layout_width="0dp"
         android:layout_height="36dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/vNumber"
+        app:layout_constraintStart_toStartOf="@+id/vPhone"
         app:layout_constraintTop_toBottomOf="@+id/vNumber">
 
         <ImageView
@@ -123,7 +123,7 @@
         android:layout_width="0dp"
         android:layout_height="36dp"
         android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toEndOf="@+id/rvEmail"
+        app:layout_constraintStart_toStartOf="@+id/vPhone"
         app:layout_constraintTop_toBottomOf="@+id/rvEmail">
 
         <ImageView
@@ -154,10 +154,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/txtPhone"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/bg_round_table"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/vEmail" />
@@ -166,10 +163,7 @@
         android:id="@+id/rvWebsite"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/bg_round_table"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/vWebsite" />
@@ -178,8 +172,6 @@
         android:id="@+id/vNumber"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -189,8 +181,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvNumber"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_round_table"></android.support.v7.widget.RecyclerView>
+            android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
     </RelativeLayout>
 
 

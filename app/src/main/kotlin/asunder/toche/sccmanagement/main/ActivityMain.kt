@@ -85,7 +85,6 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
         controlViewModel.updateCurrentUI(ROOT.CONTACTS)
         checkDataFromService(intent)
         setupCurrentUser()
-
         if (intent.hasExtra(ROOT.CONTACTS)){
             val contact = intent.getParcelableExtra<Model.Contact>(ROOT.CONTACTS)
             selectContact(contact)
@@ -141,31 +140,36 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
         tabLayout.setupWithViewPager(pager)
         tabLayout.addOnTabSelectedListener(object :TabLayout.OnTabSelectedListener{
             override fun onTabReselected(tab: TabLayout.Tab?) {
+                updateCurrentUI(tab)
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {
             }
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                when(tab?.position){
-                    0 ->{
-                        controlViewModel.updateCurrentUI(ROOT.CONTACTS)
-                        System.out.println("Tab Select ${tab.position}")
-                    }
-                    1 ->{
-                        controlViewModel.updateCurrentUI(ROOT.ISSUE)
-                        System.out.println("Tab Select ${tab.position}")
-                    }
-                    2 ->{
-                        controlViewModel.updateCurrentUI(ROOT.PRODUCTS)
-                        System.out.println("Tab Select ${tab.position}")
-                    }
-                    3 ->{
-                        controlViewModel.updateCurrentUI(ROOT.TRANSACTIONS)
-                        System.out.println("Tab Select ${tab.position}")
-                    }
-                }
+                updateCurrentUI(tab)
             }
-
         })
+    }
+
+    fun updateCurrentUI(tab:TabLayout.Tab?){
+        txtSearch.text.clear()
+        when(tab?.position){
+            0 ->{
+                controlViewModel.updateCurrentUI(ROOT.CONTACTS)
+                System.out.println("Tab Select ${tab.position}")
+            }
+            1 ->{
+                controlViewModel.updateCurrentUI(ROOT.ISSUE)
+                System.out.println("Tab Select ${tab.position}")
+            }
+            2 ->{
+                controlViewModel.updateCurrentUI(ROOT.PRODUCTS)
+                System.out.println("Tab Select ${tab.position}")
+            }
+            3 ->{
+                controlViewModel.updateCurrentUI(ROOT.TRANSACTIONS)
+                System.out.println("Tab Select ${tab.position}")
+            }
+        }
     }
 
     fun setHumburgerButton() {
@@ -287,7 +291,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
         })
 
         transactionVM.stateView.observe(this, Observer {
-            if (it == TransactionState.SHOWTRANSACTION && pager.currentItem == 2){
+            if (it == TransactionState.SHOWTRANSACTION){
                 //tabLayout.setScrollPosition(3,0f,true)
                 pager.currentItem = 3
                 //transactionVM.updateStateView(TransactionState.SHOWTRANSACTION)
@@ -295,6 +299,11 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
         })
 
         issueVM.isSaveIssueComplete.observe(this,Observer{
+            when(it){
+                IssueState.SHOWFROM ->{
+                    pager.currentItem = 1
+                }
+            }
 
         })
 
@@ -387,7 +396,10 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
 
     override fun onClickConfirm() {
         HoverService.showFloatingMenu(this)
-        finish()
+        val setIntent = Intent(Intent.ACTION_MAIN)
+        setIntent.addCategory(Intent.CATEGORY_HOME)
+        setIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(setIntent)
     }
 
     override fun onClickCancel() {
