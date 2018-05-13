@@ -385,11 +385,12 @@ class ContactFragment  : Fragment(),ComponentListener{
         edtBill.setText(contact.bill)
         edtContactName.setText(contact.contact_name)
         numberAdapter.updateNumbers(contact.numbers)
-        numberAdapter.updateTypeList(contact.type_number)
         emailAdapter.updateEmails(contact.email)
+        webstieAdapter.updateWebsites(contact.websites)
+
+        numberAdapter.updateTypeList(contact.type_number)
         emailAdapter.updateTypeList(contact.type_number)
         webstieAdapter.updateTypeList(contact.type_number)
-        webstieAdapter.updateWebsites(contact.websites)
         addressAdapter.updateTypeList(contact.type_number)
     }
 

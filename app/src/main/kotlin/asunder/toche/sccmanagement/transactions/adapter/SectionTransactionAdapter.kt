@@ -6,6 +6,7 @@ import android.view.View
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.transactions.TransactionListener
 import com.bumptech.glide.Glide
@@ -73,8 +74,8 @@ class SectionTransactionAdapter() : StatelessSection(SectionParameters.builder()
         fun bind(data: Model.Transaction,product:Model.Product,listener: TransactionListener){
             txtCompany.text = product.product_name
             txtDate.text = Utils.format2DigiYMD(data.date)
-            txtVat.text = "A"
             if (data.sale_price.isNotEmpty()) {
+                txtVat.text = getSaleType(data.sale_price[0].vat)
                 txtPriceSale.text = data.sale_price[0].price
                 txtValues.text = data.sale_price[0].values
                 if (data.sale_price[0].note.isNotEmpty()){
@@ -90,8 +91,22 @@ class SectionTransactionAdapter() : StatelessSection(SectionParameters.builder()
             itemView.setOnClickListener {
                 listener.onClickTransaction(data)
             }
-
-
+        }
+        fun getSaleType(typePrice:String):String{
+            return when(typePrice){
+                ROOT.NOVAT->{
+                    "B"
+                }
+                ROOT.VAT ->{
+                    "A"
+                }
+                ROOT.CASH->{
+                    "C"
+                }
+                else ->{
+                    ""
+                }
+            }
         }
     }
 

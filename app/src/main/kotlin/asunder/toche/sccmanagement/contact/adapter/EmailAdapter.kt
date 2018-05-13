@@ -146,7 +146,7 @@ class EmailAdapter(var listener: ComponentListener): RecyclerView.Adapter<EmailA
             rvFilterType.adapter = typeNumber
             rvFilterType.setOnItemClickListener { parent, view, position, id ->
                 emails[itemPosition].type = parent.getItemAtPosition(position) as String
-                txtTitle?.text = parent.getItemAtPosition(position) as String
+                txtTitle.text = parent.getItemAtPosition(position) as String
                 bottomSheetDialog.dismiss()
                 notifyDataSetChanged()
             }

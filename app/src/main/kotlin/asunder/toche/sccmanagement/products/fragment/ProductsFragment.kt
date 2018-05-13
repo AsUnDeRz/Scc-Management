@@ -133,6 +133,7 @@ class ProductsFragment : Fragment(),
     }
     // Replace the switch method
     fun displayProductList(){
+        tabProductHistory.visibility = View.GONE
         val ft = fragmentManager?.beginTransaction()
         if (productListFragment.isAdded) { // if the fragment is already in container
             ft?.show(productListFragment)
@@ -149,6 +150,12 @@ class ProductsFragment : Fragment(),
 
     // Replace the switch method
     fun displayHistory(){
+        tabProductHistory.visibility = View.VISIBLE
+        tabProductHistory.setOnClickListener {
+            displayProductList()
+            productViewModel.updateStateView(ProductState.SHOWFORMWITHPRODUCT)
+
+        }
         val ft = fragmentManager?.beginTransaction()
         if (productHistoryFragment.isAdded) { // if the fragment is already in container
             ft?.show(productHistoryFragment)
