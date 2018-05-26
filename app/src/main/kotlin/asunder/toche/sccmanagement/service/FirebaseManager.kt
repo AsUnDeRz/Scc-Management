@@ -34,10 +34,10 @@ class FirebaseManager{
 
     fun fetchData(uid:String){
         firebase.child("users/$uid").addListenerForSingleValueEvent(object :ValueEventListener{
-            override fun onCancelled(p0: DatabaseError?) {
+            override fun onCancelled(p0: DatabaseError) {
             }
 
-            override fun onDataChange(data: DataSnapshot?) {
+            override fun onDataChange(data: DataSnapshot) {
                 val menu: MutableList<Model.Contact> = mutableListOf()
                 Log.d(TAG,"Data before decode"+data?.value.toString())
                 /*

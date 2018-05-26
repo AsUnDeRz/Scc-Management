@@ -35,7 +35,7 @@ class IssueService(var listener : IssueCallBack){
 
     fun pushNewIssue(issue: Model.Issue){
         val keyAuth = firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.ISSUE}").push().key
-        issue.id = keyAuth
+        issue.id = keyAuth!!
         Log.d(TAG,"PushNewIssue with $issue")
         val childUpdates = HashMap<String,Any>()
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.ISSUE}/$keyAuth"] = issue

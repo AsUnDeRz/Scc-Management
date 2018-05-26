@@ -9,7 +9,7 @@
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtCompany"
         android:layout_width="0dp"
-        android:layout_height="48dp"
+        android:layout_height="40dp"
         android:layout_marginEnd="48dp"
         android:layout_marginStart="48dp"
         android:layout_marginTop="8dp"
@@ -18,7 +18,7 @@
         android:hint="กรอกข้อมูลบริษัท ..."
         android:inputType="textPersonName"
         android:paddingStart="8dp"
-        android:textSize="16sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,14 +26,14 @@
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtBill"
         android:layout_width="0dp"
-        android:layout_height="48dp"
+        android:layout_height="40dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:ems="10"
         android:hint="กรอกข้อมูลกำหนดวางบิล ..."
         android:inputType="textPersonName"
         android:paddingStart="8dp"
-        android:textSize="16sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@+id/edtCompany"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/edtCompany"
@@ -42,7 +42,7 @@
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtContactName"
         android:layout_width="0dp"
-        android:layout_height="120dp"
+        android:layout_height="40dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:ems="10"
@@ -50,7 +50,7 @@
         android:hint="กรอกข้อมูลผู้ติดต่อ ..."
         android:inputType="textPersonName"
         android:padding="8dp"
-        android:textSize="16sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@+id/edtBill"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/edtBill"
@@ -82,7 +82,7 @@
             android:layout_toEndOf="@+id/imgPhone"
             android:text="เพิ่มเบอร์โทรศัพท์"
             android:textColor="@color/colorDark"
-            android:textSize="16sp" />
+            android:textSize="12sp" />
 
 
     </RelativeLayout>
@@ -113,7 +113,7 @@
             android:layout_toEndOf="@+id/imgEmail"
             android:text="เพิ่มอีเมล"
             android:textColor="@color/colorDark"
-            android:textSize="16sp" />
+            android:textSize="12sp" />
 
 
     </RelativeLayout>
@@ -144,7 +144,7 @@
             android:layout_toEndOf="@+id/imgWeb"
             android:text="เพิ่มเว็ปไซด์"
             android:textColor="@color/colorDark"
-            android:textSize="16sp" />
+            android:textSize="12sp" />
 
 
     </RelativeLayout>

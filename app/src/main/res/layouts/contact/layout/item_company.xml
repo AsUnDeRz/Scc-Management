@@ -53,7 +53,7 @@
         android:layout_toRightOf="@+id/iconUser"
         android:lines="1"
         android:textColor="@android:color/black"
-        android:textSize="16sp" />
+        android:textSize="12dp" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtThin
         android:id="@+id/txtContact"
@@ -62,7 +62,7 @@
         android:layout_alignTop="@+id/txtCompany"
         android:layout_toRightOf="@+id/txtCompany"
         android:lines="1"
-        android:textSize="16sp"
+        android:textSize="12sp"
         android:visibility="gone" />
 
     <View

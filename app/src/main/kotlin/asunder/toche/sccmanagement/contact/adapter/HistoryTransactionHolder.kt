@@ -22,10 +22,12 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
     private val txtMediumPrice = itemView.findViewById<TxtThin>(R.id.txtMediumPrice)
     private val txtMediumVat = itemView.findViewById<TxtThin>(R.id.txtMediumVat)
     private val txtMediumDate = itemView.findViewById<TxtThin>(R.id.txtMediumDate)
+    private val txtNote = itemView.findViewById<TxtThin>(R.id.txtNote)
 
 
     fun bind(transaction: Model.Transaction,product: Model.Product,listener: TransactionListener?){
         txtProdName.text = product.product_name
+        txtNote.text = transaction.desc
         if (transaction.sale_price.isNotEmpty()) {
             txtSalePrice.text = checkDecimal(transaction.sale_price[0].price)
             txtSaleVat.text = when(transaction.sale_price[0].vat){

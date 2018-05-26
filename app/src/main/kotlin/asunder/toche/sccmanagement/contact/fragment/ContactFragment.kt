@@ -36,9 +36,13 @@ import asunder.toche.sccmanagement.custom.extension.DisableClick
 import asunder.toche.sccmanagement.custom.extension.EnableClick
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
+import asunder.toche.sccmanagement.issue.IssueState
+import asunder.toche.sccmanagement.issue.IssueViewModel
 import asunder.toche.sccmanagement.main.ControlViewModel
 import asunder.toche.sccmanagement.preference.KEY
 import asunder.toche.sccmanagement.preference.ROOT
+import asunder.toche.sccmanagement.transactions.TransactionState
+import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
 import com.thefinestartist.finestwebview.FinestWebView
 import kotlinx.android.synthetic.main.fragment_contact.*
 import kotlinx.android.synthetic.main.fragment_contact_add.*
@@ -69,7 +73,9 @@ class ContactFragment  : Fragment(),ComponentListener{
     private lateinit var titleInput : TxtMedium
     private lateinit var edtInput : EdtMedium
     private var stateInput : CurrentInputState = CurrentInputState.Company
-    lateinit var contactVM : ContactViewModel
+    private lateinit var contactVM : ContactViewModel
+    private lateinit var transactionViewModel : TransactionViewModel
+    private lateinit var issueViewModel : IssueViewModel
     private var loading = LoadingDialog.newInstance()
     private lateinit var numberAdapter : NumberAdapter
     private lateinit var emailAdapter: EmailAdapter
@@ -86,7 +92,9 @@ class ContactFragment  : Fragment(),ComponentListener{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         contactVM = ViewModelProviders.of(activity!!).get(ContactViewModel::class.java)
+        transactionViewModel = ViewModelProviders.of(activity!!).get(TransactionViewModel::class.java)
         controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
+        issueViewModel = ViewModelProviders.of(activity!!).get(IssueViewModel::class.java)
         initControllState()
     }
 
@@ -100,6 +108,9 @@ class ContactFragment  : Fragment(),ComponentListener{
                         saveContact()
                     }
                     ContactState.SELECTCONTACT ->{
+                        showContactList()
+                    }
+                    else ->{
                         showContactList()
                     }
                 }
@@ -128,6 +139,7 @@ class ContactFragment  : Fragment(),ComponentListener{
     // Replace the switch method
     fun displayCompany(){
         tabContactHistory.visibility = View.GONE
+        tabContact.visibility = View.GONE
         val ft = fragmentManager?.beginTransaction()
         if (companyFragment.isAdded) { // if the fragment is already in container
             ft?.show(companyFragment)
@@ -146,8 +158,16 @@ class ContactFragment  : Fragment(),ComponentListener{
     fun displayHistory(){
         tabContactHistory.visibility = View.VISIBLE
         tabContactHistory.setOnClickListener {
-            displayCompany()
-            showFormContactWithData(filterFirstContact)
+            if (contactVM.isSaveContactComplete.value == ContactState.SHOWFORM){
+                dismissFormContact()
+                contactVM.updateViewState(ContactState.SAVED)
+            }else {
+                contactVM.updateViewState(ContactState.ALLCONTACT)
+            }
+        }
+        tabContact.visibility = View.VISIBLE
+        tabContact.setOnClickListener {
+            contactVM.updateViewState(ContactState.EDITCONTACT)
         }
         val ft = fragmentManager?.beginTransaction()
         if (historyCompanyFragment.isAdded) { // if the fragment is already in container
@@ -168,7 +188,6 @@ class ContactFragment  : Fragment(),ComponentListener{
         Log.d(TAG,"onViewCreated")
         //setUpPager()
         //setUpTablayout()
-        setEditAction()
         setUpStub1()
         setUpStub2()
         observerContacts()
@@ -251,26 +270,50 @@ class ContactFragment  : Fragment(),ComponentListener{
         }
 
         btnAddContact.setOnClickListener {
-            //if (validateInput()) {
-                saveContact()
-                contactScrollView.fullScroll(ScrollView.FOCUS_UP)
-            //}
+            when {
+                contactVM.isSaveContactComplete.value == ContactState.TRIGGERFROMTRANSACTION -> {
+                    saveContact()
+                    transactionViewModel.updateStateView(TransactionState.SHOWTRANSACTION)
+                    transactionViewModel.updateTransaction(transactionViewModel.transaction.value!!)
+                }
+                contactVM.isSaveContactComplete.value == ContactState.TRIGGERFROMISSUE -> {
+                    saveContact()
+                    issueViewModel.updateViewState(IssueState.SHOWFROM)
+                    issueViewModel.updateCurrentIssue(issueViewModel.currentIssue.value!!)
+                }
+                else -> {
+                    saveContact()
+                    dismissFormContact()
+                    contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+                }
+            }
         }
 
         btnCancelContact.setOnClickListener {
-            contactVM.updateViewState(ContactState.ALLCONTACT)
-            contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+            when {
+                contactVM.isSaveContactComplete.value == ContactState.TRIGGERFROMTRANSACTION -> {
+                    transactionViewModel.updateStateView(TransactionState.SHOWTRANSACTION)
+                    transactionViewModel.updateTransaction(transactionViewModel.transaction.value!!)
+                }
+                contactVM.isSaveContactComplete.value == ContactState.TRIGGERFROMISSUE ->{
+                    issueViewModel.updateViewState(IssueState.SHOWFROM)
+                    issueViewModel.updateCurrentIssue(issueViewModel.currentIssue.value!!)
+                }
+                contactVM.isSaveContactComplete.value == ContactState.SHOWFORM ->{
+                    contactVM.updateViewState(ContactState.SAVED)
+                    dismissFormContact()
+                    contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+                }
+                else -> {
+                    showContactList()
+                    dismissFormContact()
+                    contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+                }
+            }
         }
 
         btnDeleteContact.setOnClickListener {
             contactVM.deleteContact()
-        }
-
-        btnHistory.setOnClickListener {
-            showContactList()
-            displayHistory()
-            triggerContact(filterFirstContact)
-            //contactVM.updateViewState(ContactState.SELECTCONTACT)
         }
     }
 
@@ -328,14 +371,6 @@ class ContactFragment  : Fragment(),ComponentListener{
     }
 */
 
-
-    fun setEditAction(){
-        imgEdit.setOnClickListener {
-            showFormContact()
-            clearModelContact()
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -360,7 +395,7 @@ class ContactFragment  : Fragment(),ComponentListener{
                 ,edtContactName.text.toString(),numberAdapter.numbers,emailAdapter.emails,
                 webstieAdapter.websites, addressAdapter.addresses,numberAdapter.typeList)
         contactVM.saveContact(data)
-        loading.show(fragmentManager, LoadingDialog.TAG)
+        //loading.show(fragmentManager, LoadingDialog.TAG)
     }
 
     fun validateInput() : Boolean{
@@ -394,6 +429,22 @@ class ContactFragment  : Fragment(),ComponentListener{
         addressAdapter.updateTypeList(contact.type_number)
     }
 
+    fun showFormContactWithOutState(contact :Model.Contact){
+        filterFirstContact = contact
+        contactVM.updateContactId(contact.id)
+        edtCompany.setText(contact.company)
+        edtBill.setText(contact.bill)
+        edtContactName.setText(contact.contact_name)
+        numberAdapter.updateNumbers(contact.numbers)
+        emailAdapter.updateEmails(contact.email)
+        webstieAdapter.updateWebsites(contact.websites)
+
+        numberAdapter.updateTypeList(contact.type_number)
+        emailAdapter.updateTypeList(contact.type_number)
+        webstieAdapter.updateTypeList(contact.type_number)
+        addressAdapter.updateTypeList(contact.type_number)
+    }
+
     fun showFormContact(){
         contactScrollView.fullScroll(ScrollView.FOCUS_UP)
         edtCompany.EnableClick()
@@ -402,7 +453,11 @@ class ContactFragment  : Fragment(),ComponentListener{
         contactVM.updateViewState(ContactState.SHOWFORM)
         root.visibility = View.VISIBLE
         rootInput.visibility = View.GONE
-        imgEdit.visibility = View.GONE
+    }
+
+    fun dismissFormContact(){
+        root.visibility = View.GONE
+        rootInput.visibility = View.GONE
     }
 
     fun clearModelContact(){
@@ -429,7 +484,6 @@ class ContactFragment  : Fragment(),ComponentListener{
     fun showContactList(){
         displayCompany()
         root.visibility = View.GONE
-        imgEdit.visibility = View.VISIBLE
     }
 
     fun checkState(){
@@ -511,7 +565,8 @@ class ContactFragment  : Fragment(),ComponentListener{
                     }
                 }
                 ContactState.NEWCONTACT ->{
-
+                    showFormContact()
+                    clearModelContact()
                 }
                 ContactState.EDITCONTACT ->{
                     showFormContactWithData(contactVM.contact.value!!)
@@ -521,6 +576,24 @@ class ContactFragment  : Fragment(),ComponentListener{
                     //vpContact.currentItem = 1
                     displayHistory()
                     triggerContact(contactVM.contact.value!!)
+                }
+                ContactState.TRIGGERFROMTRANSACTION ->{
+                    contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+                    edtCompany.EnableClick()
+                    edtCompany.requestFocus()
+                    edtCompany.DisableClick()
+                    root.visibility = View.VISIBLE
+                    rootInput.visibility = View.GONE
+                    showFormContactWithOutState(contactVM.contact.value!!)
+                }
+                ContactState.TRIGGERFROMISSUE ->{
+                    contactScrollView.fullScroll(ScrollView.FOCUS_UP)
+                    edtCompany.EnableClick()
+                    edtCompany.requestFocus()
+                    edtCompany.DisableClick()
+                    root.visibility = View.VISIBLE
+                    rootInput.visibility = View.GONE
+                    showFormContactWithOutState(contactVM.contact.value!!)
                 }
             }
         })
@@ -540,7 +613,6 @@ class ContactFragment  : Fragment(),ComponentListener{
         contactVM.updateViewState(ContactState.SHOWFORM)
         root.visibility = View.VISIBLE
         rootInput.visibility = View.GONE
-        imgEdit.visibility = View.GONE
         contactVM.updateContactId(contact.id)
         edtCompany.setText(contact.company)
         edtBill.setText(contact.bill)

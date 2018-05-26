@@ -6,6 +6,7 @@ import asunder.toche.sccmanagement.Model
  *Created by ToCHe on 20/3/2018 AD.
  */
 enum class TransactionState{
+    NEWTRANSACTION,
     SHOWLIST,
     SHOWFORM,
     SHOWINPUT,

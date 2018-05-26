@@ -49,13 +49,20 @@ object Utils{
     }
 
     fun format2DigiYMD(date: String):String{
-        val fmtOut = SimpleDateFormat("yy/MM/dd", Locale("th","TH"))
+        val fmtOut = SimpleDateFormat("yyMMdd", Locale("th","TH"))
         return fmtOut.format(getDateWithString(date))
     }
 
     fun getDateWithNumberFromCurrent(number:Int):Date{
         val calendar = Calendar.getInstance()
         calendar.time = getCurrentDate()
+        calendar.add(Calendar.DATE,number)
+        return calendar.time
+    }
+
+    fun getDateWithNumber(number:Int,date: Date):Date{
+        val calendar = Calendar.getInstance()
+        calendar.time = date
         calendar.add(Calendar.DATE,number)
         return calendar.time
     }

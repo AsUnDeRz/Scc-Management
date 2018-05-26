@@ -76,7 +76,7 @@ class PictureAdapter(var listener: ComponentListener): RecyclerView.Adapter<Pict
                         .load(File(picture.local_path))
                         .into(it)
             }
-            imageAction
+
         }
     }
 }

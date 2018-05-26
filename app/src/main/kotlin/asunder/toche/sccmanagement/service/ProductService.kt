@@ -31,7 +31,7 @@ class ProductService(var listener:ProductCallback){
 
     fun pushNewProduct(product: Model.Product){
         val keyAuth = firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.PRODUCTS}").push().key
-        product.id = keyAuth
+        product.id = keyAuth!!
         Log.d(TAG,"PushNewProduct with $product")
         val childUpdates = HashMap<String,Any>()
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.PRODUCTS}/$keyAuth"] = product

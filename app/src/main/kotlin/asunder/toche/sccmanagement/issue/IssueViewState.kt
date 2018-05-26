@@ -10,9 +10,10 @@ enum class IssueState{
     NEWISSUE,
     NEWFROMCONTACT,
     TRIGGERFROMSERVICE,
-    SHOWFROM
+    SHOWFROM,
+
 }
 interface ComponentListener{
-    fun OnFileClick(file:Model.Content,position: Int)
+    fun OnFileClick(file:Model.Content,isDeleteOrShare:Boolean,position: Int)
     fun OnPictureClick(picture:Model.Content,isDeleteOrShare:Boolean,position: Int)
 }

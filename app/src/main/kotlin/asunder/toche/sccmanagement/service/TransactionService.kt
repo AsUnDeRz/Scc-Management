@@ -32,7 +32,7 @@ class TransactionService(var listener:TransactionCallback){
 
     fun pushNewTransaction(transaction: Model.Transaction){
         val keyAuth = firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.TRANSACTIONS}").push().key
-        transaction.id = keyAuth
+        transaction.id = keyAuth!!
         Log.d(TAG,"PushNewTransaction with Transaction")
         val childUpdates = HashMap<String,Any>()
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.TRANSACTIONS}/$keyAuth"] = transaction

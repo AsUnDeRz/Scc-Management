@@ -14,7 +14,7 @@ android {
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
         versionCode 1
-        versionName "1.0.5"
+        versionName "1.0.7"
         testInstrumentationRunner "android.support.menu_drawer.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -125,6 +125,11 @@ dependencies {
     implementation project(':FilePicker')
     implementation project(':hover')
     implementation 'com.thefinestartist:finestwebview:1.2.7'
+    implementation 'com.github.piasy:GlideImageLoader:1.4.6'
+    implementation 'au.com.jtribe.shelly:shelly:0.1.6@aar'
+
+
+
 }
 kotlin {
     experimental {

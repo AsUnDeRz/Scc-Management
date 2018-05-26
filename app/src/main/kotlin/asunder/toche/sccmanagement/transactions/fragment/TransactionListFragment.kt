@@ -62,13 +62,13 @@ class TransactionListFragment : Fragment(),
 
     fun observeTransactions(){
         transactionVM.transactions.observe(this, Observer {
-            masterSectionAdapter.updateMasterGroup(transactionVM.sortAll(this))
+            masterSectionAdapter.updateMasterGroup(transactionVM.sortToday(this))
 
         })
         transactionVM.stateView.observe(this, Observer {
             when(it){
                 TransactionState.SORTALL ->{
-                    masterSectionAdapter.updateMasterGroup(transactionVM.sortAll(this))
+                    masterSectionAdapter.updateMasterGroup(transactionVM.sortToday(this))
                 }
                 TransactionState.SORTYESTERDAY ->{
                     masterSectionAdapter.updateMasterGroup(transactionVM.sortYesterday(this))

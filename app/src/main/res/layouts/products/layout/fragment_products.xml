@@ -4,44 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <asunder.toche.sccmanagement.custom.textview.TxtBold
-        android:id="@+id/tabProduct"
-        android:layout_width="110dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="32dp"
-        android:background="@drawable/bg_round"
-        android:gravity="center"
-        android:text="สินค้า"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <asunder.toche.sccmanagement.custom.textview.TxtBold
-        android:id="@+id/tabProductHistory"
-        android:layout_width="110dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/bg_round"
-        android:gravity="center"
-        android:text="ย้อนกลับ"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:visibility="gone"
-        app:layout_constraintStart_toEndOf="@+id/tabProduct"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/imgNewProduct"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        android:tint="@color/colorDark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_edit_black_24dp" />
-
     <FrameLayout
         android:id="@+id/vpProduct"
         android:layout_width="0dp"
@@ -49,7 +11,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabProduct" />
+        app:layout_constraintTop_toTopOf="parent" />
 <!--
     <asunder.toche.sccmanagement.custom.tablayout.CustomTabLayout
         android:id="@+id/tabProduct"
@@ -71,32 +33,31 @@
 
     <ViewStub
         android:id="@+id/stubProductAdd"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:inflatedId="@+id/layout_product_add"
         android:layout="@layout/fragment_product_add"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabProduct"  />
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ViewStub
         android:id="@+id/stubLayoutInput"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:inflatedId="@+id/layout_input_add"
         android:layout="@layout/layout_input"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabProduct"  />
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ViewStub
         android:id="@+id/stubMediumRate"
-        android:inflatedId="@+id/layout_medium_rate"
-        android:layout="@layout/layout_price_rate"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:inflatedId="@+id/layout_medium_rate"
+        android:layout="@layout/layout_price_rate"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabProduct"  />
+        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

@@ -5,13 +5,18 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.TabLayout
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
+import android.support.v4.app.ShareCompat
+import android.support.v4.content.ContextCompat
+import android.support.v4.content.FileProvider
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -22,8 +27,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ScrollView
+import asunder.toche.sccmanagement.BuildConfig
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.adapter.CompanyAdapter
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.button.BtnMedium
@@ -33,10 +40,12 @@ import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.issue.adapter.FileAdapter
 import asunder.toche.sccmanagement.issue.adapter.IssueAdapter
 import asunder.toche.sccmanagement.issue.adapter.PictureAdapter
+import asunder.toche.sccmanagement.main.ActivityImageViewer
 import asunder.toche.sccmanagement.main.ControlViewModel
 import asunder.toche.sccmanagement.main.FilterViewPager
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
+import au.com.jtribe.shelly.Shelly
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.SimpleTarget
@@ -93,6 +102,8 @@ class IssueFragment : Fragment(),
     private val files = mutableListOf<Model.Content>()
     private lateinit var pictureAdapter:PictureAdapter
     private lateinit var fileAdapter:FileAdapter
+    lateinit var viewPager:ViewPager
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,7 +120,15 @@ class IssueFragment : Fragment(),
                 if (!isInitView) {
                     initViewCreated()
                 }
-                tabLayoutFilterIssue.setScrollPosition(1,0f,true)
+                if (issueVM.isSaveIssueComplete.value == IssueState.SHOWFROM){
+                    showIssueForm()
+                    viewPager.currentItem = 1
+                    tabLayoutFilterIssue.setScrollPosition(1, 0f, true)
+                }else {
+                    viewPager.currentItem = 1
+                    tabLayoutFilterIssue.setScrollPosition(1, 0f, true)
+                    issueVM.updateViewState(IssueState.ALLISSUE)
+                }
             }else{
                 if (issueVM.isSaveIssueComplete.value == IssueState.SHOWFROM){
                     saveIssue()
@@ -132,7 +151,6 @@ class IssueFragment : Fragment(),
             layoutManager = LinearLayoutManager(context)
         }
         observerTabFilterIssue()
-        onClickNewIssue()
         initFilterWithButton()
         observerIssue()
     }
@@ -146,6 +164,7 @@ class IssueFragment : Fragment(),
         super.onViewCreated(view, savedInstanceState)
         inflateStubIssueAdd()
         inflateStubLayoutInput()
+        initViewCreated()
     }
 
 
@@ -178,7 +197,7 @@ class IssueFragment : Fragment(),
     }
 
     fun observerTabFilterIssue(){
-        val viewPager = ViewPager(context!!)
+        viewPager = ViewPager(context!!)
         viewPager.adapter = FilterViewPager(fragmentManager,true)
         tabLayoutFilterIssue.setupWithViewPager(viewPager)
         tabLayoutFilterIssue.addOnTabSelectedListener(object :TabLayout.OnTabSelectedListener{
@@ -253,12 +272,7 @@ class IssueFragment : Fragment(),
         }
     }
 
-    fun onClickNewIssue(){
-        imgNewIssue.setOnClickListener {
-            showIssueForm()
-            clearFormIssue()
-        }
-    }
+
 
     fun inflateStubIssueAdd(){
         stubIssueAdd.setOnInflateListener { _, v ->
@@ -282,11 +296,34 @@ class IssueFragment : Fragment(),
     fun initIssueForm(){
         initContentAdapter()
         btnAddIssueInfo.setOnClickListener {
-            saveIssue()
+            when {
+                issueVM.isSaveIssueComplete.value == IssueState.TRIGGERFROMSERVICE -> {
+                    saveIssue()
+                    contactVm.updateContact(contactVm.contact.value!!)
+                    contactVm.updateViewState(ContactState.SHOWFORM)
+                }
+                issueVM.isSaveIssueComplete.value == IssueState.NEWFROMCONTACT -> {
+                    saveIssue()
+                    contactVm.updateViewState(ContactState.SELECTCONTACT)
+                }
+                else -> saveIssue()
+            }
         }
         btnCancelIssueInfo.setOnClickListener {
-            clearFormIssue()
-            issueVM.updateViewState(IssueState.ALLISSUE)
+            when {
+                issueVM.isSaveIssueComplete.value == IssueState.TRIGGERFROMSERVICE -> {
+                    saveIssue()
+                    contactVm.updateContact(contactVm.contact.value!!)
+                    contactVm.updateViewState(ContactState.SHOWFORM)
+                }
+                issueVM.isSaveIssueComplete.value == IssueState.NEWFROMCONTACT -> {
+                    contactVm.updateViewState(ContactState.SELECTCONTACT)
+                }
+                else -> {
+                    clearFormIssue()
+                    issueVM.updateViewState(IssueState.ALLISSUE)
+                }
+            }
         }
         btnDeleteIssueInfo.setOnClickListener {
             showConfirmDialog(edtIssue.text.toString(),issueVM.companyReference.value?.company)
@@ -320,6 +357,11 @@ class IssueFragment : Fragment(),
                     .pickPhoto(this)
         }
 
+        btnOpenContact.setOnClickListener {
+            contactVm.updateContact(issueVM.companyReference.value!!)
+            contactVm.updateViewState(ContactState.TRIGGERFROMISSUE)
+        }
+
     }
     fun initLayoutInput(){
         btnSaveInput.setOnClickListener {
@@ -338,13 +380,11 @@ class IssueFragment : Fragment(),
         issueVM.updateViewState(IssueState.SHOWFROM)
         rootIssueForm.visibility = View.VISIBLE
         rootLayoutInput.visibility = View.GONE
-        imgNewIssue.visibility = View.GONE
     }
 
     fun showIssueList(){
         rootIssueForm.visibility = View.GONE
         rootLayoutInput.visibility = View.GONE
-        imgNewIssue.visibility = View.VISIBLE
     }
 
     fun showLayoutInput(){
@@ -367,10 +407,14 @@ class IssueFragment : Fragment(),
         val btnDone = bottomSheetView.findViewById<BtnMedium>(R.id.btnDone)
         btnWaiting.setOnClickListener {
             edtProcess.setText("รอทำ")
+            edtProcess.setTextColor(ContextCompat.getColor(this.context!!,R.color.colorDark))
+            edtProcess.setBackgroundColor(ContextCompat.getColor(this.context!!,R.color.colorWaiting))
             bottomSheetDialog.dismiss()
         }
         btnDone.setOnClickListener {
             edtProcess.setText("ทำแล้ว")
+            edtProcess.setTextColor(ContextCompat.getColor(this.context!!,android.R.color.white))
+            edtProcess.setBackgroundColor(ContextCompat.getColor(this.context!!,R.color.colorConfirm))
             bottomSheetDialog.dismiss()
         }
 
@@ -458,7 +502,6 @@ class IssueFragment : Fragment(),
         if(issueVM.currentIssue.value?.id != issue.id){
             issueVM.updateCurrentIssue(issue)
         }
-        edtProcess.setText(issue.status)
         edtIssue.setText(issue.issue_name)
         edtIssueDetail.setText(issue.issue_desc)
         issueVM.currentIssueId = issue.id
@@ -480,10 +523,21 @@ class IssueFragment : Fragment(),
         }else{
             selectedFile.clear()
         }
+        if (issue.status == "รอทำ"){
+            edtProcess.setText("รอทำ")
+            edtProcess.setTextColor(ContextCompat.getColor(this.context!!,R.color.colorDark))
+            edtProcess.setBackgroundColor(ContextCompat.getColor(this.context!!,R.color.colorWaiting))
+        }else{
+            edtProcess.setText("ทำแล้ว")
+            edtProcess.setTextColor(ContextCompat.getColor(this.context!!,android.R.color.white))
+            edtProcess.setBackgroundColor(ContextCompat.getColor(this.context!!,R.color.colorConfirm))
+        }
     }
 
     fun clearFormIssue(){
         edtProcess.setText("รอทำ")
+        edtProcess.setTextColor(ContextCompat.getColor(this.context!!,R.color.colorDark))
+        edtProcess.setBackgroundColor(ContextCompat.getColor(this.context!!,R.color.colorWaiting))
         edtIssue.setText("")
         edtIssueDetail.setText("")
         edtCompany.setText("")
@@ -513,6 +567,7 @@ class IssueFragment : Fragment(),
                 println("Setup IssueFrom with $it")
                 it?.let { it1 -> setUpIssueForm(it1) }
             }
+            println("Current State ${issueVM.isSaveIssueComplete.value}")
         })
 
         issueVM.companyReference.observe(this, Observer {
@@ -528,16 +583,24 @@ class IssueFragment : Fragment(),
                     }
                 }
                 IssueState.NEWISSUE ->{
-
+                    showIssueForm()
+                    clearFormIssue()
                 }
                 IssueState.NEWFROMCONTACT ->{
-                    showIssueForm()
+                    println("Show Issue Form")
+                    issueScrollView.fullScroll(ScrollView.FOCUS_UP)
+                    edtCompany.requestFocus()
+                    rootIssueForm.visibility = View.VISIBLE
+                    rootLayoutInput.visibility = View.GONE
                     clearFormIssue()
                     issueVM.updateCompany(contactVm.contact.value!!)
                 }
                 IssueState.TRIGGERFROMSERVICE ->{
                     println("Trigger from service")
-                    showIssueForm()
+                    issueScrollView.fullScroll(ScrollView.FOCUS_UP)
+                    edtCompany.requestFocus()
+                    rootIssueForm.visibility = View.VISIBLE
+                    rootLayoutInput.visibility = View.GONE
                 }
 
             }
@@ -637,13 +700,32 @@ class IssueFragment : Fragment(),
     override fun onClickCancel() {
     }
 
-    override fun OnFileClick(file: Model.Content, position: Int) {
-        fileAdapter.remove(position)
+    override fun OnFileClick(file: Model.Content,isDeleteOrShare:Boolean, position: Int) {
+        if (isDeleteOrShare) {
+            fileAdapter.remove(position)
+        }else {
+            val f = File(file.local_path)
+            val intentShareFile = Intent(Intent.ACTION_SEND)
+            val fileWithinMyDir = File(file.local_path)
+            if (fileWithinMyDir.exists()) {
+                intentShareFile.type = "text/*"
+                intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://${file.local_path}"))
+                intentShareFile.putExtra(Intent.EXTRA_SUBJECT, "MyApp File Share: " + f.name)
+                intentShareFile.putExtra(Intent.EXTRA_TEXT, "MyApp File Share: " + f.name)
+
+                this.startActivity(Intent.createChooser(intentShareFile, f.name))
+            }
+
+        }
     }
     override fun OnPictureClick(picture: Model.Content,isDeleteOrShare:Boolean, position: Int) {
         if (isDeleteOrShare) {
             pictureAdapter.remove(position)
         }else{
+            val intent = Intent()
+            intent.putExtra("path",picture.local_path)
+            activity?.startActivity(intent.setClass(activity,ActivityImageViewer::class.java))
+            /*
             Glide.with(activity!!)
                     .asBitmap()
                     .load(File(picture.local_path))
@@ -660,6 +742,7 @@ class IssueFragment : Fragment(),
                             }
                         }
                     })
+                    */
         }
     }
     fun initContentAdapter(){

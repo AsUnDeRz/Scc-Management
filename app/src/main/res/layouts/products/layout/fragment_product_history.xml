@@ -5,6 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+        android:id="@+id/txtBack"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_round"
+        android:gravity="center"
+        android:text="ย้อนกลับ"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <asunder.toche.sccmanagement.custom.textview.TxtBold
         android:id="@+id/txtHistory"
         android:layout_width="wrap_content"

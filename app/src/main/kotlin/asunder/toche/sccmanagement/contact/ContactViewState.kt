@@ -12,7 +12,10 @@ enum class ContactState{
     SELECTCONTACT,
     NEWISSUE,
     NEWTRANSACTION,
-    SHOWFORM
+    SHOWFORM,
+    TRIGGERFROMTRANSACTION,
+    TRIGGERFROMISSUE,
+    SAVED
 }
 
 interface ComponentListener{

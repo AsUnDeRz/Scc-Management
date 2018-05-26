@@ -32,7 +32,7 @@
             android:layout_toEndOf="@+id/imgStateAdd"
             android:text="เพิ่มที่อยู่"
             android:textColor="@color/colorDark"
-            android:textSize="16sp" />
+            android:textSize="12sp" />
 
 
     </RelativeLayout>
@@ -41,7 +41,9 @@
         android:id="@+id/rvAddress"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/vAddress" />

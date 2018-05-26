@@ -255,6 +255,7 @@ class HoverViewStateCollapsed extends BaseHoverViewState {
             mListener.onDragEnd();
         }
 
+
         boolean droppedOnExit = mHoverView.mScreen.getExitView().isInExitZone(mFloatingTab.getPosition());
         if (droppedOnExit) {
             Log.d(TAG, "User dropped floating tab on exit.");
@@ -286,6 +287,7 @@ class HoverViewStateCollapsed extends BaseHoverViewState {
 
             sendToDock();
         }
+
     }
 
     private void onTap() {

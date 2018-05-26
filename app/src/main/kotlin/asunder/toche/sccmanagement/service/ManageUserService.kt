@@ -285,11 +285,11 @@ class ManageUserService{
     fun checkAdmin(){
         ROOT.listAdmin.clear()
         firebase.child(ROOT.ADMIN).addListenerForSingleValueEvent(object : ValueEventListener{
-            override fun onCancelled(data: DatabaseError?) {
+            override fun onCancelled(data: DatabaseError) {
                 Log.d(TAG, data?.message)
                 Crashlytics.log(data?.message)
             }
-            override fun onDataChange(data: DataSnapshot?) {
+            override fun onDataChange(data: DataSnapshot) {
                 val emails = mutableListOf<String>()
                 data?.children?.mapNotNullTo(emails){
                     it.child(ROOT.EMAIL).value.toString()
@@ -305,13 +305,13 @@ class ManageUserService{
     fun fetchUsers(callBack : ServiceState){
         val usersAuth : MutableList<Model.UserAuth> = mutableListOf()
             firebase.child("${ROOT.MANAGEMENT}/").addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onCancelled(data: DatabaseError?) {
-                    Log.d(TAG, data?.message)
-                    Crashlytics.log(data?.message)
+                override fun onCancelled(data: DatabaseError) {
+                    Log.d(TAG, data.message)
+                    Crashlytics.log(data.message)
                 }
 
-                override fun onDataChange(data: DataSnapshot?) {
-                    data?.children?.mapNotNullTo(usersAuth) {
+                override fun onDataChange(data: DataSnapshot) {
+                    data.children.mapNotNullTo(usersAuth) {
                         it.getValue<Model.UserAuth>(Model.UserAuth::class.java)
                     }
                     callBack.loadUserSuccess(usersAuth)
@@ -325,14 +325,14 @@ class ManageUserService{
                     "","","",""))
         }
         firebase.child("${ROOT.MANAGEMENT}/$uid").addListenerForSingleValueEvent(object  : ValueEventListener{
-            override fun onCancelled(data: DatabaseError?) {
+            override fun onCancelled(data: DatabaseError) {
                 Log.d(TAG, data?.message)
                 listener?.currentStatus(Model.UserAuth("", ROOT.REGISTER,
                         "","","",""))
                 handler.removeCallbacks(runnable)
                 Crashlytics.log(data?.message)
             }
-            override fun onDataChange(data: DataSnapshot?) {
+            override fun onDataChange(data: DataSnapshot) {
                 val userAuth = data?.getValue(Model.UserAuth::class.java)
                 if(userAuth == null){
                     listener?.currentStatus(Model.UserAuth("",ROOT.REGISTER,
@@ -353,10 +353,10 @@ class ManageUserService{
     fun synceDatabase(uid: String,listener :SyncData){
         Log.d(TAG,"Uid  "+uid)
         firebase.child(ROOT.USERS+"/"+uid).addListenerForSingleValueEvent(object :ValueEventListener{
-            override fun onCancelled(error: DatabaseError?) {
+            override fun onCancelled(error: DatabaseError) {
             }
 
-            override fun onDataChange(data: DataSnapshot?) {
+            override fun onDataChange(data: DataSnapshot) {
                 val contacts = mutableListOf<Model.Contact>()
                 val issues = mutableListOf<Model.Issue>()
                 val products = mutableListOf<Model.Product>()

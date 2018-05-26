@@ -31,7 +31,7 @@
             android:layout_toEndOf="@+id/imgFile"
             android:text="เพิ่มไฟล์เอกสาร"
             android:textColor="@color/colorDark"
-            android:textSize="16sp" />
+            android:textSize="12sp" />
 
 
     </RelativeLayout>

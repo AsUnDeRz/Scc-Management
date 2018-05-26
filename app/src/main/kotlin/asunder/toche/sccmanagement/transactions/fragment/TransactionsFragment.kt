@@ -17,14 +17,14 @@ import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.ScrollView
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.adapter.CompanyAdapter
+import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
@@ -46,7 +46,6 @@ import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
 import kotlinx.android.synthetic.main.fragment_transactions.*
 import kotlinx.android.synthetic.main.fragment_transactions_add.*
 import kotlinx.android.synthetic.main.layout_price_rate.*
-import kotlinx.android.synthetic.main.section_transaction_confirm.*
 import kotlinx.android.synthetic.main.section_transaction_info.*
 import java.util.*
 
@@ -68,6 +67,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
     private lateinit var transactionVM: TransactionViewModel
     private lateinit var productVM: ProductViewModel
     private lateinit var controlViewModel: ControlViewModel
+    private lateinit var contactViewModel: ContactViewModel
     private lateinit var saleRateAdapter: SaleRateAdapter
     private lateinit var adapter: CompanyAdapter
     private lateinit var productAdapter: ProductAdapter
@@ -81,6 +81,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         transactionVM = ViewModelProviders.of(activity!!).get(TransactionViewModel::class.java)
         productVM = ViewModelProviders.of(activity!!).get(ProductViewModel::class.java)
         controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
+        contactViewModel = ViewModelProviders.of(activity!!).get(ContactViewModel::class.java)
         initControllState()
     }
 
@@ -102,8 +103,6 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
     fun initViewCreated(){
         isInitView = true
         setUpPager()
-        setUpTablayout()
-        setEditAction()
         observerTabFilterTransactions()
         observeTransaction()
     }
@@ -130,35 +129,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
 
     }
 
-    fun setUpTablayout(){
-        Log.d(TAG,"SetupTablayoutr")
-        tabTransaction.setCustomSize(resources.getDimensionPixelSize(R.dimen.txt20).toFloat())
-        tabTransaction.setupWithViewPager(vpTransaction)
-        tabTransaction.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                if (tab?.position == 1){
-                    imgNewTransaction.visibility = View.GONE
-                }else{
-                    imgNewTransaction.visibility = View.VISIBLE
-                }
-            }
-        })
-        val tabStrip = tabTransaction.getChildAt(0) as LinearLayout
-        for (i in 0 until tabStrip.childCount){
-            tabStrip.getChildAt(i).setOnTouchListener { v, event -> true }
-        }
-    }
-
-
-    fun setEditAction(){
-        imgNewTransaction.setOnClickListener {
-            showTransactionForm()
-        }
-    }
 
 
     fun observerTabFilterTransactions(){
@@ -208,11 +179,27 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         stubTransactionAdd.inflate()
         initViewInStubTransactionForm()
 
+        openContact.setOnClickListener {
+            contactViewModel.updateContact(transactionVM.contact.value!!)
+            contactViewModel.updateViewState(ContactState.TRIGGERFROMTRANSACTION)
+
+        }
+
+        openProduct.setOnClickListener {
+            productVM.updateProduct(transactionVM.product.value!!)
+            productVM.updateStateView(ProductState.TRIGGERFROMTRANSACTION)
+        }
+
     }
 
     fun initViewInStubTransactionForm(){
         btnCancelTransaction.setOnClickListener {
-            showTransactionList()
+            if (transactionVM.stateView.value == TransactionState.NEWFROMCONTACT){
+                contactViewModel.updateViewState(ContactState.SELECTCONTACT)
+                transactionVM.updateStateView(TransactionState.SHOWLIST)
+            }else {
+                showTransactionList()
+            }
         }
 
         btnDeleteTransaction.setOnClickListener {
@@ -220,7 +207,13 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         }
 
         btnAddTransaction.setOnClickListener {
-            saveOrUpdateTransaction()
+            if (transactionVM.stateView.value == TransactionState.NEWFROMCONTACT){
+                saveOrUpdateTransaction()
+                contactViewModel.updateViewState(ContactState.SELECTCONTACT)
+                transactionVM.updateStateView(TransactionState.SHOWLIST)
+            }else {
+                saveOrUpdateTransaction()
+            }
         }
 
         imgNewSaleRate.setOnClickListener {
@@ -302,11 +295,11 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
     fun showTransactionList(){
         rootTransactionForm.visibility = View.GONE
         rootLayoutPriceForm.visibility = View.GONE
-        imgNewTransaction.visibility = View.VISIBLE
         clearTransaction()
         transactionScrollView.fullScroll(ScrollView.FOCUS_UP)
     }
     fun showTransactionForm(){
+        edtTransactionNote.clearFocus()
         transactionVM.updateStateView(TransactionState.SHOWFORM)
         edtTransactionCompany.EnableClick()
         edtTransactionCompany.requestFocus()
@@ -314,8 +307,6 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         transactionScrollView.fullScroll(ScrollView.FOCUS_UP)
         rootTransactionForm.visibility = View.VISIBLE
         rootLayoutPriceForm.visibility = View.GONE
-        imgNewTransaction.visibility = View.GONE
-
     }
 
     fun showSalePriceForm(){
@@ -437,6 +428,10 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         })
         transactionVM.stateView.observe(this, Observer {
             when(it){
+                TransactionState.NEWTRANSACTION ->{
+                    println("New transaction")
+                    showTransactionForm()
+                }
                 TransactionState.SHOWTRANSACTION ->{
                     showTransactionForm()
                 }
@@ -448,13 +443,29 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
                 }
                 TransactionState.SHOWLIST ->{
                     showTransactionList()
-                    loading.dismiss()
+                    if (loading.isShow) {
+                        loading.dismiss()
+                    }
                 }
                 TransactionState.SHOWSALEFORM ->{
 
                 }
                 TransactionState.NEWFROMCONTACT ->{
-                    showTransactionForm()
+                    edtTransactionCompany.setText("")
+                    edtTransactionProduct.setText("")
+                    edtTransactionNote.setText("")
+                    edtMediumPrice.setText("")
+                    saleRateAdapter.updateSalePrice(mutableListOf())
+                    transactionVM.transactionId = ""
+                    selectedDate = Utils.getCurrentDate()
+                    transactionVM.updateProduct(Model.Product())
+                    edtTransactionNote.clearFocus()
+                    edtTransactionCompany.EnableClick()
+                    edtTransactionCompany.requestFocus()
+                    edtTransactionCompany.DisableClick()
+                    transactionScrollView.fullScroll(ScrollView.FOCUS_UP)
+                    rootTransactionForm.visibility = View.VISIBLE
+                    rootLayoutPriceForm.visibility = View.GONE
                     edtTransactionCompany.setText(transactionVM.contact.value?.company)
 
                 }
@@ -604,6 +615,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
             txtSaleValues?.text = salePrice.values
             txtSaleVat?.text = getSaleType(salePrice.vat)
          */
+        edtPriceNote.setText(salePrice.note)
         edtPriceDate.setText(Utils.format2DigiYMD(salePrice.date))
         edtPrice.setText(salePrice.price)
         edtPriceValues.setText(salePrice.values)

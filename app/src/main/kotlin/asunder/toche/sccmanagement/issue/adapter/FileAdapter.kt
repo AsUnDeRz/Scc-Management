@@ -63,7 +63,10 @@ class FileAdapter(var listener: ComponentListener): RecyclerView.Adapter<FileAda
             edtContent?.text = file?.lastPathSegment
             imageStateDelete?.isSelected = true
             imageStateDelete?.setOnClickListener {
-                listener.OnFileClick(files[adapterPosition],adapterPosition)
+                listener.OnFileClick(files[adapterPosition],true,adapterPosition)
+            }
+            edtContent?.setOnClickListener {
+                listener.OnFileClick(files[adapterPosition],false,adapterPosition)
             }
             imageStateDelete?.let {
                 Glide.with(itemView.context)

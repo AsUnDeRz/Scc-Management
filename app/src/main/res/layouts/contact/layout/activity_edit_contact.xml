@@ -75,7 +75,7 @@
         android:hint="กรอกข้อมูลประเภทที่อยู่ ..."
         android:inputType="textPersonName"
         android:paddingStart="8dp"
-        android:textSize="16sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -91,7 +91,7 @@
         android:hint="กรอกข้อมูลที่อยู่ ..."
         android:inputType="textPersonName"
         android:padding="8dp"
-        android:textSize="16sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@+id/edtTypeAddress"
         app:layout_constraintStart_toStartOf="@+id/edtTypeAddress"
         app:layout_constraintTop_toBottomOf="@+id/edtTypeAddress" />
@@ -103,7 +103,7 @@
         android:layout_marginTop="8dp"
         android:text="รูปแผนที่"
         android:textColor="@color/colorDark"
-        android:textSize="16sp"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="@+id/edtFactoryAddress"
         app:layout_constraintTop_toBottomOf="@+id/edtFactoryAddress" />
 
@@ -124,7 +124,7 @@
         android:layout_marginTop="8dp"
         android:text="แผนที่"
         android:textColor="@color/colorDark"
-        android:textSize="16sp"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="@+id/imgMap"
         app:layout_constraintTop_toBottomOf="@+id/imgMap" />
 

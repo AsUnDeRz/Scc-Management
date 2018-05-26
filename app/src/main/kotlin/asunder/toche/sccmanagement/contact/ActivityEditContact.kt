@@ -79,7 +79,7 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback {
             if (intent.hasExtra(ROOT.POSITION)) {
                 currentAddress = Model.Address(edtTypeAddress.text.toString(), edtFactoryAddress.text.toString(),
                         "", currentPhoto,
-                        "${location?.latitude}", "${location?.longitude}")
+                        "${location?.longitude}", "${location?.latitude}")
                 val intent = Intent()
                 intent.putExtra(ROOT.ADDRESS, currentAddress)
                 intent.putExtra(ROOT.POSITION,position)

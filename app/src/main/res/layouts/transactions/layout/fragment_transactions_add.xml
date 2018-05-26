@@ -62,7 +62,6 @@
 
             <include layout="@layout/section_transaction_info" />
 
-            <include layout="@layout/section_transaction_confirm" />
         </LinearLayout>
     </ScrollView>
 

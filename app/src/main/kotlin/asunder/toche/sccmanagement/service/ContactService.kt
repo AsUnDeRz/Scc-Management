@@ -30,7 +30,7 @@ class ContactService(var listener:ContactCallBack){
 
     fun pushNewContact(contact: Model.Contact)  {
         val keyAuth = firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.CONTACTS}").push().key
-        contact.id = keyAuth
+        contact.id = keyAuth!!
         Log.d(TAG,"PushNewContact with $contact")
         val childUpdates = HashMap<String,Any>()
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.CONTACTS}/$keyAuth"] = contact

@@ -93,12 +93,12 @@ class CompanyFragment : Fragment(),CompanyAdapter.CompanyListener {
 
     override fun onSelectContact(contact: Model.Contact) {
         contactVM.updateContact(contact)
-        contactVM.updateViewState(ContactState.EDITCONTACT)
+        contactVM.updateViewState(ContactState.SELECTCONTACT)
     }
 
     override fun onClickEdit(contact: Model.Contact) {
         contactVM.updateContact(contact)
-        contactVM.updateViewState(ContactState.EDITCONTACT)
+        contactVM.updateViewState(ContactState.SELECTCONTACT)
 
     }
 

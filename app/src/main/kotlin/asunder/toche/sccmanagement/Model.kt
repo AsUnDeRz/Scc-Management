@@ -81,7 +81,7 @@ object Model{
                            val product_id:String = "",
                            val product_name: String ="",
                            val medium_price:String = "",
-                           val date:String = "",
+                           var date:String = "",
                            val desc:String = "",
                            val sale_price:MutableList<SalePrice> = ArrayList()) : Parcelable
 

@@ -88,11 +88,11 @@ class ActivityLogin : AppCompatActivity(),ManageUserService.Sign,
     fun onStatusChange(uid:String){
         authManager.firebase.child(ROOT.MANAGEMENT+"/"+uid+"/status_user")
                 .addValueEventListener(object :ValueEventListener{
-            override fun onCancelled(error: DatabaseError?) {
+            override fun onCancelled(error: DatabaseError) {
             }
 
-            override fun onDataChange(data: DataSnapshot?) {
-                if(data?.value.toString() == ROOT.ADMIN){
+            override fun onDataChange(data: DataSnapshot) {
+                if(data.value.toString() == ROOT.ADMIN){
                     val intent = Intent()
                     intent.putExtra(ROOT.ADMIN,true)
                     startActivity(intent.setClass(this@ActivityLogin,ActivityMain::class.java))

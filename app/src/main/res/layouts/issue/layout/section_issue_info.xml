@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <!--
     <asunder.toche.sccmanagement.custom.button.BtnMedium
@@ -26,7 +25,7 @@
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtProcess"
         android:layout_width="0dp"
-        android:layout_height="48dp"
+        android:layout_height="40dp"
         android:layout_marginEnd="48dp"
         android:layout_marginStart="48dp"
         android:layout_marginTop="8dp"
@@ -36,7 +35,7 @@
         android:hint="In process"
         android:maxLines="1"
         android:paddingStart="8dp"
-        android:textSize="16sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtIssueDate" />
@@ -44,7 +43,8 @@
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtCompany"
         android:layout_width="0dp"
-        android:layout_height="48dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:focusable="false"
@@ -52,15 +52,15 @@
         android:hint="เลือก บริษัท ..."
         android:maxLines="1"
         android:paddingStart="8dp"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/edtProcess"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/space"
         app:layout_constraintStart_toStartOf="@+id/edtProcess"
         app:layout_constraintTop_toBottomOf="@+id/edtProcess" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtIssue"
         android:layout_width="0dp"
-        android:layout_height="48dp"
+        android:layout_height="40dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:hint="กรอกข้อมูล ประเด็น..."
@@ -69,22 +69,22 @@
         android:maxLines="1"
         android:nextFocusDown="@id/edtIssueDetail"
         android:paddingStart="8dp"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/edtCompany"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/btnOpenContact"
         app:layout_constraintStart_toStartOf="@+id/edtCompany"
         app:layout_constraintTop_toBottomOf="@+id/edtCompany" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtIssueDetail"
         android:layout_width="0dp"
-        android:layout_height="144dp"
+        android:layout_height="40dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:gravity="left"
         android:hint="กรอกข้อมูล รายละเอียดประเด็น..."
         android:imeOptions="actionDone"
         android:padding="8dp"
-        android:textSize="16sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@+id/edtIssue"
         app:layout_constraintStart_toStartOf="@+id/edtIssue"
         app:layout_constraintTop_toBottomOf="@+id/edtIssue" />
@@ -92,7 +92,7 @@
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtIssueDate"
         android:layout_width="0dp"
-        android:layout_height="48dp"
+        android:layout_height="40dp"
         android:layout_marginEnd="48dp"
         android:layout_marginStart="48dp"
         android:background="@drawable/bg_round_table"
@@ -101,7 +101,7 @@
         android:hint="วันที่"
         android:maxLines="1"
         android:paddingStart="8dp"
-        android:textSize="16sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -132,7 +132,7 @@
             android:layout_toEndOf="@+id/imgPicture"
             android:text="เพิ่มรูปภาพ"
             android:textColor="@color/colorDark"
-            android:textSize="16sp" />
+            android:textSize="12sp" />
 
 
     </RelativeLayout>
@@ -154,5 +154,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
     </RelativeLayout>
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:textAllCaps="false"
+        android:id="@+id/btnOpenContact"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_round_bold"
+        android:text="ไปหน้า Contact"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/edtProcess"
+        app:layout_constraintStart_toEndOf="@+id/space"
+        app:layout_constraintTop_toTopOf="@+id/edtCompany" />
+
+    <Space
+        android:id="@+id/space"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/edtProcess"
+        app:layout_constraintStart_toStartOf="@+id/edtProcess"
+        app:layout_constraintTop_toBottomOf="@+id/edtProcess" />
 
 </android.support.constraint.ConstraintLayout>

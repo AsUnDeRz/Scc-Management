@@ -96,6 +96,7 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
         val tranformFormat :MutableList<String> = mutableListOf()
         issues.value?.forEach {
             tranformFormat.add(it.date.substring(0,10))
+            println("Tranformformat  ${it.date.substring(0,10)}")
         }
         return tranformFormat.distinctBy { it }
     }
@@ -107,8 +108,10 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
             :SectionedRecyclerViewAdapter{
         val sectionIssueAdapter = SectionedRecyclerViewAdapter()
         sectionList.forEach {
-            val section = SectionIssueAdapter(it, results[it] as MutableList<Model.Issue>,listener)
-            sectionIssueAdapter.addSection(section)
+            if (results[it]!!.isNotEmpty()) {
+                val section = SectionIssueAdapter(it, results[it] as MutableList<Model.Issue>, listener)
+                sectionIssueAdapter.addSection(section)
+            }
         }
         return sectionIssueAdapter
     }
@@ -120,12 +123,13 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
     }
     fun sortToday(listener: IssueAdapter.IssueItemListener): SectionedRecyclerViewAdapter{
         val sectionList = tranformFormat().filter { Utils.getDateString(it).time <= Utils.getCurrentDate().time }.sortedByDescending { Utils.getDateString(it).time }
+        println("SectionList $sectionList")
         val resultIssue = separateSection(sectionList,true)
         return setSectionAdapter(sectionList,resultIssue,listener)
     }
     fun sortTomorrow(listener: IssueAdapter.IssueItemListener): SectionedRecyclerViewAdapter{
         val sectionList = tranformFormat().filter { Utils.getDateString(it).time > Utils.getCurrentDate().time
-                && Utils.getDateString(it).time <= Utils.getDateWithNumberFromCurrent(2).time }
+                && Utils.getDateString(it).time <= Utils.getDateWithNumberFromCurrent(1).time }
                 .sortedByDescending { Utils.getDateString(it).time }
         val resultIssue = separateSection(sectionList,false)
         return setSectionAdapter(sectionList,resultIssue,listener)
@@ -150,6 +154,8 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
                 it.status == "รอทำ"}
             }
         }
+
+        println("MasterSection $masterSection")
         println("separateSection success")
         return masterSection
     }

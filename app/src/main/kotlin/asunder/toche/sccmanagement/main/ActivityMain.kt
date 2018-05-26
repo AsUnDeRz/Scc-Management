@@ -33,6 +33,7 @@ import asunder.toche.sccmanagement.preference.KEY
 import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
+import asunder.toche.sccmanagement.products.ProductState
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
 import asunder.toche.sccmanagement.service.ManageUserService
 import asunder.toche.sccmanagement.settings.ActivitySetting
@@ -89,6 +90,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
             val contact = intent.getParcelableExtra<Model.Contact>(ROOT.CONTACTS)
             selectContact(contact)
         }
+        addContentListener()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -154,6 +156,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
         txtSearch.text.clear()
         when(tab?.position){
             0 ->{
+                filterContact(txtSearch.text.toString())
                 controlViewModel.updateCurrentUI(ROOT.CONTACTS)
                 System.out.println("Tab Select ${tab.position}")
             }
@@ -266,12 +269,14 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
         contactVM.isSaveContactComplete.observe(this, Observer {
             when(it){
                 ContactState.ALLCONTACT ->{
+                    txtSearch.text.clear()
                 }
                 ContactState.NEWCONTACT ->{
                 }
                 ContactState.EDITCONTACT ->{
                 }
                 ContactState.SELECTCONTACT ->{
+                    pager.currentItem = 0
                 }
                 ContactState.NEWISSUE ->{
                     pager.currentItem = 1
@@ -280,6 +285,15 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
                 ContactState.NEWTRANSACTION ->{
                     pager.currentItem = 3
                     transactionVM.updateStateView(TransactionState.NEWFROMCONTACT)
+                }
+                ContactState.TRIGGERFROMTRANSACTION ->{
+                    pager.currentItem = 0
+                }
+                ContactState.TRIGGERFROMISSUE ->{
+                    pager.currentItem = 0
+                }
+                ContactState.SHOWFORM ->{
+                    pager.currentItem = 0
                 }
             }
         })
@@ -290,8 +304,16 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
             txtSearch.setText(it?.product_name?.trim())
         })
 
+        productVM.stateView.observe(this, Observer {
+            when(it){
+                ProductState.TRIGGERFROMTRANSACTION ->{
+                    pager.currentItem = 2
+                }
+            }
+        })
+
         transactionVM.stateView.observe(this, Observer {
-            if (it == TransactionState.SHOWTRANSACTION){
+            if (it == TransactionState.SHOWTRANSACTION || it == TransactionState.SHOWFORM){
                 //tabLayout.setScrollPosition(3,0f,true)
                 pager.currentItem = 3
                 //transactionVM.updateStateView(TransactionState.SHOWTRANSACTION)
@@ -301,6 +323,9 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
         issueVM.isSaveIssueComplete.observe(this,Observer{
             when(it){
                 IssueState.SHOWFROM ->{
+                    pager.currentItem = 1
+                }
+                IssueState.TRIGGERFROMSERVICE ->{
                     pager.currentItem = 1
                 }
             }
@@ -320,32 +345,16 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 when(pager.currentItem){
                     0 ->{
-                        Utils.findCompany(s.toString(),object :Utils.OnFindCompanyListener{
-                            override fun onResults(results: MutableList<Model.Contact>) {
-                                contactVM.updateContacts(results)
-                            }
-                        },contactVM.service.getContactInDb())
+                        filterContact(s.toString())
                     }
                     1 ->{
-                        Utils.findIssue(s.toString(),object : Utils.OnFindIssueListener{
-                            override fun onResults(results: MutableList<Model.Issue>) {
-                                issueVM.updateIssues(results)
-                            }
-                        },issueVM.service.getIssueInDb())
+                        filterIssue(s.toString())
                     }
                     2 ->{
-                        Utils.findProduct(s.toString(),object : Utils.OnFindProductListener{
-                            override fun onResults(results: MutableList<Model.Product>) {
-                                productVM.updateProducts(results)
-                            }
-                        },productVM.service.getProductsInDb())
+                        filterProduct(s.toString())
                     }
                     3 ->{
-                        Utils.findTransaction(s.toString(),object : Utils.OnFindTransactionsListener{
-                            override fun onResults(results: MutableList<Model.Transaction>) {
-                                transactionVM.updateTransactions(results)
-                            }
-                        },transactionVM.service.getTransactionInDb(),null)
+                        filterTransactions(s.toString())
                     }
                 }
 
@@ -416,6 +425,58 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     }
 
 
+    fun filterContact(query:String){
+        Utils.findCompany(query,object :Utils.OnFindCompanyListener{
+            override fun onResults(results: MutableList<Model.Contact>) {
+                contactVM.updateContacts(results)
+            }
+        },contactVM.service.getContactInDb())
+    }
+
+    fun filterIssue(query:String){
+        Utils.findIssue(query,object : Utils.OnFindIssueListener{
+            override fun onResults(results: MutableList<Model.Issue>) {
+                issueVM.updateIssues(results)
+            }
+        },issueVM.service.getIssueInDb())
+    }
+
+    fun filterProduct(query:String){
+        Utils.findProduct(query,object : Utils.OnFindProductListener{
+            override fun onResults(results: MutableList<Model.Product>) {
+                productVM.updateProducts(results)
+            }
+        },productVM.service.getProductsInDb())
+    }
+
+    fun filterTransactions(query:String){
+        Utils.findTransaction(query,object : Utils.OnFindTransactionsListener{
+            override fun onResults(results: MutableList<Model.Transaction>) {
+                transactionVM.updateTransactions(results)
+            }
+        },transactionVM.service.getTransactionInDb(),null)
+    }
+
+
+
+    fun addContentListener(){
+        imgAddContent.setOnClickListener {
+            when(pager.currentItem){
+                0 ->{
+                    contactVM.updateViewState(ContactState.NEWCONTACT)
+                }
+                1 ->{
+                    issueVM.updateViewState(IssueState.NEWISSUE)
+                }
+                2 ->{
+                    productVM.updateStateView(ProductState.NEWPRODUCT)
+                }
+                3 ->{
+                    transactionVM.updateStateView(TransactionState.NEWTRANSACTION)
+                }
+            }
+        }
+    }
 
 
 

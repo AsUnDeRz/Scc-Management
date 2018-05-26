@@ -4,6 +4,7 @@ package asunder.toche.sccmanagement.products
  *Created by ToCHe on 19/3/2018 AD.
  */
 enum class ProductState{
+    NEWPRODUCT,
     SHOWLIST,
     SHOWFORM,
     SHOWINPUT,
@@ -11,6 +12,7 @@ enum class ProductState{
     SHOWPRODUCT,
     SELECTMEDIUM,
     NEWMEDIUM,
-    SHOWFORMWITHPRODUCT
+    SHOWFORMWITHPRODUCT,
+    TRIGGERFROMTRANSACTION
 
 }

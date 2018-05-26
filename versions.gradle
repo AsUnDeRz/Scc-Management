@@ -27,9 +27,10 @@ versions.atsl_rules = "1.0.1"
 versions.hamcrest = "1.3"
 versions.kotlin = "1.2.40"
 versions.rxadapter ="1.0.0"
-versions.ggplay = "11.8.0"
+versions.ggplay = "15.0.1"
+versions.firebaselib = "16.0.1"
 versions.android_gradle_plugin = "3.1.2"
-versions.googleplay_service = "3.2.0"
+versions.googleplay_service = "4.0.1"
 versions.multidex = "1.0.2"
 def deps = [:]
 
@@ -86,12 +87,12 @@ kotlin.plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
 deps.kotlin = kotlin
 
 def firebase = [:]
-firebase.auth = "com.google.firebase:firebase-auth:$versions.ggplay"
-firebase.core = "com.google.firebase:firebase-core:$versions.ggplay"
-firebase.fcm = "com.google.firebase:firebase-messaging:$versions.ggplay"
-firebase.db = "com.google.firebase:firebase-database:$versions.ggplay"
-firebase.store = "com.google.firebase:firebase-firestore:$versions.ggplay"
-firebase.storage = "com.google.firebase:firebase-storage:$versions.ggplay"
+firebase.auth = "com.google.firebase:firebase-auth:$versions.firebaselib"
+firebase.core = "com.google.firebase:firebase-core:16.0.0"
+firebase.fcm = "com.google.firebase:firebase-messaging:$versions.firebaselib"
+firebase.db = "com.google.firebase:firebase-database:$versions.firebaselib"
+firebase.store = "com.google.firebase:firebase-firestore:$versions.firebaselib"
+firebase.storage = "com.google.firebase:firebase-storage:$versions.firebaselib"
 deps.firebase = firebase
 
 def ggplay = [:]
@@ -153,5 +154,7 @@ def addRepos(RepositoryHandler handler) {
     handler.maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     handler.maven { url 'https://maven.fabric.io/public' }
     handler.maven {	url "https://jitpack.io" }
+    handler.maven { url  "http://dl.bintray.com/piasy/maven" }
+
 }
 ext.addRepos = this.&addRepos

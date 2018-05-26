@@ -85,6 +85,7 @@
                 android:layout_marginEnd="48dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_round_table"
+                android:digits="0123456789."
                 android:hint="XXXX.XX"
                 android:inputType="number"
                 android:maxLines="1"

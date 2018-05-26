@@ -30,8 +30,11 @@ import asunder.toche.sccmanagement.products.ProductState
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
 import asunder.toche.sccmanagement.products.adapter.MediumRateAdapter
 import asunder.toche.sccmanagement.products.pager.ProductsPager
+import asunder.toche.sccmanagement.transactions.TransactionState
+import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
 import kotlinx.android.synthetic.main.fragment_product_add.*
+import kotlinx.android.synthetic.main.fragment_product_history.*
 import kotlinx.android.synthetic.main.fragment_products.*
 import kotlinx.android.synthetic.main.item_product.*
 import kotlinx.android.synthetic.main.layout_input.*
@@ -61,6 +64,7 @@ class ProductsFragment : Fragment(),
         fun newInstance(): ProductsFragment = ProductsFragment()
     }
     private lateinit var productViewModel: ProductViewModel
+    private lateinit var transactionViewModel : TransactionViewModel
     private lateinit var controlViewModel: ControlViewModel
     private lateinit var rootLayoutInput : ScrollView
     private lateinit var rootLayoutMediumRate : ScrollView
@@ -81,6 +85,7 @@ class ProductsFragment : Fragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         productViewModel = ViewModelProviders.of(activity!!).get(ProductViewModel::class.java)
+        transactionViewModel = ViewModelProviders.of(activity!!).get(TransactionViewModel::class.java)
         controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
         initControllState()
     }
@@ -104,7 +109,6 @@ class ProductsFragment : Fragment(),
         isInitView = true
         //setUpPager()
         //setUpTablayout()
-        setEditAction()
         observProductViewModel()
     }
 
@@ -133,7 +137,6 @@ class ProductsFragment : Fragment(),
     }
     // Replace the switch method
     fun displayProductList(){
-        tabProductHistory.visibility = View.GONE
         val ft = fragmentManager?.beginTransaction()
         if (productListFragment.isAdded) { // if the fragment is already in container
             ft?.show(productListFragment)
@@ -150,8 +153,7 @@ class ProductsFragment : Fragment(),
 
     // Replace the switch method
     fun displayHistory(){
-        tabProductHistory.visibility = View.VISIBLE
-        tabProductHistory.setOnClickListener {
+        txtBack.setOnClickListener {
             displayProductList()
             productViewModel.updateStateView(ProductState.SHOWFORMWITHPRODUCT)
 
@@ -212,12 +214,23 @@ class ProductsFragment : Fragment(),
         }
 
         btnAddProduct.setOnClickListener {
-            saveProduct()
+            if (productViewModel.stateView.value == ProductState.TRIGGERFROMTRANSACTION){
+                saveProduct()
+                transactionViewModel.updateStateView(TransactionState.SHOWTRANSACTION)
+                transactionViewModel.updateTransaction(transactionViewModel.transaction.value!!)
+            }else {
+                saveProduct()
+            }
         }
 
         btnCancelProduct.setOnClickListener {
-            showProductList()
-            setupForm(Model.Product())
+            if (productViewModel.stateView.value == ProductState.TRIGGERFROMTRANSACTION){
+                transactionViewModel.updateStateView(TransactionState.SHOWTRANSACTION)
+                transactionViewModel.updateTransaction(transactionViewModel.transaction.value!!)
+            }else {
+                showProductList()
+                setupForm(Model.Product())
+            }
         }
 
         btnDeleteProduct.setOnClickListener {
@@ -308,7 +321,6 @@ class ProductsFragment : Fragment(),
         rootProductForm.visibility = View.GONE
         rootLayoutInput.visibility = View.GONE
         rootLayoutMediumForm.visibility = View.GONE
-        imgNewProduct.visibility = View.VISIBLE
 
     }
     fun showProductForm(){
@@ -318,7 +330,6 @@ class ProductsFragment : Fragment(),
         rootProductForm.visibility = View.VISIBLE
         rootLayoutInput.visibility = View.GONE
         rootLayoutMediumForm.visibility = View.GONE
-        imgNewProduct.visibility = View.GONE
 
 
     }
@@ -377,44 +388,6 @@ class ProductsFragment : Fragment(),
                 .build()
         spinner.show()
 
-    }
-
-
-    /*
-    fun setUpPager(){
-        Log.d(TAG,"SetupPager")
-        vpProduct.adapter = ProductsPager(childFragmentManager)
-        vpProduct.setAllowedSwipeDirection(CustomViewPager.SwipeDirection.none)
-        vpProduct.offscreenPageLimit = 2
-    }
-
-    fun setUpTablayout(){
-        Log.d(TAG,"SetupTablayoutr")
-        tabProduct.setCustomSize(resources.getDimensionPixelSize(R.dimen.txt20).toFloat())
-        tabProduct.setupWithViewPager(vpProduct)
-        tabProduct.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                if (tab?.position == 1){
-                    imgNewProduct.visibility = View.GONE
-                }else{
-                    imgNewProduct.visibility = View.VISIBLE
-                    productViewModel.updateProduct(Model.Product())
-                }
-            }
-        })
-    }
-    */
-
-
-    fun setEditAction(){
-        imgNewProduct.setOnClickListener {
-            showProductForm()
-            setupForm(Model.Product())
-        }
     }
 
     fun clearEdtInput(){
@@ -547,6 +520,10 @@ class ProductsFragment : Fragment(),
 
         productViewModel.stateView.observe(this, Observer {
             when(it){
+                ProductState.NEWPRODUCT ->{
+                    showProductForm()
+                    setupForm(Model.Product())
+                }
                 ProductState.SHOWLIST ->{
                     showProductList()
                     loading.dismiss()
@@ -568,6 +545,14 @@ class ProductsFragment : Fragment(),
                 }
                 ProductState.SHOWFORMWITHPRODUCT ->{
                     showProductForm()
+                    setupForm(productViewModel.product.value!!)
+                }
+                ProductState.TRIGGERFROMTRANSACTION ->{
+                    productScrollView.fullScroll(ScrollView.FOCUS_UP)
+                    edtProductName.requestFocus()
+                    rootProductForm.visibility = View.VISIBLE
+                    rootLayoutInput.visibility = View.GONE
+                    rootLayoutMediumForm.visibility = View.GONE
                     setupForm(productViewModel.product.value!!)
                 }
             }

@@ -11,7 +11,8 @@
         android:id="@+id/txtProdName"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:gravity="left"
+        android:paddingStart="8dp"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView8" />
@@ -68,7 +69,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_weight="4"
                     android:gravity="center"
-                    android:textSize="8sp" />
+                    android:textSize="10sp" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -110,18 +111,17 @@
                     android:layout_alignParentRight="true"
                     android:layout_weight="3"
                     android:gravity="center"
-                    android:textSize="8sp" />
+                    android:textSize="10sp" />
             </LinearLayout>
 
         </RelativeLayout>
 
-        <ImageView
-            android:id="@+id/imageView"
+        <asunder.toche.sccmanagement.custom.textview.TxtThin
+            android:id="@+id/txtNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="6"
-            android:tint="@color/colorGoogle"
-            app:srcCompat="@android:drawable/stat_sys_warning" />
+            android:gravity="center" />
     </LinearLayout>
 
 </LinearLayout>

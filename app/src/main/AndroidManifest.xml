@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
+
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true"/>
@@ -114,10 +115,22 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"/>
         <activity android:name=".contact.ActivityContactHistory" />
+        <activity android:name=".main.ActivityImageViewer" />
 
         <provider android:authorities="com.facebook.app.FacebookContentProvider1471129742927460"
             android:name="com.facebook.FacebookContentProvider"
             android:exported="true"/>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:grantUriPermissions="true"
+            android:exported="false"
+            android:authorities="${applicationId}">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider"/>
+
+        </provider>
     </application>
 
 </manifest>

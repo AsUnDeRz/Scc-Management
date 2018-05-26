@@ -7,6 +7,8 @@ import android.support.v4.content.ContextCompat
 import asunder.toche.sccmanagement.hover.theme.HoverTheme
 import asunder.toche.sccmanagement.hover.theme.HoverThemeManager
 import asunder.toche.sccmanagement.preference.SecurePreferences
+import com.github.piasy.biv.BigImageViewer
+import com.github.piasy.biv.loader.glide.GlideImageLoader
 import com.google.firebase.database.FirebaseDatabase
 import io.paperdb.Paper
 import org.greenrobot.eventbus.EventBus
@@ -21,6 +23,7 @@ class SccApp : Application(){
         Paper.init(this)
         FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         setupTheme()
+        BigImageViewer.initialize(GlideImageLoader.with(this))
 
     }
 

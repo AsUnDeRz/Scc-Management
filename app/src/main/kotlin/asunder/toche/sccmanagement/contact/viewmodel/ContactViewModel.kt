@@ -94,14 +94,14 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
 
 
     override fun onSuccess() {
-        updateViewState(ContactState.ALLCONTACT)
-        loadContacts()
+        updateViewState(ContactState.SAVED)
+        //loadContacts()
 
     }
 
     override fun onFail() {
-        updateViewState(ContactState.ALLCONTACT)
-        loadContacts()
+        updateViewState(ContactState.SAVED)
+        //loadContacts()
     }
 
 

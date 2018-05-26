@@ -47,6 +47,10 @@ class TransactionViewModel : ViewModel(),
 
 
     fun saveTransaction(data: Model.Transaction){
+        if (data.sale_price.isNotEmpty()){
+            data.date = data.sale_price.first().date
+        }
+
         if (transactionId == ""){
             service.pushNewTransaction(data)
         }else{
@@ -116,9 +120,10 @@ class TransactionViewModel : ViewModel(),
         return mapSection
     }
 
-    fun sortAll(listener: TransactionListener) : Model.MasterGroup{
+    fun sortToday(listener: TransactionListener) : Model.MasterGroup{
         val masterGroup = tranformFormat()
-        val sectionList = masterGroup.groupDate.filter { Utils.getDateString(it).time <= Utils.getCurrentDate().time }
+        val sectionList = masterGroup.groupDate.filter { Utils.getDateString(it).time > Utils.getDateWithNumberFromCurrent(-1).time
+                && Utils.getDateString(it).time < Utils.getDateWithNumberFromCurrent(1).time }
         val companyList = masterGroup.groupCompany
         val result = separateSection(sectionList,companyList,listener)
         return if(result.isNotEmpty()) {
@@ -134,7 +139,7 @@ class TransactionViewModel : ViewModel(),
         val masterGroup = tranformFormat()
         val companyList = masterGroup.groupCompany
         val newDate = masterGroup.groupDate.filter { Utils.getDateString(it).time > Utils.getCurrentDate().time
-                && Utils.getDateString(it).time <= Utils.getDateWithNumberFromCurrent(2).time }
+                && Utils.getDateString(it).time <= Utils.getDateWithNumberFromCurrent(1).time }
         val result = separateSection(newDate,companyList,listener)
         return if(result.isNotEmpty()) {
             masterGroup.resultMap = result
