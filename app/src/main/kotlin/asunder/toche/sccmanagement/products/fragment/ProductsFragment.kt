@@ -228,7 +228,7 @@ class ProductsFragment : Fragment(),
                 transactionViewModel.updateStateView(TransactionState.SHOWTRANSACTION)
                 transactionViewModel.updateTransaction(transactionViewModel.transaction.value!!)
             }else {
-                showProductList()
+                productViewModel.updateStateView(ProductState.SHOWLIST)
                 setupForm(Model.Product())
             }
         }
@@ -493,7 +493,7 @@ class ProductsFragment : Fragment(),
 
     fun validateProduct():Boolean{
         if(TextUtils.isEmpty(edtProductName.text)){
-            edtProductName.error = "กรุณากรอกชื่อสินค้า"
+            //edtProductName.error = "กรุณากรอกชื่อสินค้า"
             return false
         }
         return true
@@ -521,12 +521,15 @@ class ProductsFragment : Fragment(),
         productViewModel.stateView.observe(this, Observer {
             when(it){
                 ProductState.NEWPRODUCT ->{
+                    println("Newproduct")
                     showProductForm()
                     setupForm(Model.Product())
                 }
                 ProductState.SHOWLIST ->{
                     showProductList()
-                    loading.dismiss()
+                    if (loading.isShow) {
+                        loading.dismiss()
+                    }
                 }
                 ProductState.SHOWFORM ->{
 

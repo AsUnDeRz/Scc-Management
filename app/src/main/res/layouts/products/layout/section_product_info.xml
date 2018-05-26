@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtProductName"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginEnd="48dp"
         android:layout_marginStart="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
@@ -18,7 +18,7 @@
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/space2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,10 +32,10 @@
         android:focusableInTouchMode="false"
         android:gravity="left"
         android:hint="กรอกข้อมูล รายละเอียดสินค้า ..."
-        android:inputType="text"
+        android:inputType="text|textMultiLine"
         android:padding="8dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/edtProductName"
+        app:layout_constraintEnd_toEndOf="@+id/btnHistorySell"
         app:layout_constraintStart_toStartOf="@+id/edtProductName"
         app:layout_constraintTop_toBottomOf="@+id/edtProductName" />
 
@@ -52,7 +52,7 @@
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/edtProductDetail"
+        app:layout_constraintEnd_toStartOf="@+id/space3"
         app:layout_constraintStart_toStartOf="@+id/edtProductDetail"
         app:layout_constraintTop_toBottomOf="@+id/edtProductDetail" />
 
@@ -60,6 +60,7 @@
         android:id="@+id/edtPackSize"
         android:layout_width="0dp"
         android:layout_height="48dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:focusable="false"
@@ -69,19 +70,19 @@
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/edtImportFrom"
-        app:layout_constraintStart_toStartOf="@+id/edtImportFrom"
-        app:layout_constraintTop_toBottomOf="@+id/edtImportFrom" />
+        app:layout_constraintEnd_toEndOf="@+id/edtProductDetail"
+        app:layout_constraintStart_toEndOf="@+id/space3"
+        app:layout_constraintTop_toBottomOf="@+id/edtProductDetail" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
         android:id="@+id/txtMedium2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="48dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="ราคากลาง"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtPackSize" />
+        app:layout_constraintTop_toBottomOf="@+id/edtImportFrom" />
 
     <ImageView
         android:id="@+id/imgNewMediumRate"
@@ -108,7 +109,7 @@
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
+            android:layout_weight="6"
             android:background="@drawable/bg_round_table"
             android:gravity="center"
             android:text="ราคา" />
@@ -116,16 +117,17 @@
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
+            android:layout_weight="7"
             android:background="@drawable/bg_round_table"
             android:gravity="center"
+            android:maxLines="1"
             android:text="VAT" />
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:id="@+id/txtMedium6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
+            android:layout_weight="6"
             android:background="@drawable/bg_round_table"
             android:gravity="center"
             android:text="      วันที่      " />
@@ -134,19 +136,21 @@
             android:id="@+id/txtMedium9"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
+            android:layout_weight="3"
             android:background="@drawable/bg_round_table"
             android:gravity="center"
             android:text="Note" />
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:focusable="false"
         android:id="@+id/rvMediumPrice"
         android:layout_width="0dp"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:layout_marginEnd="48dp"
         android:layout_marginStart="48dp"
+        android:focusable="false"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
@@ -164,4 +168,37 @@
         app:layout_constraintEnd_toStartOf="@+id/edtProductName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/edtProductName" />
+
+    <Space
+        android:id="@+id/space2"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnHistorySell"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_round_bold"
+        android:text="ขายให้ใครบ้าง"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/space2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Space
+        android:id="@+id/space3"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/edtProductDetail"
+        app:layout_constraintStart_toStartOf="@+id/edtProductDetail"
+        app:layout_constraintTop_toBottomOf="@+id/edtProductDetail" />
 </android.support.constraint.ConstraintLayout>

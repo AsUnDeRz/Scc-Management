@@ -63,7 +63,16 @@ object Model{
                        val pack_size:String = "",
                        val desc:String = "",
                        val date:String ="",
-                       val medium_rate:MutableList<MediumRate> = ArrayList()) : Parcelable
+                       val medium_rate:MutableList<MediumRate> = ArrayList(),
+                       val types:MutableList<String> = mutableListOf(),
+                       var pictures:MutableList<ContentForProduct> = mutableListOf(),
+                       var files:MutableList<ContentForProduct> = mutableListOf()) : Parcelable
+
+    @SuppressLint("ParcelCreator")
+    @Parcelize
+    data class ContentForProduct(var local_path:String = "",
+                                 var cloud_url:String = "",
+                                 var title_type:String = "") : Parcelable
 
     @SuppressLint("ParcelCreator")
     @Parcelize

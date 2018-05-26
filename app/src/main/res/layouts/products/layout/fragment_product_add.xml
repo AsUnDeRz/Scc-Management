@@ -48,20 +48,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="spread" />
 
-    <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:id="@+id/btnHistorySell"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/bg_round"
-        android:text="ขายให้ใครบ้าง"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/btnAddProduct"
-        app:layout_constraintStart_toStartOf="@+id/btnDeleteProduct"
-        app:layout_constraintTop_toBottomOf="@+id/btnCancelProduct" />
-
     <ScrollView
         android:id="@+id/productScrollView"
         android:layout_width="0dp"
@@ -70,7 +56,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnHistorySell">
+        app:layout_constraintTop_toBottomOf="@+id/btnCancelProduct">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -78,6 +64,7 @@
             android:orientation="vertical">
 
             <include layout="@layout/section_product_info" />
+            <include layout="@layout/section_product_content"/>
 
             <include layout="@layout/section_product_confirm" />
         </LinearLayout>

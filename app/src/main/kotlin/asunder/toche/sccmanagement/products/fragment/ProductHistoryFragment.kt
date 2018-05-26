@@ -69,17 +69,31 @@ ProductHistoryAdapter.ProductHistoryOnClickListener{
             override fun onResults(results: MutableList<Model.Transaction>) {
                 val mapTransaction:MutableMap<Model.Transaction,Model.Contact> = mutableMapOf()
                 val contacts = transactionVM.getContact()
+                val groupCompany = mutableListOf<String>()
+                val sortTranstions = mutableListOf<Model.Transaction>()
                 async(UI){
                     val result = async {
                         results.sortByDescending { Utils.getDateWithString(it.date).time }
                     }
                     result.await()
                 }
-                results.forEach {transac ->
-                    val company = contacts.first { transac.company_id == it.id  }
-                    mapTransaction[transac] = company
+                results.mapTo(groupCompany,{
+                    it.company_id
+                })
+                groupCompany.forEach { company ->
+                    val data = results.filter { company == it.company_id  }
+                            .sortedByDescending { Utils.getDateWithString(it.date).time }
+                            .first()
+                    sortTranstions.add(data)
+                    val comp = contacts.first { company == it.id  }
+                    mapTransaction[data] = comp
                 }
-                productHistoryAdapter.updateTransaction(mapTransaction,results)
+                async(UI) {
+                    val def = async {
+                        sortTranstions.distinctBy { it.company_id }
+                    }
+                    productHistoryAdapter.updateTransaction(mapTransaction,def.await().toMutableList())
+                }
             }
         },transactionVM.service.getTransactionInDb(), ROOT.PRODUCTS)
     }

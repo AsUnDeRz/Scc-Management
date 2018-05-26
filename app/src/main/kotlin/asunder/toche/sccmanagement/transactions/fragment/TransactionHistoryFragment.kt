@@ -187,13 +187,22 @@ class TransactionHistoryFragment : Fragment(),TransactionListener {
                     setUpAdapter(mapTransaction, results)
                 }
             }, transactionVM.service.getTransactionInDb(), ROOT.PRODUCTS)
+
+            val results = productVM.service.getProductsInDb().filter { id == it.id }
+            if (results.isNotEmpty()) {
+                edtSelectProduct.setText(results.first().product_name.trim())
+            }
+            /*
             Utils.findProduct(id, object : Utils.OnFindProductListener {
                 override fun onResults(results: MutableList<Model.Product>) {
+
                     if (results.isNotEmpty()) {
                         edtSelectProduct.setText(results.first().product_name.trim())
                     }
+
                 }
             }, productVM.service.getProductsInDb())
+            */
         }
     }
 

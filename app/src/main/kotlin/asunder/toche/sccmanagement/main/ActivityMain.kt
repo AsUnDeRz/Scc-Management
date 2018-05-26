@@ -309,6 +309,9 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
                 ProductState.TRIGGERFROMTRANSACTION ->{
                     pager.currentItem = 2
                 }
+                ProductState.SHOWLIST ->{
+                    txtSearch.text.clear()
+                }
             }
         })
 

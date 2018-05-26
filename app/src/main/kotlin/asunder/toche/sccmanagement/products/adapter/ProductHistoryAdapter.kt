@@ -24,6 +24,13 @@ ProductHistoryOnClickListener)
                           newTransactions :MutableList<Model.Transaction>){
         mapTransaction = newData
         transactions = newTransactions
+        transactions.sortByDescending { Utils.getDateWithString(it.date).time }
+        notifyDataSetChanged()
+    }
+
+    fun updateTrnsaction(newData : MutableList<Model.Transaction>){
+        transactions = newData
+        transactions.sortByDescending { Utils.getDateWithString(it.date).time }
         notifyDataSetChanged()
     }
 
@@ -49,7 +56,7 @@ ProductHistoryOnClickListener)
         val txtValues = itemView?.findViewById<TxtMedium>(R.id.txtValues)
         val txtDate = itemView?.findViewById<TxtMedium>(R.id.txtDate)
 
-        fun bind(transaction: Model.Transaction,contact:Model.Contact,listener:ProductHistoryOnClickListener){
+        fun bind(transaction: Model.Transaction,contact: Model.Contact,listener:ProductHistoryOnClickListener){
             txtCompany?.text = contact.company
             if (transaction.sale_price.isNotEmpty()) {
                 txtPriceSale?.text = transaction.sale_price[0].price

@@ -20,11 +20,13 @@ class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>,val listen
     fun updateMedium(position: Int,mediumRate: Model.MediumRate){
         mediumList.removeAt(position)
         mediumList.add(position,mediumRate)
+        sortData()
         notifyDataSetChanged()
     }
 
     fun deleteMedium(position: Int){
         mediumList.removeAt(position)
+        sortData()
         notifyDataSetChanged()
     }
 
@@ -32,6 +34,7 @@ class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>,val listen
     fun updateMediumList(newData : MutableList<Model.MediumRate>){
         mediumList = newData
         //mediumList.sortByDescending { Utils.getDateWithString(it.date).time }
+        sortData()
         notifyDataSetChanged()
     }
 
@@ -48,12 +51,17 @@ class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>,val listen
                 mediumList.removeAt(mediumList.lastIndex)
             }
         }
+        sortData()
         notifyDataSetChanged()
     }
 
     fun deleteMediumList(mediumRate: Model.MediumRate){
         mediumList.remove(mediumRate)
         notifyDataSetChanged()
+    }
+
+    fun sortData(){
+        mediumList.sortByDescending { Utils.getDateWithString(it.date).time }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediumRateHolder {
@@ -76,22 +84,13 @@ class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>,val listen
         private val txtMediumPrice = itemView?.findViewById<TxtMedium>(R.id.txtMediumPrice)
         private val txtMediumVat = itemView?.findViewById<TxtMedium>(R.id.txtMediumVat)
         private val txtMediumDate = itemView?.findViewById<TxtMedium>(R.id.txtMediumDate)
-        private val imgMediumNote = itemView?.findViewById<AppCompatImageView>(R.id.txtMediumNote)
+        private val txtMediumNote = itemView?.findViewById<TxtMedium>(R.id.txtMediumNote)
 
         fun bind(mediumRate: Model.MediumRate){
             txtMediumPrice?.text = mediumRate.price
             txtMediumDate?.text = Utils.format2DigiYMD(mediumRate.date)
             txtMediumVat?.text = if(mediumRate.vat) "A" else "B"
-
-            if (mediumRate.note.isNotEmpty()){
-                Glide.with(itemView)
-                        .load(android.R.drawable.stat_sys_warning)
-                        .into(imgMediumNote!!)
-                itemView.setOnLongClickListener {
-                    listener?.onClickLongMedium(mediumRate)
-                    true
-                }
-            }
+            txtMediumNote?.text = mediumRate.note
 
             itemView?.setOnClickListener {
                 listener?.onClickMedium(mediumRate,adapterPosition)

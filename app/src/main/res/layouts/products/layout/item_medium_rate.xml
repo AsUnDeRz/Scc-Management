@@ -14,29 +14,36 @@
         android:id="@+id/txtMediumPrice"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="3"
-        android:gravity="right|center_vertical"
-        android:paddingRight="16dp" />
+        android:layout_weight="6"
+        android:gravity="center"
+        android:text="12345" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
         android:id="@+id/txtMediumVat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="4"
-        android:gravity="center" />
+        android:layout_weight="7"
+        android:gravity="center"
+        android:text="a" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
         android:id="@+id/txtMediumDate"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="4"
+        android:layout_weight="6"
         android:gravity="center"
+        android:text="610518"
         android:textSize="12sp" />
 
-    <android.support.v7.widget.AppCompatImageView
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
         android:id="@+id/txtMediumNote"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="4"
-        app:tint="@color/tw__composer_red" />
+        android:layout_weight="3"
+        android:gravity="left|center"
+        android:maxLines="1"
+        android:paddingEnd="4dp"
+        android:paddingStart="4dp"
+        android:text="adfasfasfasfsdf"
+        android:textSize="12sp" />
 </LinearLayout>
