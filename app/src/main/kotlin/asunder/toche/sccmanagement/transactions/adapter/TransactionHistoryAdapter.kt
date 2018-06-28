@@ -8,6 +8,7 @@ import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.preference.ROOT
+import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.transactions.TransactionListener
 
 /**
@@ -48,6 +49,7 @@ class TransactionHistoryAdapter : RecyclerView.Adapter<TransactionHistoryAdapter
         val txtVat = itemView?.findViewById<TxtMedium>(R.id.txtVat)
         val txtValues = itemView?.findViewById<TxtMedium>(R.id.txtValues)
         val txtDate = itemView?.findViewById<TxtMedium>(R.id.txtDate)
+        val txtNote = itemView?.findViewById<TxtMedium>(R.id.txtNote)
 
         fun bind(transaction: Model.Transaction,contact:Model.Contact,listner:TransactionListener){
             txtCompany?.text = contact.company
@@ -68,8 +70,9 @@ class TransactionHistoryAdapter : RecyclerView.Adapter<TransactionHistoryAdapter
                     }
                 }
                 txtValues?.text = transaction.sale_price[0].values
+                txtNote?.text = transaction.sale_price[0].note
             }
-            txtDate?.text = transaction.date.substring(0,10)
+            txtDate?.text = Utils.format2DigiYMD(transaction.date)
             itemView.setOnClickListener {
                 listner.onClickTransaction(transaction)
             }

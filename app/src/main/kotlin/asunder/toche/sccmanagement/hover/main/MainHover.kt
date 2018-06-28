@@ -2,16 +2,17 @@ package asunder.toche.sccmanagement.hover.main
 
 import android.annotation.TargetApi
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
-import asunder.toche.sccmanagement.BuildConfig
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.hover.HoverService
+import asunder.toche.sccmanagement.main.ActivityMain
 import io.mattcarroll.hover.Content
-import kotlinx.android.synthetic.main.main_hover.view.*
+
 
 /**
  *Created by ToCHe on 26/3/2018 AD.
@@ -31,26 +32,15 @@ class MainHover : FrameLayout,Content {
 
     fun initUI(){
         LayoutInflater.from(context).inflate(R.layout.main_hover, this, true)
-        txtVersion.text = "Version ${BuildConfig.VERSION_NAME}"
         this.setOnClickListener {
             HoverService.mHoverView.collapse()
+            val intent  = Intent()
+            //intent.putExtra(ROOT.CONTACTS,company)
+            //intent.putExtra(ROOT.TRANSACTIONS,transaction)
+            context.startActivity(intent.setClass(context, ActivityMain::class.java))
         }
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -74,5 +64,4 @@ class MainHover : FrameLayout,Content {
 
     override fun onHidden() {
     }
-
 }

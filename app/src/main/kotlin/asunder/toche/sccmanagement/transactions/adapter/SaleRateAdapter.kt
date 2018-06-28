@@ -13,12 +13,20 @@ import asunder.toche.sccmanagement.preference.Utils
 /**
  *Created by ToCHe on 18/3/2018 AD.
  */
-class SaleRateAdapter(var saleList: MutableList<Model.SalePrice>,val listener:SaleRateListener) :
+class SaleRateAdapter(var saleList: MutableList<Model.SalePrice>,
+                      val listener:SaleRateListener,
+                      var transaction:Model.Transaction) :
         RecyclerView.Adapter<SaleRateAdapter.SaleHolder>(){
 
     fun updateSaleRate(position: Int,salePrice: Model.SalePrice){
         saleList.removeAt(position)
         saleList.add(position,salePrice)
+        saleList.sortByDescending { Utils.getDateWithString(it.date).time}
+        if (saleList.isNotEmpty()){
+            if (saleList.size > 20){
+                saleList.removeAt(saleList.lastIndex)
+            }
+        }
         notifyDataSetChanged()
     }
 
@@ -36,7 +44,7 @@ class SaleRateAdapter(var saleList: MutableList<Model.SalePrice>,val listener:Sa
 
     fun addSaleList(salePrice: Model.SalePrice){
         saleList.add(0,salePrice)
-        //saleList.sortByDescending { Utils.getDateWithString(it.date).time}
+        saleList.sortByDescending { Utils.getDateWithString(it.date).time}
         if (saleList.isNotEmpty()){
             if (saleList.size > 20){
                 saleList.removeAt(saleList.lastIndex)
@@ -47,14 +55,15 @@ class SaleRateAdapter(var saleList: MutableList<Model.SalePrice>,val listener:Sa
 
     fun addSalePrice(salePrice: Model.SalePrice){
         saleList.add(salePrice)
-        saleList.sortByDescending { it.date }
+        saleList.sortByDescending { Utils.getDateWithString(it.date).time}
         notifyDataSetChanged()
 
     }
 
-    fun updateSalePrice(newData:MutableList<Model.SalePrice>){
-        saleList = newData
-        saleList.sortByDescending { it.date }
+    fun updateSalePrice(transaction: Model.Transaction){
+        this.transaction = transaction
+        saleList = transaction.sale_price
+        saleList.sortByDescending { Utils.getDateWithString(it.date).time}
         if (saleList.isNotEmpty()){
             if (saleList.size > 20){
                 saleList.removeAt(saleList.lastIndex)
@@ -70,7 +79,8 @@ class SaleRateAdapter(var saleList: MutableList<Model.SalePrice>,val listener:Sa
     }
 
     override fun getItemCount(): Int {
-        return if(saleList.size >= 5) 5 else saleList.size
+        //return if(saleList.size >= 5) 5 else saleList.size
+        return saleList.size
     }
 
     override fun onBindViewHolder(holder: SaleHolder, position: Int) {
@@ -84,15 +94,17 @@ class SaleRateAdapter(var saleList: MutableList<Model.SalePrice>,val listener:Sa
         private val txtSaleVat = itemView?.findViewById<TxtMedium>(R.id.txtSaleVat)
         private val txtSaleValues = itemView?.findViewById<TxtMedium>(R.id.txtSaleValues)
         private val txtSaleDate = itemView?.findViewById<TxtMedium>(R.id.txtSaleDate)
+        private val txtSaleNote = itemView?.findViewById<TxtMedium>(R.id.txtSaleNote)
 
         fun bind(salePrice: Model.SalePrice){
             txtSaleDate?.text = Utils.format2DigiYMD(salePrice.date)
             txtSalePrice?.text = salePrice.price
             txtSaleValues?.text = salePrice.values
             txtSaleVat?.text = getSaleType(salePrice.vat)
+            txtSaleNote?.text = salePrice.note
 
             itemView.setOnClickListener {
-                listener.onClickSaleRate(salePrice,adapterPosition)
+                listener.onClickSaleRate(salePrice,adapterPosition,transaction)
             }
 
         }
@@ -117,7 +129,7 @@ class SaleRateAdapter(var saleList: MutableList<Model.SalePrice>,val listener:Sa
     }
 
     interface SaleRateListener{
-        fun onClickSaleRate(salePrice: Model.SalePrice,position:Int)
+        fun onClickSaleRate(salePrice: Model.SalePrice,position:Int,transaction: Model.Transaction)
         fun onClickLongSaleRate(salePrice: Model.SalePrice)
     }
 }

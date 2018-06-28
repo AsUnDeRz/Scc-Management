@@ -17,7 +17,8 @@ enum class TransactionState{
     SORTYESTERDAY,
     SORTTOMORROW,
     NEWFROMCONTACT,
-    SELECTSALEPRICE
+    SELECTSALEPRICE,
+    TRIGGERFROMSERVICE
 }
 
 interface TransactionListener{

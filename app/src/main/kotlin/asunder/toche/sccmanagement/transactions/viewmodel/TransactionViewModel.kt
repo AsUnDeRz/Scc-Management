@@ -33,6 +33,7 @@ class TransactionViewModel : ViewModel(),
     val salePrice:MutableLiveData<Model.SalePrice> = MutableLiveData()
     val salePriceLists : MutableLiveData<MutableList<Model.SalePrice>> = MutableLiveData()
     val stateView : MutableLiveData<TransactionState> = MutableLiveData()
+    val outState : MutableLiveData<TransactionState> = MutableLiveData()
     val product: MutableLiveData<Model.Product> = MutableLiveData()
     val contact: MutableLiveData<Model.Contact> = MutableLiveData()
     var transactionId  =""
@@ -92,8 +93,7 @@ class TransactionViewModel : ViewModel(),
             companyList.forEach {compId ->
                 Log.d(TAG,"CompanyList [$compId]")
                 val mapProduct : MutableMap<String,Model.Product> = mutableMapOf()
-                val transaction = data?.filter { it.company_id == compId &&
-                                  sectionDate == it.date.substring(0,10)}
+                val transaction = data?.filter { it.company_id == compId && sectionDate == it.date.substring(0,10)}
                 if (transaction != null) {
                     if (transaction.isNotEmpty()) {
                         transaction.forEach { transacModel ->
@@ -101,7 +101,7 @@ class TransactionViewModel : ViewModel(),
                             val item = products.filter { it.id == transacModel.product_id }
                             if(item.isNotEmpty()) {
                                 Log.d(TAG,"Map product with transaction [${item.first().product_name}]")
-                                mapProduct[transacModel.id] = item.first()
+                                //mapProduct[transacModel.id] = item.first()
                             }
                         }
                         val compName = companys.first { it.id == compId }
@@ -109,12 +109,13 @@ class TransactionViewModel : ViewModel(),
                         sectionAdapter.addSection(
                                 SectionTransactionAdapter(compName.company,
                                         transaction.toMutableList(),
-                                        mapProduct,
+                                        //mapProduct,
                                         listener))
+                        mapSection[sectionDate] = sectionAdapter
                     }
                 }
             }
-            mapSection[sectionDate] = sectionAdapter
+            //mapSection[sectionDate] = sectionAdapter
         }
 
         return mapSection
@@ -123,7 +124,7 @@ class TransactionViewModel : ViewModel(),
     fun sortToday(listener: TransactionListener) : Model.MasterGroup{
         val masterGroup = tranformFormat()
         val sectionList = masterGroup.groupDate.filter { Utils.getDateString(it).time > Utils.getDateWithNumberFromCurrent(-1).time
-                && Utils.getDateString(it).time < Utils.getDateWithNumberFromCurrent(1).time }
+                && Utils.getDateString(it).time < Utils.getCurrentDate().time }
         val companyList = masterGroup.groupCompany
         val result = separateSection(sectionList,companyList,listener)
         return if(result.isNotEmpty()) {
@@ -193,12 +194,16 @@ class TransactionViewModel : ViewModel(),
         stateView.value = state
     }
 
-    fun updateProduct(data: Model.Product){
+    fun updateProduct(data: Model.Product?){
         product.value = data
     }
 
     fun updateContact(data:Model.Contact){
         contact.value = data
+    }
+
+    fun updateOutState(data:TransactionState){
+        outState.value = data
     }
 
     override fun onSuccess() {
@@ -209,6 +214,9 @@ class TransactionViewModel : ViewModel(),
     override fun onFail() {
         updateStateView(TransactionState.SHOWLIST)
         loadTransaction()
+    }
+
+    override fun onDeleteSuccess() {
 
     }
 

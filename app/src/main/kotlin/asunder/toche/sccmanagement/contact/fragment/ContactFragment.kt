@@ -8,7 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
-import android.support.design.widget.TabLayout
+import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
@@ -18,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ScrollView
+import android.widget.Toast
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.ActivityEditContact
@@ -27,14 +28,13 @@ import asunder.toche.sccmanagement.contact.adapter.AddressAdapter
 import asunder.toche.sccmanagement.contact.adapter.EmailAdapter
 import asunder.toche.sccmanagement.contact.adapter.NumberAdapter
 import asunder.toche.sccmanagement.contact.adapter.WebsiteAdapter
-import asunder.toche.sccmanagement.contact.pager.ContactPager
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.TriggerContact
+import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
 import asunder.toche.sccmanagement.custom.extension.EnableClick
-import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.issue.IssueState
 import asunder.toche.sccmanagement.issue.IssueViewModel
@@ -46,7 +46,6 @@ import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
 import com.thefinestartist.finestwebview.FinestWebView
 import kotlinx.android.synthetic.main.fragment_contact.*
 import kotlinx.android.synthetic.main.fragment_contact_add.*
-import kotlinx.android.synthetic.main.section_contact_confirm.*
 import kotlinx.android.synthetic.main.section_contact_info.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -55,7 +54,11 @@ import org.greenrobot.eventbus.Subscribe
 /**
  *Created by ToCHe on 26/2/2018 AD.
  */
-class ContactFragment  : Fragment(),ComponentListener{
+class ContactFragment  :
+        Fragment(),
+        ComponentListener,
+        ConfirmDialog.ConfirmDialogListener{
+
 
     private val TAG = this::class.java.simpleName
     companion object {
@@ -85,7 +88,7 @@ class ContactFragment  : Fragment(),ComponentListener{
     private val companyFragment = CompanyFragment.newInstance()
     private val historyCompanyFragment = HistoryCompanyFragment.newInstance()
     private lateinit var filterFirstContact:Model.Contact
-
+    private var companyName:String = ""
 
 
 
@@ -186,8 +189,6 @@ class ContactFragment  : Fragment(),ComponentListener{
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG,"onViewCreated")
-        //setUpPager()
-        //setUpTablayout()
         setUpStub1()
         setUpStub2()
         observerContacts()
@@ -284,6 +285,7 @@ class ContactFragment  : Fragment(),ComponentListener{
                 else -> {
                     saveContact()
                     dismissFormContact()
+                    showContactList()
                     contactScrollView.fullScroll(ScrollView.FOCUS_UP)
                 }
             }
@@ -313,7 +315,7 @@ class ContactFragment  : Fragment(),ComponentListener{
         }
 
         btnDeleteContact.setOnClickListener {
-            contactVM.deleteContact()
+            showConfirmDialog()
         }
     }
 
@@ -391,10 +393,13 @@ class ContactFragment  : Fragment(),ComponentListener{
     }
 
     fun saveContact(){
-        val data = Model.Contact("",edtCompany.text.toString().capitalize(),edtBill.text.toString()
-                ,edtContactName.text.toString(),numberAdapter.numbers,emailAdapter.emails,
-                webstieAdapter.websites, addressAdapter.addresses,numberAdapter.typeList)
-        contactVM.saveContact(data)
+        if (validateInput()) {
+            val data = Model.Contact("", companyName?.capitalize(), edtBill.text.toString()
+                    , edtContactName.text.toString(), numberAdapter.numbers, emailAdapter.emails,
+                    webstieAdapter.websites, addressAdapter.addresses, numberAdapter.typeList)
+            contactVM.saveContact(data)
+
+        }
         //loading.show(fragmentManager, LoadingDialog.TAG)
     }
 
@@ -404,11 +409,13 @@ class ContactFragment  : Fragment(),ComponentListener{
             edtCompany.error = "กรุณากรอกข้อมูลบริษัท"
             return false
         }
+        /*
         if(TextUtils.isEmpty(edtContactName.text)){
             contactScrollView.fullScroll(ScrollView.FOCUS_UP)
             edtContactName.error = "กรุณากรอกชื่อผู้ติดต่อ"
             return false
         }
+        */
         return true
     }
 
@@ -416,12 +423,17 @@ class ContactFragment  : Fragment(),ComponentListener{
         filterFirstContact = contact
         showFormContact()
         contactVM.updateContactId(contact.id)
-        edtCompany.setText(contact.company)
+        val lines = contact.company.lines()
+        companyName = contact.company
+        lines.let {
+            edtCompany.setText(it[0])
+        }
         edtBill.setText(contact.bill)
         edtContactName.setText(contact.contact_name)
         numberAdapter.updateNumbers(contact.numbers)
         emailAdapter.updateEmails(contact.email)
         webstieAdapter.updateWebsites(contact.websites)
+        addressAdapter.updateAddress(contact.addresses)
 
         numberAdapter.updateTypeList(contact.type_number)
         emailAdapter.updateTypeList(contact.type_number)
@@ -432,12 +444,17 @@ class ContactFragment  : Fragment(),ComponentListener{
     fun showFormContactWithOutState(contact :Model.Contact){
         filterFirstContact = contact
         contactVM.updateContactId(contact.id)
-        edtCompany.setText(contact.company)
+        val lines = contact.company.lines()
+        companyName = contact.company
+        lines.let {
+            edtCompany.setText(it[0])
+        }
         edtBill.setText(contact.bill)
         edtContactName.setText(contact.contact_name)
         numberAdapter.updateNumbers(contact.numbers)
         emailAdapter.updateEmails(contact.email)
         webstieAdapter.updateWebsites(contact.websites)
+        addressAdapter.updateAddress(contact.addresses)
 
         numberAdapter.updateTypeList(contact.type_number)
         emailAdapter.updateTypeList(contact.type_number)
@@ -462,6 +479,7 @@ class ContactFragment  : Fragment(),ComponentListener{
 
     fun clearModelContact(){
         val contact = Model.Contact()
+        companyName = ""
         contactVM.updateContactId("")
         contactVM.updatePathPicture("")
         emailAdapter.updateEmails(mutableListOf())
@@ -489,7 +507,8 @@ class ContactFragment  : Fragment(),ComponentListener{
     fun checkState(){
         when (stateInput){
             CurrentInputState.Company ->{
-                updateInputForm("บริษัท",edtCompany.text.toString())
+                updateInputForm("บริษัท",companyName)
+
             }
             CurrentInputState.Address ->{
             }
@@ -505,7 +524,11 @@ class ContactFragment  : Fragment(),ComponentListener{
     fun updateCurrentInput(){
         when (stateInput){
             CurrentInputState.Company ->{
-                edtCompany.text = edtInput.text
+                val lines = edtInput.text.lines()
+                companyName = edtInput.text.toString()
+                lines.let {
+                    edtCompany.setText(it[0])
+                }
             }
             CurrentInputState.Address ->{
                 //addressAdapter.addAddress(edtInput.text.toString())
@@ -560,6 +583,7 @@ class ContactFragment  : Fragment(),ComponentListener{
             when(it){
                 ContactState.ALLCONTACT ->{
                     showContactList()
+                    clearModelContact()
                     if (loading.isShow) {
                         loading.dismiss()
                     }
@@ -598,7 +622,7 @@ class ContactFragment  : Fragment(),ComponentListener{
             }
         })
         contactVM.contacts.observe(this, Observer {
-            if (contactVM.isSaveContactComplete.value == ContactState.SHOWFORM){
+            if (contactVM.isSaveContactComplete.value == ContactState.SHOWFORM && controlViewModel.currentUI.value == ROOT.CONTACTS){
                 it?.let {
                     if (it.isNotEmpty()){
                         filterContactForm(it.first())
@@ -614,7 +638,10 @@ class ContactFragment  : Fragment(),ComponentListener{
         root.visibility = View.VISIBLE
         rootInput.visibility = View.GONE
         contactVM.updateContactId(contact.id)
-        edtCompany.setText(contact.company)
+        val lines = contact.company.lines()
+        lines.let {
+            edtCompany.setText(it[0])
+        }
         edtBill.setText(contact.bill)
         edtContactName.setText(contact.contact_name)
         numberAdapter.updateNumbers(contact.numbers)
@@ -624,6 +651,7 @@ class ContactFragment  : Fragment(),ComponentListener{
         webstieAdapter.updateTypeList(contact.type_number)
         webstieAdapter.updateWebsites(contact.websites)
         addressAdapter.updateTypeList(contact.type_number)
+        addressAdapter.updateAddress(contact.addresses)
 
     }
 
@@ -701,5 +729,25 @@ class ContactFragment  : Fragment(),ComponentListener{
         }
     }
 
+    fun showConfirmDialog(){
+        val contact = contactVM.contact.value
+        val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบข้อมูลการติดต่อ ประเด็น และการซื้อขายสินค้า ของ ${contact?.company} ใช่หรือไหม","แจ้งเตือน",true)
+        confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+        confirmDialog.customListener(this)
+        confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
+    }
+
+    override fun onClickConfirm() {
+        contactVM.deleteContact()
+        contactVM.contact.value?.let {
+            issueViewModel.service.deleteIssueWithContact(it)
+            transactionViewModel.service.deleteTransactionWithContact(it)
+        }
+
+
+    }
+
+    override fun onClickCancel() {
+    }
 
 }

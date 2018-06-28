@@ -5,18 +5,19 @@ import android.util.Log
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
-import asunder.toche.sccmanagement.preference.Utils
+import com.crashlytics.android.Crashlytics
 import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.StorageMetadata
-import com.google.gson.internal.bind.util.ISO8601Utils
+import com.snatik.storage.Storage
 import io.paperdb.Paper
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import java.io.File
-import java.util.*
-import kotlin.collections.HashMap
+import java.io.IOException
 
 
 /**
@@ -60,29 +61,17 @@ class FirebaseManager{
 
     }
 
-    fun pushNewIssue(issue: Model.Issue){
-
-    }
-
-    fun updateIssue(issue: Model.Issue){
-
-    }
-
-    fun pushNewProduct(product: Model.Product){
-
-    }
-
-    fun updateProduct(product: Model.Product){
-
-    }
-
-
-    fun pushTransaction(transaction : Model.Transaction){
-
-    }
-
     fun updateTransaction(transaction : Model.Transaction){
 
+    }
+
+    fun getPathClone(path: String):String{
+        val stor = Storage(storage.app.applicationContext)
+        val rawFile = File(path)
+        val externalPath = stor.externalStorageDirectory
+        val newDir = externalPath + File.separator + Prefer.getUUID(this.context!!)
+        return  newDir + File.separator + rawFile.absolutePath.substring(
+                rawFile.absolutePath.lastIndexOf(File.separator)+1)
     }
 
     fun pushFileToFirebase(path:String,session: String){
@@ -95,22 +84,20 @@ class FirebaseManager{
         }else{
             riversRef.putFile(file)
         }
-        uploadTask.addOnFailureListener({
-            val filePath = Uri.fromFile(File(path))
-            //val uploadsession = uploadTask.snapshot.uploadSessionUri
-            //uploadsession?.let { it1 -> Prefer.saveSession(it1,filePath, context) }
+        saveImage(path)
+        uploadTask.addOnFailureListener {
             System.out.println("Upload fail cause "+it.cause)
             System.out.println("Upload fail message"+it.message)
             System.out.println("Upload Fail")
-        }).addOnSuccessListener({
+        }.addOnSuccessListener {
             System.out.println("Upload Success ${file.lastPathSegment}")
             pushPathImageToDb(path)
-        }).addOnProgressListener({
+        }.addOnProgressListener {
             val progress = (100.0 * it.bytesTransferred) / it.totalByteCount
             System.out.println("Upload is $progress% done")
-        }).addOnPausedListener( {
+        }.addOnPausedListener {
             System.out.println("Upload is paused")
-        })
+        }
     }
 
     fun pushPathImageToDb(path: String){
@@ -118,7 +105,15 @@ class FirebaseManager{
         System.out.println("Upload Success $path")
     }
 
-    fun deleteFile(path: String){
+    fun deleteFile(path: String,pathInDevice:String){
+        val stor = Storage(storage.app.applicationContext)
+        launch(UI) {
+            val result = async {
+                stor.deleteFile(pathInDevice)
+            }
+            result.await()
+            println("Delete File $pathInDevice")
+        }
         val storageRef = storage.reference
         val desertRef = storageRef.child(path)
         desertRef
@@ -130,9 +125,53 @@ class FirebaseManager{
                     val errorCode = (it as StorageException).errorCode
                     val errorMessage = it.message
                     System.out.println("Delete $errorCode  $errorMessage")
+                    Crashlytics.log(it.message)
                 }
     }
 
+    fun saveImage(path:String) {
+        val stor = Storage(storage.app.applicationContext)
+        val externalPath = stor.externalStorageDirectory
+        val newDir = externalPath + File.separator + Prefer.getUUID(this.context!!)
+        stor.createDirectory(newDir)
+        val toPath = newDir+File.separator+File(path).absolutePath.substring(File(path).absolutePath.lastIndexOf(File.separator)+1)
+        val rawFile = File(getPathClone(path))
+        if (!rawFile.exists() && !rawFile.isDirectory){
+            println("copy file $path \n to $toPath")
+            stor.copy(path, toPath)
+        }else{
+            println("File already")
+        }
+    }
 
+    fun downloadInLocalFile(path: String) {
+        val stor = Storage(storage.app.applicationContext)
+        val externalPath = stor.externalStorageDirectory
+        val newDir = externalPath + File.separator + Prefer.getUUID(this.context!!)
+        stor.createDirectory(newDir)
+
+        val storageRef = storage.reference
+        val content = storageRef.child(path)
+
+        val file = File(newDir, content.name)
+        try {
+            stor.createDirectory(newDir)
+            file.createNewFile()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        val fileDownloadTask = content.getFile(file)
+
+        fileDownloadTask.addOnSuccessListener {
+            println("DownloadFileSuccess"+file.absolutePath)
+
+        }.addOnFailureListener { exception ->
+            Crashlytics.log(exception.message)
+        }.addOnProgressListener { taskSnapshot ->
+            val progress = (100 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount)
+            println("onDownloadProgress $progress")
+        }
+    }
 
 }

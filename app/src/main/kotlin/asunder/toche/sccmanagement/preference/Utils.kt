@@ -1,18 +1,15 @@
 package asunder.toche.sccmanagement.preference
 
+import android.app.Activity
 import android.content.Context
-import android.content.SharedPreferences
+import android.content.ContextWrapper
 import android.graphics.Typeface
-import android.util.Log
 import android.widget.Filter
 import asunder.toche.sccmanagement.Model
+import com.snatik.storage.Storage
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import android.content.ContextWrapper
-import android.app.Activity
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
 
 
 /**
@@ -263,10 +260,5 @@ object Utils{
 
         }.filter(query)
     }
-
-
-
-
-
 
 }

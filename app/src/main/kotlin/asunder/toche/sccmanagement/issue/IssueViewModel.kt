@@ -25,6 +25,7 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
                     Utils.OnFindCompanyListener,
                     IssueService.IssueCallBack {
 
+
     val service = IssueService(this)
     val contactService = ContactService(this)
     val firebase = FirebaseManager()
@@ -42,6 +43,12 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
     fun deleteIssue(data: Model.Issue){
         service.deleteIssue(data)
         service.deleteIssueInDb(data.id)
+        data.pictures.forEach {
+            firebase.deleteFile(it.cloud_url,it.local_path)
+        }
+        data.files.forEach {
+            firebase.deleteFile(it.cloud_url,it.local_path)
+        }
 
     }
 
@@ -67,6 +74,12 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
                         val filePath = Uri.fromFile(File(it.local_path))
                         it.cloud_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${filePath.lastPathSegment}"
                         firebase.pushFileToFirebase(it.local_path,"")
+                        async(UI) {
+                            val result = async {
+                                it.local_path = firebase.getPathClone(it.local_path)
+                            }
+                            result.await()
+                        }
                     }
                 }
                 if(data.pictures.isNotEmpty()){
@@ -74,6 +87,12 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
                         val imgPath = Uri.fromFile(File(it.local_path))
                         it.cloud_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${imgPath.lastPathSegment}"
                         firebase.pushFileToFirebase(it.local_path, "")
+                        async(UI) {
+                            val result = async {
+                                it.local_path = firebase.getPathClone(it.local_path)
+                            }
+                            result.await()
+                        }
                     }
                 }
                 data.company_id = companyReference.value!!.id
@@ -96,7 +115,6 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
         val tranformFormat :MutableList<String> = mutableListOf()
         issues.value?.forEach {
             tranformFormat.add(it.date.substring(0,10))
-            println("Tranformformat  ${it.date.substring(0,10)}")
         }
         return tranformFormat.distinctBy { it }
     }
@@ -123,7 +141,6 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
     }
     fun sortToday(listener: IssueAdapter.IssueItemListener): SectionedRecyclerViewAdapter{
         val sectionList = tranformFormat().filter { Utils.getDateString(it).time <= Utils.getCurrentDate().time }.sortedByDescending { Utils.getDateString(it).time }
-        println("SectionList $sectionList")
         val resultIssue = separateSection(sectionList,true)
         return setSectionAdapter(sectionList,resultIssue,listener)
     }
@@ -154,9 +171,6 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
                 it.status == "รอทำ"}
             }
         }
-
-        println("MasterSection $masterSection")
-        println("separateSection success")
         return masterSection
     }
 
@@ -192,6 +206,10 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
     }
 
     override fun onFail() {
+    }
+
+    override fun onDeleteSuccess() {
+
     }
 
 

@@ -82,6 +82,7 @@ object Model{
                           val note:String = "",
                           var default:Boolean = false) : Parcelable
 
+
     @SuppressLint("ParcelCreator")
     @Parcelize
     data class Transaction(var id:String = "",
@@ -89,10 +90,11 @@ object Model{
                            val company_name:String = "",
                            val product_id:String = "",
                            val product_name: String ="",
-                           val medium_price:String = "",
+                           var medium_price:String = "",
                            var date:String = "",
                            val desc:String = "",
                            val sale_price:MutableList<SalePrice> = ArrayList()) : Parcelable
+
 
     @SuppressLint("ParcelCreator")
     @Parcelize

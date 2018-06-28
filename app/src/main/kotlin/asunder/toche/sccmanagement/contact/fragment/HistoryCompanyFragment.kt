@@ -132,6 +132,7 @@ class HistoryCompanyFragment : Fragment(),TransactionListener, IssueListener, Co
                     }
                 }).getProductsInDb()
                 val mapTransaction : MutableMap<Model.Transaction,Model.Product> = mutableMapOf()
+                val transactions : MutableList<Model.Transaction> = mutableListOf()
                 async(UI) {
                     val filterResult = async {
                         results.filter { it.company_id == contact.id }
@@ -139,12 +140,18 @@ class HistoryCompanyFragment : Fragment(),TransactionListener, IssueListener, Co
 
                     }
                     filterResult.await().forEach { item ->
-                        val product = products.first { it.id == item.product_id}
-                        mapTransaction[item] = product
+                        val product = products.filter { it.id == item.product_id}
+                        if (product.isNotEmpty()) {
+                            mapTransaction[item] = product.first()
+                            transactions.add(item)
+                        }else{
+                            mapTransaction[item] = Model.Product(product_name = item.product_name)
+                            transactions.add(item)
+                        }
                     }
                     historyTransactionAdapter.updateMapTransaction(
                             mapTransaction
-                            ,filterResult.await().toMutableList())
+                            ,transactions)
                 }
             }
         },TransactionService(object : TransactionService.TransactionCallback{
@@ -175,7 +182,7 @@ class HistoryCompanyFragment : Fragment(),TransactionListener, IssueListener, Co
 
     override fun onClickTransaction(transaction: Model.Transaction) {
         println("OnClickTransaction")
-        transactionVM.updateStateView(TransactionState.SHOWTRANSACTION)
+        transactionVM.updateStateView(TransactionState.TRIGGERFROMSERVICE)
         transactionVM.updateTransaction(transaction)
     }
 

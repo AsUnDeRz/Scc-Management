@@ -7,11 +7,13 @@ import android.support.v4.content.ContextCompat
 import asunder.toche.sccmanagement.hover.theme.HoverTheme
 import asunder.toche.sccmanagement.hover.theme.HoverThemeManager
 import asunder.toche.sccmanagement.preference.SecurePreferences
-import com.github.piasy.biv.BigImageViewer
-import com.github.piasy.biv.loader.glide.GlideImageLoader
 import com.google.firebase.database.FirebaseDatabase
 import io.paperdb.Paper
 import org.greenrobot.eventbus.EventBus
+import android.os.StrictMode
+import android.os.Build
+
+
 
 /**
  *Created by ToCHe on 24/2/2018 AD.
@@ -23,8 +25,16 @@ class SccApp : Application(){
         Paper.init(this)
         FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         setupTheme()
-        BigImageViewer.initialize(GlideImageLoader.with(this))
+        //BigImageViewer.initialize(GlideImageLoader.with(this))
 
+        if (Build.VERSION.SDK_INT >= 24) {
+            try {
+                val m = StrictMode::class.java.getMethod("disableDeathOnFileUriExposure")
+                m.invoke(null)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     override fun attachBaseContext(base: Context?) {

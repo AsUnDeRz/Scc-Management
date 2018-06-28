@@ -30,6 +30,14 @@ class SectionTransactionAdapter() : StatelessSection(SectionParameters.builder()
         listener = transactionListener
         transactions.sortBy { it.product_name }
     }
+    constructor(companyName: String,
+                data:MutableList<Model.Transaction>,
+                transactionListener: TransactionListener) : this(){
+        sectionComp = companyName
+        transactions = data
+        listener = transactionListener
+        transactions.sortBy { it.product_name }
+    }
     lateinit var listener: TransactionListener
     var transactions: MutableList<Model.Transaction> = mutableListOf()
     var products: MutableMap<String,Model.Product> = mutableMapOf()
@@ -46,9 +54,8 @@ class SectionTransactionAdapter() : StatelessSection(SectionParameters.builder()
 
     override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val itemHolder = holder as ItemHolder
-        itemHolder.bind(transactions[position],
-                products[transactions[position].id]!!,
-                listener)
+        //itemHolder.bind(transactions[position], products[transactions[position].id]!!, listener)
+        itemHolder.bind(transactions[position],listener)
     }
 
     override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
@@ -69,7 +76,7 @@ class SectionTransactionAdapter() : StatelessSection(SectionParameters.builder()
         val txtVat = itemView.findViewById<TxtMedium>(R.id.txtVat)
         val txtValues = itemView.findViewById<TxtMedium>(R.id.txtValues)
         val txtDate = itemView.findViewById<TxtMedium>(R.id.txtDate)
-        val txtNote = itemView.findViewById<AppCompatImageView>(R.id.txtNote)
+        val txtNote = itemView.findViewById<TxtMedium>(R.id.txtNote)
 
         fun bind(data: Model.Transaction,product:Model.Product,listener: TransactionListener){
             txtCompany.text = product.product_name
@@ -78,15 +85,21 @@ class SectionTransactionAdapter() : StatelessSection(SectionParameters.builder()
                 txtVat.text = getSaleType(data.sale_price[0].vat)
                 txtPriceSale.text = data.sale_price[0].price
                 txtValues.text = data.sale_price[0].values
-                if (data.sale_price[0].note.isNotEmpty()){
-                    Glide.with(itemView)
-                            .load(android.R.drawable.stat_sys_warning)
-                            .into(txtNote)
-                    itemView.setOnLongClickListener {
-                        listener.onClickNote(data.sale_price[0].note)
-                        true
-                    }
-                }
+                txtNote.setText(data.sale_price[0].note)
+            }
+            itemView.setOnClickListener {
+                listener.onClickTransaction(data)
+            }
+        }
+
+        fun bind(data: Model.Transaction,listener: TransactionListener){
+            txtCompany.text = data.product_name?.lines()?.first()
+            txtDate.text = Utils.format2DigiYMD(data.date)
+            if (data.sale_price.isNotEmpty()) {
+                txtVat.text = getSaleType(data.sale_price[0].vat)
+                txtPriceSale.text = data.sale_price[0].price
+                txtValues.text = data.sale_price[0].values
+                txtNote.setText(data.sale_price[0].note)
             }
             itemView.setOnClickListener {
                 listener.onClickTransaction(data)

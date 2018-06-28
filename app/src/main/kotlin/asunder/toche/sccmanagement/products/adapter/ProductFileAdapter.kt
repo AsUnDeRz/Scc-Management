@@ -1,12 +1,10 @@
-package asunder.toche.sccmanagement.contact.adapter
+package asunder.toche.sccmanagement.products.adapter
 
+import android.net.Uri
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetDialog
-import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.RecyclerView
-import android.text.Editable
 import android.text.TextUtils
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,28 +13,42 @@ import android.widget.ImageView
 import android.widget.ListView
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
-import asunder.toche.sccmanagement.contact.ComponentListener
 import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
-import asunder.toche.sccmanagement.custom.extension.DisableClick
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
+import asunder.toche.sccmanagement.products.ComponentListener
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.item_component_info.view.*
+import java.io.File
 
 /**
- *Created by ToCHe on 3/4/2018 AD.
+ *Created by ToCHe on 4/5/2018 AD.
  */
-class AddressAdapter(var listener : ComponentListener): RecyclerView.Adapter<AddressAdapter.AddressHolder>(){
+class ProductFileAdapter(var listener: ComponentListener): RecyclerView.Adapter<ProductFileAdapter.FileHolder>(){
 
-    val addresses:MutableList<Model.Address> =  mutableListOf()
+    val files:MutableList<Model.ContentForProduct> =  mutableListOf()
     val typeList:MutableList<String> = mutableListOf()
     val defaultType = arrayListOf("Home","Work","Mobile")
 
-    fun updateAddress(data:MutableList<Model.Address>){
-        addresses.clear()
-        addresses.addAll(data)
+    fun updateFiles(data:MutableList<Model.ContentForProduct>){
+        files.clear()
+        files.addAll(data)
         notifyDataSetChanged()
     }
+    fun addFiles(data:MutableList<Model.ContentForProduct>){
+        files.addAll(data)
+        notifyDataSetChanged()
+    }
+
+    fun addFile(data:Model.ContentForProduct){
+        files.add(data)
+        notifyDataSetChanged()
+    }
+
+    fun remove(position: Int){
+        files.removeAt(position)
+        notifyDataSetChanged()
+    }
+
     fun addType(type:String){
         typeList.add(0,type)
         notifyDataSetChanged()
@@ -46,72 +58,46 @@ class AddressAdapter(var listener : ComponentListener): RecyclerView.Adapter<Add
         typeList.addAll(data)
     }
 
-    fun addAddress(data:Model.Address){
-        addresses.add(data)
-        notifyDataSetChanged()
-    }
-
-    fun updateAddress(data: Model.Address,position: Int){
-        addresses.removeAt(position)
-        addresses.add(position,data)
-        notifyDataSetChanged()
-    }
-
-    fun remove(position: Int){
-        addresses.removeAt(position)
-        notifyDataSetChanged()
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddressHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_component_info,parent,false)
-        return AddressHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product_file,parent,false)
+        return FileHolder(view)
     }
 
     override fun getItemCount(): Int {
-        return addresses.size
+        return files.size
     }
 
-    override fun onBindViewHolder(holder: AddressHolder, position: Int) {
-        holder.bind(addresses[holder.adapterPosition],listener)
+    override fun onBindViewHolder(holder: FileHolder, position: Int) {
+        holder.bind(files[position],listener)
     }
 
 
-    inner class AddressHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class FileHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
+        val txtTitle = itemView?.findViewById<TxtMedium>(R.id.txtTitle)
+        val edtContent = itemView?.findViewById<TxtMedium>(R.id.txtFile)
+        val imageStateDelete = itemView?.findViewById<ImageView>(R.id.imageStateDelete)
 
-        val txtTitle = itemView.txtTitle
-        val edtContent = itemView.edtContent
-        val imageStateDelete = itemView.imageStateDelete
-        val imageAction = itemView.imageAction
-
-        fun bind(address: Model.Address,listener: ComponentListener){
-            imageAction?.visibility = View.GONE
-            if(address.type == "" || address.type == "เลือก"){
+        fun bind(content:Model.ContentForProduct,listener: ComponentListener){
+            val file = Uri.fromFile(File(content.local_path))
+            if(content.title_type == "" || content.title_type == "เลือก"){
                 txtTitle?.text = "เลือก"
             }else {
-                txtTitle?.text = address.type
+                txtTitle?.text = content.title_type
             }
-            edtContent?.setText(address.address_type)
+            edtContent?.text = file?.lastPathSegment
             imageStateDelete?.isSelected = true
             imageStateDelete?.setOnClickListener {
-                listener.OnAddressClick(Model.Address(),false,adapterPosition)
+                listener.OnFileClick(files[adapterPosition],true,adapterPosition)
             }
-            edtContent?.DisableClick()
             edtContent?.setOnClickListener {
-                listener.OnAddressClick(address,true,adapterPosition)
-            }
-            imageAction?.setOnClickListener {
-                //listener.OnAddressClick(address,true,adapterPosition)
+                listener.OnFileClick(files[adapterPosition],false,adapterPosition)
             }
             imageStateDelete?.let {
                 Glide.with(itemView.context)
                         .load(R.drawable.ic_remove_white_24dp)
                         .into(it)
             }
-            imageAction?.let {
-                Glide.with(itemView.context)
-                        .load(R.drawable.ic_edit_black_24dp)
-                        .into(it)
-            }
+
             txtTitle?.setOnClickListener {
                 showSheetCompany(adapterPosition,txtTitle)
             }
@@ -140,7 +126,7 @@ class AddressAdapter(var listener : ComponentListener): RecyclerView.Adapter<Add
             typeNumber.addAll(defaultType)
             rvFilterType.adapter = typeNumber
             rvFilterType.setOnItemClickListener { parent, view, position, id ->
-                addresses[itemPosition].type = parent.getItemAtPosition(position) as String
+                files[itemPosition].title_type = parent.getItemAtPosition(position) as String
                 txtTitle.text = parent.getItemAtPosition(position) as String
                 bottomSheetDialog.dismiss()
                 notifyDataSetChanged()

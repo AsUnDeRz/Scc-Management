@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
 
     <uses-feature
@@ -24,7 +25,7 @@
         android:name=".SccApp"
         android:icon="@mipmap/app_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/app_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:allowBackup="true"
@@ -97,7 +98,10 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".hover.HoverService" />
+        <service android:name=".hover.FloatingViewService"
+            android:enabled="true"
+            android:exported="false" />
+
         <receiver android:name=".hover.PhoneStateReceive">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
@@ -114,8 +118,15 @@
         <activity android:name=".contact.ActivityEditContact"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"/>
-        <activity android:name=".contact.ActivityContactHistory" />
-        <activity android:name=".main.ActivityImageViewer" />
+        <activity android:name=".contact.ActivityContactHistory"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".main.ActivityImageViewer"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".issue.ActivityDetailIssue"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
 
         <provider android:authorities="com.facebook.app.FacebookContentProvider1471129742927460"
             android:name="com.facebook.FacebookContentProvider"

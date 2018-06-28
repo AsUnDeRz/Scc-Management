@@ -80,44 +80,16 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <asunder.toche.sccmanagement.custom.textview.TxtMedium
-                        android:id="@+id/txtOldPrice"
+                        android:id="@+id/txtTitlePrice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="ราคาเก่า"
-                        android:visibility="visible"
-                        app:layout_constraintStart_toStartOf="@+id/edtOldPrice"
+                        android:text="ราคากลาง"
+                        app:layout_constraintStart_toStartOf="@+id/edtPrice"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-                        android:id="@+id/edtSalePrice"
-                        android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_round_table"
-                        android:digits="0123456789."
-                        android:hint="XXXX.XX"
-                        android:inputType="number"
-                        android:maxLines="1"
-                        android:paddingStart="8dp"
-                        android:visibility="visible"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/edtOldPrice"
-                        app:layout_constraintTop_toBottomOf="@+id/txtTitlePrice" />
-
-                    <asunder.toche.sccmanagement.custom.textview.TxtMedium
-                        android:id="@+id/txtSalePrice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="ราคาลูกค้า"
-                        android:visibility="visible"
-                        app:layout_constraintStart_toStartOf="@+id/edtSalePrice"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-                        android:id="@+id/edtOldPrice"
+                        android:id="@+id/edtPrice"
                         android:layout_width="0dp"
                         android:layout_height="48dp"
                         android:layout_marginEnd="8dp"
@@ -125,41 +97,51 @@
                         android:layout_marginTop="8dp"
                         android:background="@drawable/bg_round_table"
                         android:digits="0123456789."
-                        android:focusable="false"
                         android:hint="XXXX.XX"
                         android:inputType="number"
                         android:maxLines="1"
                         android:paddingStart="8dp"
-                        android:visibility="visible"
-                        app:layout_constraintEnd_toStartOf="@+id/edtSalePrice"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/edtPrice"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/space6"
                         app:layout_constraintTop_toBottomOf="@+id/txtTitlePrice" />
 
                     <asunder.toche.sccmanagement.custom.textview.TxtMedium
-                        android:id="@+id/txtTitlePrice"
+                        android:id="@+id/txtMedium10"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="ราคากลาง"
+                        android:text="วันที่"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-                        android:id="@+id/edtPrice"
+                        android:id="@+id/edtPriceDate"
                         android:layout_width="0dp"
                         android:layout_height="48dp"
+                        android:layout_marginEnd="8dp"
                         android:layout_marginTop="8dp"
                         android:background="@drawable/bg_round_table"
-                        android:digits="0123456789."
-                        android:hint="XXXX.XX"
-                        android:inputType="number"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:inputType="text"
                         android:maxLines="1"
                         android:paddingStart="8dp"
-                        app:layout_constraintEnd_toStartOf="@+id/edtOldPrice"
-                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintEnd_toStartOf="@+id/space6"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/txtTitlePrice" />
+                        app:layout_constraintTop_toBottomOf="@+id/txtMedium10" />
+
+                    <Space
+                        android:id="@+id/space6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </android.support.constraint.ConstraintLayout>
 
@@ -220,57 +202,6 @@
                 </RadioGroup>
 
                 <asunder.toche.sccmanagement.custom.textview.TxtMedium
-                    android:id="@+id/txtValues"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="48dp"
-                    android:layout_marginTop="16dp"
-                    android:text="จำนวน"
-                    android:visibility="visible"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
-
-                <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-                    android:id="@+id/edtPriceValues"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_round_table"
-                    android:digits="0123456789."
-                    android:hint="XXXX"
-                    android:inputType="number"
-                    android:maxLines="1"
-                    android:paddingStart="8dp"
-                    android:visibility="visible"
-                    app:layout_constraintEnd_toStartOf="@+id/space4"
-                    app:layout_constraintStart_toStartOf="@+id/txtValues"
-                    app:layout_constraintTop_toBottomOf="@+id/txtValues" />
-
-                <asunder.toche.sccmanagement.custom.textview.TxtMedium
-                    android:id="@+id/txtMedium10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="วันที่"
-                    app:layout_constraintStart_toEndOf="@+id/space4"
-                    app:layout_constraintTop_toTopOf="@+id/txtValues" />
-
-                <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-                    android:id="@+id/edtPriceDate"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_round_table"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:paddingStart="8dp"
-                    app:layout_constraintEnd_toEndOf="@+id/radioGroup"
-                    app:layout_constraintStart_toEndOf="@+id/space4"
-                    app:layout_constraintTop_toBottomOf="@+id/txtMedium10" />
-
-                <asunder.toche.sccmanagement.custom.textview.TxtMedium
                     android:id="@+id/txtMedium11"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -278,7 +209,7 @@
                     android:layout_marginTop="16dp"
                     android:text="Note"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/edtPriceDate" />
+                    app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
                 <asunder.toche.sccmanagement.custom.edittext.EdtMedium
                     android:id="@+id/edtPriceNote"
@@ -297,15 +228,6 @@
                     app:layout_constraintStart_toStartOf="@+id/txtMedium11"
                     app:layout_constraintTop_toBottomOf="@+id/txtMedium11" />
 
-                <Space
-                    android:id="@+id/space4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintEnd_toEndOf="@+id/radioGroup"
-                    app:layout_constraintStart_toStartOf="@+id/radioGroup"
-                    app:layout_constraintTop_toTopOf="@+id/edtPriceValues" />
             </android.support.constraint.ConstraintLayout>
         </LinearLayout>
     </ScrollView>

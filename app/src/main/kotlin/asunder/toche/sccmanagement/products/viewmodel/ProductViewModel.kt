@@ -2,11 +2,18 @@ package asunder.toche.sccmanagement.products.viewmodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.net.Uri
 import android.util.Log
 import asunder.toche.sccmanagement.Model
+import asunder.toche.sccmanagement.preference.Prefer
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.products.ProductState
 import asunder.toche.sccmanagement.service.FirebaseManager
 import asunder.toche.sccmanagement.service.ProductService
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
+import java.io.File
 
 /**
  *Created by ToCHe on 18/3/2018 AD.
@@ -24,14 +31,48 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
     var productId  =""
     var mediumPosition:Int = 0
 
+    fun saveProduct(data:Model.Product) = async(UI) {
+        try {
+            val job = async(CommonPool) {
+                if(data.files.isNotEmpty()){
+                    data.files.forEach {
+                        val filePath = Uri.fromFile(File(it.local_path))
+                        it.cloud_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${filePath.lastPathSegment}"
+                        firebase.pushFileToFirebase(it.local_path,"")
+                        async(UI) {
+                            val result = async {
+                                it.local_path = firebase.getPathClone(it.local_path)
+                            }
+                            result.await()
+                        }
+                    }
+                }
+                if(data.pictures.isNotEmpty()){
+                    data.pictures.forEach {
+                        val imgPath = Uri.fromFile(File(it.local_path))
+                        it.cloud_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${imgPath.lastPathSegment}"
+                        firebase.pushFileToFirebase(it.local_path, "")
+                        async(UI) {
+                            val result = async {
+                                it.local_path = firebase.getPathClone(it.local_path)
+                            }
+                            result.await()
+                        }
+                    }
+                }
+            }
+            job.await()
+            System.out.println("SaveProduct  $data")
+            if(productId == "") {
+                service.pushNewProduct(data)
+            }else{
+                service.updateProduct(data)
+            }
 
-
-    fun saveProduct(data:Model.Product){
-        System.out.println("SaveProduct  $data")
-        if(productId == "") {
-            service.pushNewProduct(data)
-        }else{
-            service.updateProduct(data)
+        }
+        catch (e: Exception) {
+        }
+        finally {
         }
     }
 
@@ -72,6 +113,12 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
     fun deleteProduct(product: Model.Product){
         service.deleteProductInDb(product.id)
         service.deleteProduct(product)
+        product.files.forEach {
+            firebase.deleteFile(it.cloud_url,it.local_path)
+        }
+        product.pictures.forEach {
+            firebase.deleteFile(it.cloud_url,it.local_path)
+        }
     }
 
     override fun onSuccess() {

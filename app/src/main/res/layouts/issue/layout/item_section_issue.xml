@@ -28,12 +28,14 @@
 
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:id="@+id/txtSectionDate"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_marginStart="18dp"
             android:layout_toEndOf="@+id/imageView2"
             android:gravity="center_vertical"
+            android:lines="1"
+            android:maxLines="1"
             android:text="15/03/2018 (3)"
             android:textSize="12sp" />
     </RelativeLayout>

@@ -44,6 +44,7 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/txtCircleState"
             android:gravity="center_vertical"
+            android:maxLines="1"
             android:text="ประเด็น"
             android:textSize="12sp" />
     </RelativeLayout>

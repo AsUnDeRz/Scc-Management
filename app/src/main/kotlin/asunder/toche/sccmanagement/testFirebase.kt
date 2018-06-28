@@ -33,6 +33,7 @@ class testFirebase : AppCompatActivity(){
     var MY_PERMISSIONS_REQUEST_READ_CONTACTS = 155
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_landing)

@@ -27,18 +27,17 @@
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_marginEnd="48dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:focusable="false"
         android:focusableInTouchMode="false"
+        android:gravity="center"
         android:hint="In process"
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtIssueDate" />
+        app:layout_constraintStart_toEndOf="@+id/space5"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtCompany"
@@ -49,13 +48,15 @@
         android:background="@drawable/bg_round_table"
         android:focusable="false"
         android:focusableInTouchMode="false"
+        android:gravity="center_vertical"
         android:hint="เลือก บริษัท ..."
+        android:lines="1"
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="12sp"
         app:layout_constraintEnd_toStartOf="@+id/space"
-        app:layout_constraintStart_toStartOf="@+id/edtProcess"
-        app:layout_constraintTop_toBottomOf="@+id/edtProcess" />
+        app:layout_constraintStart_toStartOf="@+id/edtIssueDate"
+        app:layout_constraintTop_toBottomOf="@+id/edtIssueDate" />
 
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtIssue"
@@ -77,7 +78,7 @@
     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
         android:id="@+id/edtIssueDetail"
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="120dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_round_table"
         android:gravity="left"
@@ -93,7 +94,7 @@
         android:id="@+id/edtIssueDate"
         android:layout_width="0dp"
         android:layout_height="40dp"
-        android:layout_marginEnd="48dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="48dp"
         android:background="@drawable/bg_round_table"
         android:focusable="false"
@@ -102,7 +103,7 @@
         android:maxLines="1"
         android:paddingStart="8dp"
         android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/space5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -173,7 +174,15 @@
         android:layout_height="40dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="@+id/edtProcess"
-        app:layout_constraintStart_toStartOf="@+id/edtProcess"
+        app:layout_constraintStart_toStartOf="@+id/edtIssueDate"
         app:layout_constraintTop_toBottomOf="@+id/edtProcess" />
+
+    <Space
+        android:id="@+id/space5"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

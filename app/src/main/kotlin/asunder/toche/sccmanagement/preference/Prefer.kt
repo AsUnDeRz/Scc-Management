@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.preference.PreferenceManager
+import android.graphics.Bitmap
+import android.graphics.Matrix
 
 
 /**
@@ -40,6 +42,20 @@ object Prefer{
     fun getFile(context: Context) : String{
         val prefer = openFile(context)
         return prefer.getString(KEY.FILE_PATH,"")
+    }
+
+    fun flipIMage(bitmap: Bitmap): Bitmap {
+        val matrix = Matrix()
+        val rotation = fixOrientation(bitmap)
+        matrix.postRotate(rotation)
+        matrix.preScale(-1f, 1f)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+    private fun fixOrientation(bitmap: Bitmap): Float {
+        return if (bitmap.width > bitmap.height) {
+            90f
+        } else 0f
     }
 
 }

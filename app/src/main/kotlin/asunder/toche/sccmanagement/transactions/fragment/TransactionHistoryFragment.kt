@@ -81,6 +81,9 @@ class TransactionHistoryFragment : Fragment(),TransactionListener {
         historyAdapter = TransactionHistoryAdapter()
         val activity = activity as ActivityHistory
         filterTransaction(activity.getProductID())
+        btnBack.setOnClickListener {
+            activity.finish()
+        }
     }
 
     fun setUpAdapter(mapTransaction:MutableMap<Model.Transaction,Model.Contact>,
@@ -120,6 +123,7 @@ class TransactionHistoryFragment : Fragment(),TransactionListener {
                             val company = contacts.first { transac.company_id == it.id  }
                             mapTransaction[transac] = company
                         }
+                        results.sortByDescending { Utils.getDateWithString(it.date).time }
                         setUpAdapter(mapTransaction,results)
                     }
                 },transactionVM.service.getTransactionInDb(),ROOT.PRODUCTS)
@@ -184,6 +188,7 @@ class TransactionHistoryFragment : Fragment(),TransactionListener {
                         val company = contacts.first { transac.company_id == it.id }
                         mapTransaction[transac] = company
                     }
+                    results.sortByDescending { Utils.getDateWithString(it.date).time }
                     setUpAdapter(mapTransaction, results)
                 }
             }, transactionVM.service.getTransactionInDb(), ROOT.PRODUCTS)

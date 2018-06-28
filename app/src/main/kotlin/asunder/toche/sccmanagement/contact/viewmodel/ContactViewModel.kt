@@ -9,7 +9,12 @@ import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.service.ContactService
 import asunder.toche.sccmanagement.service.FirebaseManager
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import java.io.File
+import kotlin.properties.Delegates
 
 /**
  *Created by ToCHe on 14/3/2018 AD.
@@ -21,26 +26,50 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
     val firebase = FirebaseManager()
     var isGranted = false
     private var pathPicture  =""
-    private var contactId = ""
-    var isSaveContactComplete  = MutableLiveData<ContactState>()
+    private var contactId by Delegates.observable("") { _, oldValue, newValue ->
+        println("Oldvalues = $oldValue \nNewValue = $newValue")
+    }
+    var isSaveContactComplete : MutableLiveData<ContactState> by Delegates.observable(MutableLiveData()){
+        _, oldValue, newValue ->
+        println("State ${oldValue.value} to  ${newValue.value}")
+    }
     val contacts : MutableLiveData<MutableList<Model.Contact>> = MutableLiveData()
     val contact : MutableLiveData<Model.Contact> = MutableLiveData()
 
 
-    fun saveContact(data:Model.Contact){
-        data.addresses.forEach {
-            val fileName = Uri.fromFile(File(it.path_img_map))
-            it.url_img_map = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${fileName.lastPathSegment}"
-            if(it.path_img_map.isNotEmpty()){
-                firebase.pushFileToFirebase(it.path_img_map,"")
+
+    fun saveContact(data:Model.Contact) = async(UI){
+        try {
+            val job = async(CommonPool) {
+                data.addresses.forEach{
+                    val fileName = Uri.fromFile(File(it.path_img_map))
+                    it.url_img_map = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${fileName.lastPathSegment}"
+                    if(it.path_img_map.isNotEmpty()){
+                        firebase.pushFileToFirebase(it.path_img_map,"")
+                        async(UI) {
+                            val result = async {
+                                it.path_img_map = firebase.getPathClone(it.path_img_map)
+                            }
+                            result.await()
+                        }
+                    }
+                }
+            }
+            job.await()
+            data.id = contactId
+            if (isSaveContactComplete.value != ContactState.SAVED) {
+                if (contactId == "") {
+                    service.pushNewContact(data)
+                } else {
+                    service.updateContact(data)
+                }
             }
         }
-        data.id = contactId
-        if(contactId == "") {
-                service.pushNewContact(data)
-            }else{
-                service.updateContact(data)
-            }
+        catch (e: Exception) {
+        }
+        finally {
+
+        }
     }
 
     fun deleteContact(data: Model.Contact){
@@ -53,6 +82,9 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
         contact.value?.let {
             service.deleteContact(it)
             service.deleteContactInDb(it.id)
+            it.addresses.forEach {
+                firebase.deleteFile(it.url_img_map,it.path_img_map)
+            }
         }
 
     }
@@ -95,15 +127,20 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
 
     override fun onSuccess() {
         updateViewState(ContactState.SAVED)
-        //loadContacts()
+        loadContacts()
 
     }
 
     override fun onFail() {
         updateViewState(ContactState.SAVED)
-        //loadContacts()
+        loadContacts()
     }
 
+    override fun onDeleteSuccess() {
+        updateViewState(ContactState.ALLCONTACT)
+        loadContacts()
+
+    }
 
 
 }

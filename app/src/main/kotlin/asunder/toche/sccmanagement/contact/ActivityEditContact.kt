@@ -6,11 +6,12 @@ import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import android.widget.SearchView
 import android.widget.TextView
+import android.widget.Toast
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.main.ActivityImageViewer
 import asunder.toche.sccmanagement.preference.KEY
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
@@ -31,11 +32,26 @@ import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
 import kotlinx.android.synthetic.main.activity_edit_contact.*
 import java.io.File
+import java.text.MessageFormat
+import java.util.*
 
 /**
  *Created by ToCHe on 30/4/2018 AD.
  */
-class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback {
+class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
+        GoogleMap.OnMyLocationButtonClickListener {
+
+    @SuppressLint("MissingPermission")
+    override fun onMyLocationButtonClick(): Boolean {
+        val task = LocationServices.getFusedLocationProviderClient(this).lastLocation
+        task.addOnCompleteListener {
+            if(it.isComplete){
+                location = it.result
+                handleNewLocation(it.result)
+            }
+        }
+        return true
+    }
 
     private lateinit var map: GoogleMap
     var location: Location? = null
@@ -53,12 +69,14 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback {
         val mapFragment : SupportMapFragment? =
                 supportFragmentManager?.findFragmentById(R.id.mapView) as SupportMapFragment?
         mapFragment?.getMapAsync(this@ActivityEditContact)
+
         setupGoogleClient()
         setAction()
     }
 
     fun initData(contact: Model.Address){
         currentAddress = contact
+        currentPhoto = contact.path_img_map
         edtTypeAddress.setText(contact.address_type)
         edtFactoryAddress.setText(contact.address_factory)
         val image = File(contact.path_img_map)
@@ -71,6 +89,13 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback {
             location?.latitude = contact.map_latitude.toDouble()
             location?.longitude = contact.map_longitude.toDouble()
             handleNewLocation(location!!)
+        }else{
+            //Toast.makeText(this,"contact.map is Empty ",Toast.LENGTH_SHORT).show()
+            //13.2466906,100.3766333 13.7616035,100.5202237,5.99
+            location = Location("")
+            location?.latitude = 13.7616035
+            location?.longitude = 100.5202237
+            handleNewLocation(location!!,5.99f)
         }
     }
 
@@ -80,15 +105,15 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback {
                 currentAddress = Model.Address(edtTypeAddress.text.toString(), edtFactoryAddress.text.toString(),
                         "", currentPhoto,
                         "${location?.longitude}", "${location?.latitude}")
-                val intent = Intent()
-                intent.putExtra(ROOT.ADDRESS, currentAddress)
-                intent.putExtra(ROOT.POSITION,position)
-                setResult(Activity.RESULT_OK, intent)
+                val result = Intent()
+                result.putExtra(ROOT.ADDRESS, currentAddress)
+                result.putExtra(ROOT.POSITION,intent.getIntExtra(ROOT.POSITION,0))
+                setResult(Activity.RESULT_OK, result)
                 finish()
             } else {
                 currentAddress = Model.Address(edtTypeAddress.text.toString(), edtFactoryAddress.text.toString(),
                         "", currentPhoto,
-                        "${location?.latitude}", "${location?.longitude}")
+                        "${location?.longitude}", "${location?.latitude}")
                 val intent = Intent()
                 intent.putExtra(ROOT.ADDRESS, currentAddress)
                 setResult(Activity.RESULT_OK, intent)
@@ -101,7 +126,7 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback {
         btnDeleteAddress.setOnClickListener {
             currentAddress = Model.Address(edtTypeAddress.text.toString(), edtFactoryAddress.text.toString(),
                     "", currentPhoto,
-                    "${location?.latitude}", "${location?.longitude}")
+                    "${location?.longitude}", "${location?.latitude}")
             val intent = Intent()
             intent.putExtra(ROOT.ADDRESS, position)
             intent.putExtra(KEY.DELETE,true)
@@ -118,8 +143,8 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback {
                     val latlng = result.split(",")
                     if (latlng.size >= 2) {
                         val location = Location("")
-                        location.latitude = latlng[0].toDouble()
-                        location.longitude = latlng[1].toDouble()
+                        location.latitude = latlng[0].trim().toDouble()
+                        location.longitude = latlng[1].trim().toDouble()
                         handleNewLocation(location)
                     }
                 }
@@ -132,17 +157,56 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback {
         })
 
         imgMap.setOnClickListener {
+            if(currentPhoto.isEmpty()) {
+                selectedPhoto.clear()
+                FilePickerBuilder.getInstance().setMaxCount(1)
+                        .setSelectedFiles(selectedPhoto)
+                        .setActivityTheme(R.style.AppTheme)
+                        .pickPhoto(this)
+            }else{
+                val intent = Intent()
+                intent.putExtra("path",currentPhoto)
+                startActivity(intent.setClass(this@ActivityEditContact, ActivityImageViewer::class.java))
+            }
+        }
+
+        imgMap.setOnLongClickListener {
             selectedPhoto.clear()
             FilePickerBuilder.getInstance().setMaxCount(1)
                     .setSelectedFiles(selectedPhoto)
                     .setActivityTheme(R.style.AppTheme)
                     .pickPhoto(this)
+            return@setOnLongClickListener true
         }
 
         if (!intent.hasExtra(ROOT.POSITION)) {
             btnDeleteAddress.isEnabled = false
         }
 
+
+        btnShare.setOnClickListener {
+            val link = formatLocation(location!!, "https://maps.google.com/?q={0},{1}")
+
+            val intent = Intent()
+            intent.action = Intent.ACTION_SEND;
+            intent.putExtra(Intent.EXTRA_TEXT, link)
+            intent.type = "text/plain";
+            startActivity(Intent.createChooser(intent, "Share location via"))
+        }
+
+    }
+
+    private fun getLatitude(location: Location): String {
+        return String.format(Locale.US, "%2.7f", location.latitude)
+    }
+
+    private fun getLongitude(location: Location): String {
+        return String.format(Locale.US, "%3.7f", location.longitude)
+    }
+
+    private fun formatLocation(location: Location, format: String): String {
+        return MessageFormat.format(format,
+                getLatitude(location), getLongitude(location))
     }
 
     fun setupGoogleClient(){
@@ -168,23 +232,7 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback {
         if(googlemap != null){
             map = googlemap
             map.isMyLocationEnabled = true
-
-            val task = LocationServices.getFusedLocationProviderClient(this).lastLocation
-            task.addOnCompleteListener {
-                if(it.isComplete){
-                    location = it.result
-                }
-            }
-            if (location == null) {
-                val taskUpdate = LocationServices.
-                        getFusedLocationProviderClient(this)
-                        .requestLocationUpdates(mLocationRequest,locationCallback,null)
-                if(taskUpdate.isComplete){
-                    taskUpdate.result
-                }
-            }
-
-
+            map.setOnMyLocationButtonClickListener(this)
         }
 
 
@@ -213,9 +261,11 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback {
 
     }
 
-    fun handleNewLocation(location: Location) {
+    fun handleNewLocation(location: Location,zoom:Float? = null) {
+        txtLocation.text = "GPS\nLatitude ${location.latitude}\nLongitude ${location.longitude}"
+        Toast.makeText(this,"OnLocationChange ${location.latitude}/${location.longitude}",Toast.LENGTH_SHORT).show()
         this.location = location
-        val zoomLevel = 14f
+        val zoomLevel = zoom ?: 14f
         val latLng = LatLng(location.latitude, location.longitude)
         map.clear()
         val current = MarkerOptions()

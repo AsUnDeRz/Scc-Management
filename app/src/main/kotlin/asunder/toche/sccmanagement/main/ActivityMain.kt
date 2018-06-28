@@ -17,6 +17,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.View
+import asunder.toche.sccmanagement.BuildConfig
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.auth.ActivityLogin
@@ -26,6 +27,7 @@ import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
 import asunder.toche.sccmanagement.custom.TriggerUpdate
 import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
+import asunder.toche.sccmanagement.hover.FloatingViewService
 import asunder.toche.sccmanagement.hover.HoverService
 import asunder.toche.sccmanagement.issue.IssueState
 import asunder.toche.sccmanagement.issue.IssueViewModel
@@ -64,6 +66,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     lateinit var productVM : ProductViewModel
     lateinit var issueVM : IssueViewModel
     lateinit var transactionVM : TransactionViewModel
+
     private val lifecycleRegistry by lazy {
         android.arch.lifecycle.LifecycleRegistry(this)
     }
@@ -91,6 +94,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
             selectContact(contact)
         }
         addContentListener()
+
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -268,6 +272,9 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     fun observerContacts(){
         contactVM.isSaveContactComplete.observe(this, Observer {
             when(it){
+                ContactState.SAVED ->{
+                    txtSearch.text.clear()
+                }
                 ContactState.ALLCONTACT ->{
                     txtSearch.text.clear()
                 }
@@ -277,6 +284,10 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
                 }
                 ContactState.SELECTCONTACT ->{
                     pager.currentItem = 0
+                    val lines = contactVM.contact.value?.company?.lines()
+                    lines?.let {
+                        txtSearch.setText(it[0])
+                    }
                 }
                 ContactState.NEWISSUE ->{
                     pager.currentItem = 1
@@ -293,15 +304,21 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
                     pager.currentItem = 0
                 }
                 ContactState.SHOWFORM ->{
-                    pager.currentItem = 0
+                    //pager.currentItem = 0
                 }
             }
         })
         contactVM.contact.observe(this, Observer {
-            txtSearch.setText(it?.company?.trim())
+            val lines = it?.company?.trim()?.lines()
+            lines?.let {
+                txtSearch.setText(it[0])
+            }
         })
         productVM.product.observe(this, Observer {
-            txtSearch.setText(it?.product_name?.trim())
+            val lines = it?.product_name?.trim()?.lines()
+            lines?.let {
+                txtSearch.setText(it[0])
+            }
         })
 
         productVM.stateView.observe(this, Observer {
@@ -310,13 +327,15 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
                     pager.currentItem = 2
                 }
                 ProductState.SHOWLIST ->{
+                    pager.currentItem = 2
                     txtSearch.text.clear()
                 }
             }
         })
 
         transactionVM.stateView.observe(this, Observer {
-            if (it == TransactionState.SHOWTRANSACTION || it == TransactionState.SHOWFORM){
+            if (it == TransactionState.SHOWTRANSACTION || it == TransactionState.SHOWFORM ||
+                    it == TransactionState.TRIGGERFROMSERVICE){
                 //tabLayout.setScrollPosition(3,0f,true)
                 pager.currentItem = 3
                 //transactionVM.updateStateView(TransactionState.SHOWTRANSACTION)
@@ -384,7 +403,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
         isActivityResume = true
         async(UI) {
             async {
-                HoverService.showFloatingMenu(this@ActivityMain)
+                openFloatingView()
             }.await()
         }
     }
@@ -407,7 +426,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     }
 
     override fun onClickConfirm() {
-        HoverService.showFloatingMenu(this)
+        openFloatingView()
         val setIntent = Intent(Intent.ACTION_MAIN)
         setIntent.addCategory(Intent.CATEGORY_HOME)
         setIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -419,12 +438,15 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     }
 
     fun setupCurrentUser(){
+        /*
         val user = FirebaseAuth.getInstance().currentUser
         if (user!!.uid == Prefer.getUUID(this)){
             txtAccount.text = "Email : ${user?.email} \n Uid : ${user?.uid}"
         }else{
             txtAccount.text = "Email : ${user?.email} \n Uid : current uid not match in Preference "
         }
+        */
+        txtAccount.text = "Version "+BuildConfig.VERSION_NAME
     }
 
 
@@ -482,5 +504,8 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     }
 
 
+    fun openFloatingView(){
+        startService(Intent(this, FloatingViewService::class.java))
+    }
 
 }

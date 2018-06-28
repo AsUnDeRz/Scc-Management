@@ -69,7 +69,7 @@ class TransactionService(var listener:TransactionCallback){
                         System.out.println("Data could not be saved " + databaseError.message)
                         listener.onFail()
                     } else {
-                        System.out.println("Data deleted successfully.")
+                        System.out.println("Data deleted successfully $transaction.")
                         listener.onSuccess()
                     }
                 })
@@ -121,6 +121,16 @@ class TransactionService(var listener:TransactionCallback){
         return TransactionFromDb
     }
 
+    fun deleteTransactionWithContact(contact:Model.Contact){
+        val currentTransaction = getTransactionInDb()
+        currentTransaction
+                .filter { it.company_id == contact.id }
+                .forEach {
+                    currentTransaction.remove(it)
+                    deleteTransaction(it)
+                }
+        pushNewTransactionToDb(currentTransaction)
+    }
 
 
 

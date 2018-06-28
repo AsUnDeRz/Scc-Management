@@ -39,14 +39,14 @@ class IssueService(var listener : IssueCallBack){
         Log.d(TAG,"PushNewIssue with $issue")
         val childUpdates = HashMap<String,Any>()
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.ISSUE}/$keyAuth"] = issue
-        firebase.updateChildren(childUpdates,{databaseError, _ ->
+        firebase.updateChildren(childUpdates) { databaseError, _ ->
             if (databaseError != null) {
                 Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
             } else {
                 System.out.println("Data Issue  saved successfully.")
             }
-        })
+        }
         pushNewIssueToDb(updateIssueFromDb(issue,getIssueInDb()))
 
 
@@ -55,28 +55,28 @@ class IssueService(var listener : IssueCallBack){
     fun updateIssue(Issue: Model.Issue){
         val childUpdates = HashMap<String,Any>()
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.ISSUE}/${Issue.id}"] = Issue
-        firebase.updateChildren(childUpdates,{ databaseError, _ ->
+        firebase.updateChildren(childUpdates) { databaseError, _ ->
             if (databaseError != null) {
                 Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
             } else {
                 System.out.println("Data Update Issue successfully.")
             }
-        })
+        }
         pushNewIssueToDb(updateIssueFromDb(Issue,getIssueInDb()))
 
     }
 
     fun deleteIssue(Issue : Model.Issue){
         firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.ISSUE}/${Issue.id}")
-                .removeValue({ databaseError, _ ->
-            if (databaseError != null) {
-                Crashlytics.log(databaseError.message)
-                System.out.println("Data could not be saved " + databaseError.message)
-            } else {
-                System.out.println("Data deleted successfully.")
-            }
-        })
+                .removeValue { databaseError, _ ->
+                    if (databaseError != null) {
+                        Crashlytics.log(databaseError.message)
+                        System.out.println("Data could not be saved " + databaseError.message)
+                    } else {
+                        System.out.println("Data deleted successfully $Issue.")
+                    }
+                }
     }
 
     fun getIssueInDb() : MutableList<Model.Issue>{
@@ -116,6 +116,17 @@ class IssueService(var listener : IssueCallBack){
 
             pushNewIssueToDb(currentIssue)
         //Paper.book().delete(ROOT.CONTACTS)
+    }
+
+    fun deleteIssueWithContact(contact:Model.Contact){
+        val currentIssue = getIssueInDb()
+        currentIssue
+                .filter { it.company_id == contact.id }
+                .forEach {
+                    currentIssue.remove(it)
+                    deleteIssue(it)
+                }
+        pushNewIssueToDb(currentIssue)
     }
 
     fun syncIssue(issueFromPhone:MutableList<Model.Issue>,issueFromDb:MutableList<Model.Issue>)

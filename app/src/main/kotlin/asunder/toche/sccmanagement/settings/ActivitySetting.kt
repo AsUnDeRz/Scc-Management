@@ -42,6 +42,8 @@ import java.io.IOException
  *Created by ToCHe on 11/3/2018 AD.
  */
 class ActivitySetting: AppCompatActivity(),ContactService.ContactCallBack{
+    override fun onDeleteSuccess() {
+    }
 
 
     private val TAG = this::class.java.simpleName

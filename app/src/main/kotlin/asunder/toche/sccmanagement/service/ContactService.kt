@@ -26,6 +26,7 @@ class ContactService(var listener:ContactCallBack){
     interface ContactCallBack{
         fun onSuccess()
         fun onFail()
+        fun onDeleteSuccess()
     }
 
     fun pushNewContact(contact: Model.Contact)  {
@@ -34,22 +35,22 @@ class ContactService(var listener:ContactCallBack){
         Log.d(TAG,"PushNewContact with $contact")
         val childUpdates = HashMap<String,Any>()
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.CONTACTS}/$keyAuth"] = contact
-        firebase.updateChildren(childUpdates,{databaseError, _ ->
+        firebase.updateChildren(childUpdates) { databaseError, _ ->
             if (databaseError != null) {
                 Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
             } else {
                 System.out.println("Data Contact,Managemnt saved successfully.")
             }
-        })
+        }
         pushNewContactToDb(updateContactFromDb(contact,getContactInDb()))
     }
 
     fun updateContact(contact: Model.Contact){
         val childUpdates = HashMap<String,Any>()
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.CONTACTS}/${contact.id}"] = contact
-
-        firebase.updateChildren(childUpdates,{ databaseError, _ ->
+        Log.d(TAG,"UpdateContact with $contact")
+        firebase.updateChildren(childUpdates) { databaseError, _ ->
             if (databaseError != null) {
                 Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
@@ -58,22 +59,22 @@ class ContactService(var listener:ContactCallBack){
                 System.out.println("Data Update Contact successfully.")
                 listener.onSuccess()
             }
-        })
+        }
         pushNewContactToDb(updateContactFromDb(contact,getContactInDb()))
 
     }
 
     fun deleteContact(contact : Model.Contact){
-        firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.CONTACTS}/${contact.id}").removeValue({ databaseError, _ ->
+        firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.CONTACTS}/${contact.id}").removeValue { databaseError, _ ->
             if (databaseError != null) {
                 Crashlytics.log(databaseError.message)
                 System.out.println("Data could not be saved " + databaseError.message)
                 listener.onFail()
             } else {
                 System.out.println("Data deleted successfully.")
-                listener.onSuccess()
+                listener.onDeleteSuccess()
             }
-        })
+        }
     }
 
     fun getContactInDb() : MutableList<Model.Contact>{
@@ -109,9 +110,19 @@ class ContactService(var listener:ContactCallBack){
                 .forEach {
                     currentContact.remove(it)
                 }
-
-        pushNewContactToDb(currentContact)
-        //Paper.book().delete(ROOT.CONTACTS)
+        async(UI) {
+            try {
+                val addContact = async {
+                    Paper.book().write(ROOT.CONTACTS,Model.ContactUser(currentContact))
+                }
+                addContact.await()
+                listener.onDeleteSuccess()
+            }
+            catch (e: Exception) {
+            }
+            finally {
+            }
+        }
     }
 
     fun syncContact(contactFromPhone:MutableList<Model.Contact>,contactFromDb:MutableList<Model.Contact>)

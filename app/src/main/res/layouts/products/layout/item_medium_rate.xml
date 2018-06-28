@@ -15,16 +15,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="6"
-        android:gravity="center"
-        android:text="12345" />
+        android:gravity="center" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
         android:id="@+id/txtMediumVat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="7"
-        android:gravity="center"
-        android:text="a" />
+        android:gravity="center" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
         android:id="@+id/txtMediumDate"
@@ -32,7 +30,6 @@
         android:layout_height="match_parent"
         android:layout_weight="6"
         android:gravity="center"
-        android:text="610518"
         android:textSize="12sp" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
@@ -44,6 +41,5 @@
         android:maxLines="1"
         android:paddingEnd="4dp"
         android:paddingStart="4dp"
-        android:text="adfasfasfasfsdf"
         android:textSize="12sp" />
 </LinearLayout>

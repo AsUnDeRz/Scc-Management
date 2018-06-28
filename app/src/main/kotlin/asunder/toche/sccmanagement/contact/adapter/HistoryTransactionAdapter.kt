@@ -32,6 +32,7 @@ class HistoryTransactionAdapter(var listener : TransactionListener?) : RecyclerV
         notifyDataSetChanged()
     }
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryTransactionHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_history_transaction
                 ,parent,false)

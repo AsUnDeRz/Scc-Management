@@ -11,6 +11,7 @@ object KEY{
     const val OPEN_CONTACT = 1999
     const val NEW_ADDRESS = 1997
     const val EDIT_ADDRESS = 1996
+    const val EDIT_ISSUE_DETAIL = 1995
     const val UPDATE="update"
     const val DELETE="delete"
 }

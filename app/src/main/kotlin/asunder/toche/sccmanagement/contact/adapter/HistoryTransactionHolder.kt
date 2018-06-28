@@ -26,7 +26,7 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
 
 
     fun bind(transaction: Model.Transaction,product: Model.Product,listener: TransactionListener?){
-        txtProdName.text = product.product_name
+        txtProdName.text = product.product_name.lines().first()
         txtNote.text = transaction.desc
         if (transaction.sale_price.isNotEmpty()) {
             txtSalePrice.text = checkDecimal(transaction.sale_price[0].price)
@@ -51,13 +51,15 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
         }
 
         if(transaction.medium_price.isNotEmpty()) {
-            if (product.medium_rate[0].vat) {
-                txtMediumVat.text = "A"
-            } else {
-                txtMediumVat.text = "B"
+            if (product.medium_rate.isNotEmpty()) {
+                if (product.medium_rate[0].vat) {
+                    txtMediumVat.text = "A"
+                } else {
+                    txtMediumVat.text = "B"
+                }
+                txtMediumPrice.text = product.medium_rate[0].price
+                txtMediumDate.text = Utils.format2DigiYMD(product.medium_rate[0].date)
             }
-            txtMediumPrice.text = product.medium_rate[0].price
-            txtMediumDate.text = Utils.format2DigiYMD(product.medium_rate[0].date)
         }
 
         itemView.rootView.setOnClickListener {

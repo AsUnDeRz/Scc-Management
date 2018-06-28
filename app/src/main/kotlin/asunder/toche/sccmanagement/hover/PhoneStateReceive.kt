@@ -86,7 +86,8 @@ class PhoneStateReceive : BroadcastReceiver() {
                     checkActivity(displayname,ctx)
                 }
                 */
-                HoverService.updateCurrent(displayname)
+                //HoverService.updateCurrent(displayname)
+                FloatingViewService.updateCurrent(displayname)
 
             }
 
@@ -133,6 +134,9 @@ class PhoneStateReceive : BroadcastReceiver() {
     private fun filterContact(numberReceive: String,context: Context): PlaceholderContent.User {
         val users :MutableList<PlaceholderContent.User> = mutableListOf()
         val service = ContactService(object : ContactService.ContactCallBack{
+            override fun onDeleteSuccess() {
+            }
+
             override fun onSuccess() {
             }
             override fun onFail() {
@@ -157,6 +161,8 @@ class PhoneStateReceive : BroadcastReceiver() {
     private fun filterContact(context: Context,numberReceive: String): Model.Contact {
         var users :Model.Contact? = null
         val service = ContactService(object : ContactService.ContactCallBack{
+            override fun onDeleteSuccess() {
+            }
             override fun onSuccess() {
             }
             override fun onFail() {

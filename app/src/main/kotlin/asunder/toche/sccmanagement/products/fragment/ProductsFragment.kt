@@ -1,19 +1,22 @@
 package asunder.toche.sccmanagement.products.fragment
 
+import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
-import android.support.design.widget.TabLayout
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import android.widget.ScrollView
+import android.widget.Toast
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.TriggerProduct
@@ -21,28 +24,38 @@ import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.ShowKeyboard
-import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
+import asunder.toche.sccmanagement.main.ActivityImageViewer
 import asunder.toche.sccmanagement.main.ControlViewModel
+import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
+import asunder.toche.sccmanagement.products.ComponentListener
 import asunder.toche.sccmanagement.products.ProductState
-import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
 import asunder.toche.sccmanagement.products.adapter.MediumRateAdapter
-import asunder.toche.sccmanagement.products.pager.ProductsPager
+import asunder.toche.sccmanagement.products.adapter.ProductFileAdapter
+import asunder.toche.sccmanagement.products.adapter.ProductPictureAdapter
+import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
 import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
+import com.crashlytics.android.Crashlytics
+import com.google.firebase.storage.FirebaseStorage
+import com.snatik.storage.Storage
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
+import droidninja.filepicker.FilePickerBuilder
+import droidninja.filepicker.FilePickerConst
 import kotlinx.android.synthetic.main.fragment_product_add.*
 import kotlinx.android.synthetic.main.fragment_product_history.*
 import kotlinx.android.synthetic.main.fragment_products.*
-import kotlinx.android.synthetic.main.item_product.*
 import kotlinx.android.synthetic.main.layout_input.*
-import kotlinx.android.synthetic.main.layout_price_rate.*
+import kotlinx.android.synthetic.main.layout_medium_rate.*
 import kotlinx.android.synthetic.main.section_product_confirm.*
+import kotlinx.android.synthetic.main.section_product_content.*
 import kotlinx.android.synthetic.main.section_product_info.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.io.File
+import java.io.IOException
 import java.util.*
 
 /**
@@ -50,7 +63,8 @@ import java.util.*
  */
 class ProductsFragment : Fragment(),
         ConfirmDialog.ConfirmDialogListener,
-        MediumRateAdapter.MediumListener {
+        MediumRateAdapter.MediumListener,
+        ComponentListener{
 
     enum class CurrentInputState{
         PROD_NAME,
@@ -79,6 +93,10 @@ class ProductsFragment : Fragment(),
     private var isInitView = false
     private val productListFragment = ProductListFragment.newInstance()
     private val productHistoryFragment = ProductHistoryFragment.newInstance()
+    private lateinit var pictureAdapter: ProductPictureAdapter
+    private lateinit var fileAdapter: ProductFileAdapter
+    private val selectedFile = arrayListOf<String>()
+    private val selectedPhoto = arrayListOf<String>()
 
 
 
@@ -207,6 +225,7 @@ class ProductsFragment : Fragment(),
     }
 
     fun initViewInStubProduct(){
+        initContentAdapter()
         imgNewMediumRate.setOnClickListener {
             productViewModel.updateStateView(ProductState.NEWMEDIUM)
             showMediumPriceForm()
@@ -274,6 +293,22 @@ class ProductsFragment : Fragment(),
             rootProductForm.visibility = View.GONE
             rootLayoutInput.visibility = View.GONE
             rootLayoutMediumForm.visibility = View.GONE
+        }
+
+        addFile.setOnClickListener {
+            selectedFile.clear()
+            FilePickerBuilder.getInstance()
+                    .setSelectedFiles(selectedFile)
+                    .setActivityTheme(R.style.AppTheme)
+                    .pickFile(this)
+        }
+
+        addPicture.setOnClickListener {
+            selectedPhoto.clear()
+            FilePickerBuilder.getInstance()
+                    .setSelectedFiles(selectedPhoto)
+                    .setActivityTheme(R.style.AppTheme)
+                    .pickPhoto(this)
         }
 
     }
@@ -347,9 +382,9 @@ class ProductsFragment : Fragment(),
         rootProductForm.visibility = View.GONE
         rootLayoutMediumForm.visibility = View.VISIBLE
         edtPriceDate.setText(Utils.getCurrentDateShort())
-        edtPriceValues.visibility = View.GONE
+        //txtValues.visibility = View.GONE
+        //edtPriceValues.visibility = View.GONE
         rdbCash.visibility = View.GONE
-        txtValues.visibility = View.GONE
     }
 
     fun setMediumPriceForm(mediumRate: Model.MediumRate){
@@ -464,7 +499,6 @@ class ProductsFragment : Fragment(),
         edtPriceDate.setText(Utils.getCurrentDateShort())
         edtPriceNote.setText("")
         rdbVat.isChecked = true
-        edtPriceValues.setText("")
         selectedDate = Utils.getCurrentDate()
     }
 
@@ -481,13 +515,29 @@ class ProductsFragment : Fragment(),
     }
 
     fun setupForm(product: Model.Product){
-        edtProductName.setText(product.product_name)
+        edtProductName.setText(product.product_name.lines().first())
         edtProductDetail.setText(product.product_desc)
         edtImportFrom.setText(product.import_from)
         edtPackSize.setText(product.pack_size)
         edtDesc.setText(product.desc)
         mediumRateAdapter.updateMediumList(product.medium_rate)
         productViewModel.productId = product.id
+        if (product.pictures.isNotEmpty()){
+            pictureAdapter.updatePictures(product.pictures)
+            pictureAdapter.updateTypeList(product.types)
+        }else{
+            pictureAdapter.updatePictures(mutableListOf())
+            pictureAdapter.updateTypeList(mutableListOf())
+            selectedPhoto.clear()
+        }
+        if (product.files.isNotEmpty()){
+            fileAdapter.updateFiles(product.files)
+            fileAdapter.updateTypeList(product.types)
+        }else{
+            selectedFile.clear()
+            fileAdapter.updateFiles(mutableListOf())
+            fileAdapter.updateTypeList(mutableListOf())
+        }
 
     }
 
@@ -504,7 +554,8 @@ class ProductsFragment : Fragment(),
             val product = Model.Product(productViewModel.productId,edtProductName.text.toString(),
                     edtProductDetail.text.toString(),edtImportFrom.text.toString(),
                     edtPackSize.text.toString(), edtDesc.text.toString(),
-                    Utils.getDateStringWithDate(selectedDate),mediumRateAdapter.mediumList)
+                    Utils.getDateStringWithDate(selectedDate),mediumRateAdapter.mediumList,
+                    fileAdapter.typeList,pictureAdapter.pictures,fileAdapter.files)
 
             productViewModel.saveProduct(product)
             loading.show(fragmentManager, LoadingDialog.TAG)
@@ -597,6 +648,147 @@ class ProductsFragment : Fragment(),
         dialog.show(fragmentManager,ConfirmDialog::class.java.simpleName)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            FilePickerConst.REQUEST_CODE_PHOTO -> if (resultCode == Activity.RESULT_OK && data != null) {
+                selectedPhoto.clear()
+                selectedPhoto.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA))
+                if(selectedPhoto.size > 0) {
+                    val pictureList= mutableListOf<Model.ContentForProduct>()
+                    selectedPhoto.forEach {
+                        pictureList.add(Model.ContentForProduct(local_path = it))
+                    }
+                    pictureAdapter.addPictures(pictureList)
+                }
+            }
+            FilePickerConst.REQUEST_CODE_DOC -> if (resultCode == Activity.RESULT_OK && data != null) {
+                selectedFile.clear()
+                selectedFile.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS))
+                if(selectedFile.size > 0) {
+                    val fileList = mutableListOf<Model.ContentForProduct>()
+                    selectedFile.forEach {
+                        fileList.add(Model.ContentForProduct(local_path = it))
+                    }
+                    fileAdapter.addFiles(fileList)
+                }
+            }
+        }
+    }
+
+    override fun OnFileClick(file: Model.ContentForProduct, isDeleteOrShare: Boolean, position: Int) {
+        if (isDeleteOrShare) {
+            fileAdapter.remove(position)
+        }else {
+           openFile(file)
+        }
+    }
+
+
+
+    override fun OnPictureClick(picture: Model.ContentForProduct, isDeleteOrShare: Boolean, position: Int) {
+        if (isDeleteOrShare) {
+            pictureAdapter.remove(position)
+        }else{
+            openPicture(picture)
+        }
+    }
+
+    override fun updateTypeList(type: String) {
+        val pictureTypeList = pictureAdapter.typeList.filter { it == type }
+        if (pictureTypeList.isEmpty()){
+            pictureAdapter.addType(type)
+        }
+        val fileTypeList = fileAdapter.typeList.filter { it == type }
+        if (fileTypeList.isEmpty()){
+            fileAdapter.addType(type)
+        }
+    }
+
+    fun initContentAdapter(){
+        pictureAdapter = ProductPictureAdapter(this@ProductsFragment)
+        fileAdapter = ProductFileAdapter(this@ProductsFragment)
+        rvFile.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(activity)
+            adapter = fileAdapter
+        }
+        rvPicture.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(activity)
+            adapter = pictureAdapter
+        }
+    }
+
+    fun openFile(path: Model.ContentForProduct){
+        val f = File(path.local_path)
+        val fileWithinMyDir = File(path.local_path)
+        if (fileWithinMyDir.exists()) {
+            val intent = Intent(Intent.ACTION_VIEW)
+            val mimeType = MimeTypeMap.getSingleton()
+                    .getMimeTypeFromExtension(MimeTypeMap
+                            .getFileExtensionFromUrl(f.path))
+            intent.setDataAndType(Uri.fromFile(f), mimeType)
+            this.startActivity(Intent.createChooser(intent, "Open file with"))
+        }else{
+            downloadInLocalFile(path.cloud_url,true)
+        }
+    }
+
+    fun openPicture(picture: Model.ContentForProduct){
+        val fileWithinMyDir = File(picture.local_path)
+        if (fileWithinMyDir.exists()) {
+            val intent = Intent()
+            intent.putExtra("path",picture.local_path)
+            activity?.startActivity(intent.setClass(activity,ActivityImageViewer::class.java))
+        }else{
+            downloadInLocalFile(picture.cloud_url,false)
+        }
+    }
+
+    fun downloadInLocalFile(path: String,isFile:Boolean) {
+        val stor = Storage(context)
+        val externalPath = stor.externalStorageDirectory
+        val newDir = externalPath + File.separator + Prefer.getUUID(this.context!!)
+        stor.createDirectory(newDir)
+
+        val storageRef = FirebaseStorage.getInstance().reference
+        val content = storageRef.child(path)
+
+        val file = File(newDir, content.name)
+        try {
+            file.createNewFile()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        val fileDownloadTask = content.getFile(file)
+
+        loading.show(fragmentManager,LoadingDialog.TAG)
+        fileDownloadTask.addOnSuccessListener {
+            loading.dismiss()
+            println("DownloadFileSuccess"+file.absolutePath)
+
+            if (isFile) {
+                val intent = Intent(Intent.ACTION_VIEW)
+                val mimeType = MimeTypeMap.getSingleton()
+                        .getMimeTypeFromExtension(MimeTypeMap
+                                .getFileExtensionFromUrl(file.path))
+                intent.setDataAndType(Uri.fromFile(file), mimeType)
+                this.startActivity(Intent.createChooser(intent, "Open file with"))
+            }else{
+                val intent = Intent()
+                intent.putExtra("path",file.path)
+                activity?.startActivity(intent.setClass(activity,ActivityImageViewer::class.java))
+            }
+        }.addOnFailureListener { exception ->
+            loading.dismiss()
+            Crashlytics.log(exception.message)
+        }.addOnProgressListener { taskSnapshot ->
+            val progress = (100 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount)
+            println("onDownloadProgress $progress")
+        }
+    }
 
 
 }

@@ -10,6 +10,10 @@ import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.issue.ComponentListener
 import com.bumptech.glide.Glide
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.android.synthetic.main.activity_image_viewer.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import java.io.File
 
 /**
@@ -37,6 +41,11 @@ class PictureAdapter(var listener: ComponentListener): RecyclerView.Adapter<Pict
 
     fun remove(position: Int){
         pictures.removeAt(position)
+        notifyDataSetChanged()
+    }
+
+    fun clear(){
+        pictures.clear()
         notifyDataSetChanged()
     }
 
@@ -71,12 +80,28 @@ class PictureAdapter(var listener: ComponentListener): RecyclerView.Adapter<Pict
                         .load(R.drawable.ic_remove_white_24dp)
                         .into(it)
             }
-            imageAction?.let {
-                Glide.with(itemView.context)
-                        .load(File(picture.local_path))
-                        .into(it)
+            imageAction?.let {image ->
+                val f = File(picture.local_path)
+                if (f.exists()) {
+                    Glide.with(itemView.context)
+                            .load(File(picture.local_path))
+                            .into(image)
+                    println()
+                }else{
+                        FirebaseStorage.getInstance().reference.child(picture.cloud_url)
+                                .downloadUrl
+                                .addOnSuccessListener { result ->
+                                    Glide.with(itemView.context)
+                                            .load(result)
+                                            .into(image)
+                                }.addOnFailureListener {
+                                    Glide.with(itemView.context)
+                                            .load(R.drawable.mock_picture)
+                                            .into(image)
+                                }
+                    println()
+                }
             }
-
         }
     }
 }

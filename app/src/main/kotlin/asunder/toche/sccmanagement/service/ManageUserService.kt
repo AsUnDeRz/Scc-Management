@@ -18,6 +18,7 @@ import io.paperdb.Paper
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import java.util.*
 
 
@@ -326,14 +327,14 @@ class ManageUserService{
         }
         firebase.child("${ROOT.MANAGEMENT}/$uid").addListenerForSingleValueEvent(object  : ValueEventListener{
             override fun onCancelled(data: DatabaseError) {
-                Log.d(TAG, data?.message)
+                Log.d(TAG, data.message)
                 listener?.currentStatus(Model.UserAuth("", ROOT.REGISTER,
                         "","","",""))
                 handler.removeCallbacks(runnable)
-                Crashlytics.log(data?.message)
+                Crashlytics.log(data.message)
             }
             override fun onDataChange(data: DataSnapshot) {
-                val userAuth = data?.getValue(Model.UserAuth::class.java)
+                val userAuth = data.getValue(Model.UserAuth::class.java)
                 if(userAuth == null){
                     listener?.currentStatus(Model.UserAuth("",ROOT.REGISTER,
                             "","","",""))
@@ -351,7 +352,7 @@ class ManageUserService{
 
 
     fun synceDatabase(uid: String,listener :SyncData){
-        Log.d(TAG,"Uid  "+uid)
+        Log.d(TAG, "Uid  $uid")
         firebase.child(ROOT.USERS+"/"+uid).addListenerForSingleValueEvent(object :ValueEventListener{
             override fun onCancelled(error: DatabaseError) {
             }
@@ -361,7 +362,7 @@ class ManageUserService{
                 val issues = mutableListOf<Model.Issue>()
                 val products = mutableListOf<Model.Product>()
                 val transactions = mutableListOf<Model.Transaction>()
-                async(UI){
+                launch(UI){
                     val jobContact = async(CommonPool) {
                         data?.child(ROOT.CONTACTS)?.children?.mapNotNullTo(contacts) {
                             it.getValue<Model.Contact>(Model.Contact::class.java)
@@ -385,10 +386,10 @@ class ManageUserService{
                     async {
                         jobContact.await()?.let {
                             ContactService(object : ContactService.ContactCallBack{
-                                override fun onSuccess() {
-
+                                override fun onDeleteSuccess() {
                                 }
-
+                                override fun onSuccess() {
+                                }
                                 override fun onFail() {
                                 }
                             }).pushNewContactToDb(it)

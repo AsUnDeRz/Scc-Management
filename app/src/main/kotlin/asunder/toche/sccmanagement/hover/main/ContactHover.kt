@@ -40,6 +40,9 @@ class ContactHover(context: Context,
         TransactionService.TransactionCallback,
         TransactionListener,
         IssueListener{
+    override fun onDeleteSuccess() {
+
+    }
 
 
     private var contactService :ContactService

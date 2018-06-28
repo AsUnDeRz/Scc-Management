@@ -36,8 +36,6 @@ class IssueAdapter : RecyclerView.Adapter<IssueAdapter.IssueHolder>(){
 
 
     class IssueHolder(itemView: View) : RecyclerView.ViewHolder(itemView),ContactService.ContactCallBack {
-
-
         val txtIssue :TxtMedium = itemView.txtIssue
         val txtCompany:TxtMedium = itemView.txtCompany
         //private val swipeView : SwipeActionView = itemView.findViewById(R.id.swipeIssue)
@@ -82,6 +80,8 @@ class IssueAdapter : RecyclerView.Adapter<IssueAdapter.IssueHolder>(){
         override fun onSuccess() {}
 
         override fun onFail() {}
+        override fun onDeleteSuccess() {
+        }
 
     }
 

@@ -8,6 +8,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.TabLayout
+import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
@@ -25,6 +26,7 @@ import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.adapter.CompanyAdapter
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
+import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
@@ -74,6 +76,8 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
     private var loading = LoadingDialog.newInstance()
     private var selectedDate = Utils.getCurrentDate()
     private var isInitView = false
+    lateinit var viewPager:ViewPager
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,6 +94,14 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
             if (it == ROOT.TRANSACTIONS){
                 if (!isInitView){
                     initViewCreated()
+                }
+                if (transactionVM.stateView.value == TransactionState.TRIGGERFROMSERVICE){
+
+                }else{
+                    viewPager.currentItem = 0
+                    tabLayoutFilterTransaction.setScrollPosition(0,0f,true)
+                    transactionVM.updateStateView(TransactionState.SORTALL)
+
                 }
 
             }else{
@@ -130,10 +142,8 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
     }
 
 
-
-
     fun observerTabFilterTransactions(){
-        val viewPager = ViewPager(context!!)
+        viewPager = ViewPager(context!!)
         viewPager.adapter = FilterViewPager(fragmentManager,false)
         tabLayoutFilterTransaction.setupWithViewPager(viewPager)
         tabLayoutFilterTransaction.addOnTabSelectedListener(object :TabLayout.OnTabSelectedListener{
@@ -186,39 +196,70 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         }
 
         openProduct.setOnClickListener {
-            productVM.updateProduct(transactionVM.product.value!!)
-            productVM.updateStateView(ProductState.TRIGGERFROMTRANSACTION)
+            if (transactionVM.product.value != null) {
+                productVM.updateProduct(transactionVM.product.value!!)
+                productVM.updateStateView(ProductState.TRIGGERFROMTRANSACTION)
+            }else{
+                showConfirmDialog()
+            }
         }
 
     }
 
     fun initViewInStubTransactionForm(){
         btnCancelTransaction.setOnClickListener {
-            if (transactionVM.stateView.value == TransactionState.NEWFROMCONTACT){
-                contactViewModel.updateViewState(ContactState.SELECTCONTACT)
-                transactionVM.updateStateView(TransactionState.SHOWLIST)
-            }else {
-                showTransactionList()
+            when {
+                transactionVM.outState.value == TransactionState.NEWFROMCONTACT -> {
+                    contactViewModel.updateViewState(ContactState.SELECTCONTACT)
+                    transactionVM.updateStateView(TransactionState.SHOWLIST)
+                }
+                transactionVM.outState.value == TransactionState.TRIGGERFROMSERVICE-> {
+                    contactViewModel.updateContact(contactViewModel.contact.value!!)
+                    contactViewModel.updateViewState(ContactState.SELECTCONTACT)
+                    transactionVM.updateStateView(TransactionState.SHOWLIST)
+                }
+                else -> showTransactionList()
             }
         }
 
         btnDeleteTransaction.setOnClickListener {
-            transactionVM.deleteTransaction()
+            when {
+                transactionVM.outState.value == TransactionState.NEWFROMCONTACT -> {
+                    transactionVM.deleteTransaction()
+                    contactViewModel.updateViewState(ContactState.SELECTCONTACT)
+                    transactionVM.updateStateView(TransactionState.SHOWLIST)
+                }
+                transactionVM.outState.value == TransactionState.TRIGGERFROMSERVICE-> {
+                    transactionVM.deleteTransaction()
+                    contactViewModel.updateContact(contactViewModel.contact.value!!)
+                    contactViewModel.updateViewState(ContactState.SELECTCONTACT)
+                    transactionVM.updateStateView(TransactionState.SHOWLIST)
+                }
+                else -> transactionVM.deleteTransaction()
+            }
         }
 
         btnAddTransaction.setOnClickListener {
-            if (transactionVM.stateView.value == TransactionState.NEWFROMCONTACT){
-                saveOrUpdateTransaction()
-                contactViewModel.updateViewState(ContactState.SELECTCONTACT)
-                transactionVM.updateStateView(TransactionState.SHOWLIST)
-            }else {
-                saveOrUpdateTransaction()
+            when {
+                transactionVM.outState.value == TransactionState.NEWFROMCONTACT -> {
+                    saveOrUpdateTransaction()
+                    contactViewModel.updateViewState(ContactState.SELECTCONTACT)
+                    transactionVM.updateStateView(TransactionState.SHOWLIST)
+                }
+                transactionVM.outState.value == TransactionState.TRIGGERFROMSERVICE -> {
+                    saveOrUpdateTransaction()
+                    contactViewModel.updateContact(contactViewModel.contact.value!!)
+                    contactViewModel.updateViewState(ContactState.SELECTCONTACT)
+                    transactionVM.updateStateView(TransactionState.SHOWLIST)
+                }
+                else -> saveOrUpdateTransaction()
             }
         }
 
         imgNewSaleRate.setOnClickListener {
             showSalePriceForm()
-            txtTitlePrice.text = "ราคาลูกค้า"
+            setSaleRateForm(Model.SalePrice(),saleRateAdapter.transaction)
+            //txtTitlePrice.text = "ราคาลูกค้า"
         }
 
         edtTransactionCompany.DisableClick()
@@ -233,15 +274,19 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         setupRalePriceAdapter()
 
         btnOpenHistory.setOnClickListener {
-            val intent = Intent()
-            intent.putExtra(ROOT.PRODUCTS,transactionVM.product.value?.id)
-            startActivity(intent.setClass(activity,ActivityHistory::class.java))
+            if (transactionVM.product.value != null) {
+                val intent = Intent()
+                intent.putExtra(ROOT.PRODUCTS,transactionVM.product.value!!.id)
+                startActivity(intent.setClass(activity,ActivityHistory::class.java))
+            }else{
+                showConfirmDialog()
+            }
         }
     }
 
     fun setupRalePriceAdapter(){
         rvSalePrice.apply {
-            saleRateAdapter = SaleRateAdapter(mutableListOf(),this@TransactionsFragment)
+            saleRateAdapter = SaleRateAdapter(mutableListOf(),this@TransactionsFragment, Model.Transaction())
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
             adapter = saleRateAdapter
@@ -267,14 +312,10 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
 
     fun initViewInStubPriceRate(){
         btnAddPrice.setOnClickListener {
-            if(validateSaleRate()) {
-                addSaleRate(Model.SalePrice(edtPrice.text.toString(), getSaleType(),
+                addSaleRate(Model.SalePrice(edtSalePrice.text.toString(), getSaleType(),
                         edtPriceValues.text.toString(), Utils.getDateStringWithDate(selectedDate), edtPriceNote.text.toString()))
                 clearPriceForm()
                 showTransactionForm()
-            }else{
-
-            }
         }
         btnDeletePrice.setOnClickListener {
             deleteSaleRate()
@@ -283,6 +324,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         }
 
         btnCancelPrice.setOnClickListener {
+            clearSaleRate()
             showTransactionForm()
         }
 
@@ -293,12 +335,14 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
     }
 
     fun showTransactionList(){
+        root_tab_filter.visibility = View.VISIBLE
         rootTransactionForm.visibility = View.GONE
         rootLayoutPriceForm.visibility = View.GONE
         clearTransaction()
         transactionScrollView.fullScroll(ScrollView.FOCUS_UP)
     }
     fun showTransactionForm(){
+        root_tab_filter.visibility = View.GONE
         edtTransactionNote.clearFocus()
         transactionVM.updateStateView(TransactionState.SHOWFORM)
         edtTransactionCompany.EnableClick()
@@ -313,6 +357,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         rootLayoutPriceRate.fullScroll(ScrollView.FOCUS_UP)
         rootTransactionForm.visibility = View.GONE
         rootLayoutPriceForm.visibility = View.VISIBLE
+        edtPrice.DisableClick()
         clearPriceForm()
 
     }
@@ -323,6 +368,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         edtPriceValues.setText("")
         edtPriceNote.setText("")
         rdbVat.isChecked = true
+        selectedDate = Utils.getCurrentDate()
 
     }
 
@@ -330,22 +376,33 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         Utils.findProduct(transaction.product_id,object : Utils.OnFindProductListener{
             override fun onResults(results: MutableList<Model.Product>) {
                 if(results.size != 0){
-                    edtTransactionProduct.setText(results[0].product_name)
-                    transactionVM.updateProduct(results[0])
+                    val product = results.filter { transaction.product_id == it.id }
+                    if (product.isNotEmpty()) {
+                        transactionVM.updateProduct(product.first())
+                        edtTransactionProduct.setText(product.first().product_name.lines().first())
+                        if (product.first().medium_rate.isNotEmpty()) {
+                            edtMediumPrice.setText(product.first().medium_rate.first().price)
+                        }
+                    }else{
+                        transactionVM.updateProduct(null)
+                        edtTransactionProduct.setText(transaction.product_name.lines().first())
+                        edtMediumPrice.setText(transaction.medium_price)
+                    }
                 }
             }
         },productVM.service.getProductsInDb())
         Utils.findCompany(transaction.company_id,object : Utils.OnFindCompanyListener{
             override fun onResults(results: MutableList<Model.Contact>) {
                 if(results.size != 0){
-                    edtTransactionCompany.setText(results[0].company)
+                    edtTransactionCompany.setText(results[0].company.lines().first())
                     transactionVM.updateContact(results[0])
+                }else{
+                    edtTransactionCompany.setText(transaction.company_name.lines().first())
                 }
             }
         },transactionVM.contactService.getContactInDb())
         edtTransactionNote.setText(transaction.desc)
-        edtMediumPrice.setText(transaction.medium_price)
-        saleRateAdapter.updateSalePrice(transaction.sale_price)
+        saleRateAdapter.updateSalePrice(transaction)
         transactionVM.transactionId = transaction.id
     }
 
@@ -354,7 +411,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         edtTransactionProduct.setText("")
         edtTransactionNote.setText("")
         edtMediumPrice.setText("")
-        saleRateAdapter.updateSalePrice(mutableListOf())
+        saleRateAdapter.updateSalePrice(Model.Transaction())
         transactionVM.transactionId = ""
         selectedDate = Utils.getCurrentDate()
         transactionVM.updateProduct(Model.Product())
@@ -363,23 +420,36 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
     }
 
     fun saveOrUpdateTransaction(){
-        if(validateTransaction()) {
-            val data = Model.Transaction(transactionVM.transactionId
-                    ,transactionVM.contact.value!!.id
-                    ,transactionVM.contact.value!!.company+"#"+transactionVM.contact.value!!.contact_name
-                    ,transactionVM.product.value!!.id
-                    ,transactionVM.product.value!!.product_name+"#"+transactionVM.product.value!!.product_desc
-                    ,edtMediumPrice.text.toString()
-                    ,Utils.getCurrentDateString()
-                    ,edtTransactionNote.text.toString()
-                    ,saleRateAdapter.saleList)
-
-
-            transactionVM.saveTransaction(data)
-            loading.show(fragmentManager, LoadingDialog.TAG)
-            showTransactionList()
+        val mediumRate = if (transactionVM.product.value != null){
+            if (transactionVM.product.value!!.medium_rate.isNotEmpty()){
+                transactionVM.product.value!!.medium_rate.first().price
+            }else{
+                edtMediumPrice.text.toString()
+            }
+        }else{
+            edtMediumPrice.text.toString()
         }
 
+        if (transactionVM.product.value != null) {
+            if(validateTransaction()) {
+                val data = Model.Transaction(transactionVM.transactionId
+                        ,transactionVM.contact.value!!.id
+                        ,transactionVM.contact.value!!.company+"\n"+transactionVM.contact.value!!.contact_name
+                        ,transactionVM.product.value!!.id
+                        ,transactionVM.product.value!!.product_name+"\n"+transactionVM.product.value!!.product_desc
+                        ,mediumRate
+                        ,Utils.getCurrentDateString()
+                        ,edtTransactionNote.text.toString()
+                        ,saleRateAdapter.saleList)
+
+
+                transactionVM.saveTransaction(data)
+                loading.show(fragmentManager, LoadingDialog.TAG)
+                showTransactionList()
+            }
+        }else{
+            showErrorSaveDialog()
+        }
     }
 
     fun validateTransaction():Boolean{
@@ -425,6 +495,9 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
                 setupTransaction(it!!)
                 println("OnTransaction setup with showfrom")
             }
+            if (transactionVM.stateView.value == TransactionState.TRIGGERFROMSERVICE){
+                setupTransaction(it!!)
+            }
         })
         transactionVM.stateView.observe(this, Observer {
             when(it){
@@ -442,6 +515,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
 
                 }
                 TransactionState.SHOWLIST ->{
+                    transactionVM.updateOutState(it)
                     showTransactionList()
                     if (loading.isShow) {
                         loading.dismiss()
@@ -451,11 +525,12 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
 
                 }
                 TransactionState.NEWFROMCONTACT ->{
+                    transactionVM.updateOutState(it)
                     edtTransactionCompany.setText("")
                     edtTransactionProduct.setText("")
                     edtTransactionNote.setText("")
                     edtMediumPrice.setText("")
-                    saleRateAdapter.updateSalePrice(mutableListOf())
+                    saleRateAdapter.updateSalePrice(Model.Transaction())
                     transactionVM.transactionId = ""
                     selectedDate = Utils.getCurrentDate()
                     transactionVM.updateProduct(Model.Product())
@@ -466,8 +541,17 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
                     transactionScrollView.fullScroll(ScrollView.FOCUS_UP)
                     rootTransactionForm.visibility = View.VISIBLE
                     rootLayoutPriceForm.visibility = View.GONE
-                    edtTransactionCompany.setText(transactionVM.contact.value?.company)
-
+                    edtTransactionCompany.setText(transactionVM.contact.value?.company?.lines()?.first())
+                }
+                TransactionState.TRIGGERFROMSERVICE ->{
+                    transactionVM.updateOutState(it)
+                    edtTransactionNote.clearFocus()
+                    edtTransactionCompany.EnableClick()
+                    edtTransactionCompany.requestFocus()
+                    edtTransactionCompany.DisableClick()
+                    transactionScrollView.fullScroll(ScrollView.FOCUS_UP)
+                    rootTransactionForm.visibility = View.VISIBLE
+                    rootLayoutPriceForm.visibility = View.GONE
                 }
                 TransactionState.SORTALL ->{
                     println(it)
@@ -508,7 +592,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         adapter = CompanyAdapter(false)
         adapter.setUpOnClickListener(object : CompanyAdapter.CompanyOnClickListener{
             override fun onClickCompany(contact: Model.Contact) {
-                edtTransactionCompany.setText(contact.company)
+                edtTransactionCompany.setText(contact.company.lines().first())
                 transactionVM.updateContact(contact)
                 bottomSheetDialog.dismiss()
             }
@@ -523,8 +607,10 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         productAdapter.setUpOnClickListener(object : ProductAdapter.ProductOnClickListener{
             override fun onClickProduct(product: Model.Product) {
                 edtTransactionProduct.setText(product.product_name)
-                val price = product.medium_rate.filter { it.default }[0]
-                edtMediumPrice.setText(price.price)
+                val price = product.medium_rate.filter { it.default }
+                if (price.isNotEmpty()) {
+                    edtMediumPrice.setText(price.first().price)
+                }
                 transactionVM.updateProduct(product)
                 bottomSheetDialog.dismiss()
             }
@@ -608,18 +694,21 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
 
     }
 
-    fun setSaleRateForm(salePrice: Model.SalePrice){
-        /*
-        txtSaleDate?.text = Utils.format2DigiYMD(salePrice.date)
-            txtSalePrice?.text = salePrice.price
-            txtSaleValues?.text = salePrice.values
-            txtSaleVat?.text = getSaleType(salePrice.vat)
-         */
+    fun setSaleRateForm(salePrice: Model.SalePrice,transaction: Model.Transaction){
+        if (saleRateAdapter.saleList.size > 0){
+            edtOldPrice.setText(saleRateAdapter.saleList[0].price)
+        }else{
+            edtOldPrice.setText("")
+        }
+        if(salePrice.date.isNotEmpty()){
+            edtPriceDate.setText(Utils.format2DigiYMD(salePrice.date))
+        }
+        edtSalePrice.setText(salePrice.price)
         edtPriceNote.setText(salePrice.note)
-        edtPriceDate.setText(Utils.format2DigiYMD(salePrice.date))
-        edtPrice.setText(salePrice.price)
+        edtPrice.setText(transaction.medium_price)
         edtPriceValues.setText(salePrice.values)
         getSaleType(salePrice.vat)
+        edtPrice.DisableClick()
     }
 
     fun getSaleType(typePrice:String){
@@ -663,15 +752,27 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         selectedDate = Utils.getCurrentDate()
     }
 
-    override fun onClickSaleRate(salePrice: Model.SalePrice, position: Int) {
+    override fun onClickSaleRate(salePrice: Model.SalePrice, position: Int,transaction: Model.Transaction) {
         transactionVM.updateSalePrice(salePrice,position)
         showSalePriceForm()
-        setSaleRateForm(salePrice)
+        setSaleRateForm(salePrice,transaction)
         transactionVM.updateStateView(TransactionState.SELECTSALEPRICE)
 
     }
 
     override fun onClickLongSaleRate(salePrice: Model.SalePrice) {
+    }
+
+    fun showConfirmDialog(){
+        val confirmDialog = ConfirmDialog.newInstance("ไม่พบรายการสินค้าที่เลือก","แจ้งเตือน",false)
+        confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+        confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
+    }
+
+    fun showErrorSaveDialog(){
+        val confirmDialog = ConfirmDialog.newInstance("ไม่พบรายการสินค้าที่เลือก ไม่สามารถบันทึกหรือแก้ไขได้","แจ้งเตือน",false)
+        confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+        confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
     }
 
 }

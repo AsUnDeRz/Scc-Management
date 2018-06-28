@@ -39,7 +39,7 @@
                         android:hint="ค้นหา ..."
                         android:imeOptions="actionDone"
                         android:inputType="text"
-                        android:maxLines="1"
+                        android:lines="1"
                         android:textColor="@color/colorDark"
                         android:textColorHint="@color/colorDark"
                         android:textSize="20sp" />

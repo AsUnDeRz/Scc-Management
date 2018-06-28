@@ -4,19 +4,15 @@ import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.TabLayout
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
-import android.support.v4.app.ShareCompat
 import android.support.v4.content.ContextCompat
-import android.support.v4.content.FileProvider
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -26,8 +22,9 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import android.widget.ScrollView
-import asunder.toche.sccmanagement.BuildConfig
+import android.widget.Toast
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.ContactState
@@ -37,23 +34,21 @@ import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
+import asunder.toche.sccmanagement.custom.extension.DisableClick
 import asunder.toche.sccmanagement.issue.adapter.FileAdapter
 import asunder.toche.sccmanagement.issue.adapter.IssueAdapter
 import asunder.toche.sccmanagement.issue.adapter.PictureAdapter
 import asunder.toche.sccmanagement.main.ActivityImageViewer
 import asunder.toche.sccmanagement.main.ControlViewModel
 import asunder.toche.sccmanagement.main.FilterViewPager
+import asunder.toche.sccmanagement.preference.KEY
+import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
-import au.com.jtribe.shelly.Shelly
-import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
-import com.facebook.share.model.ShareLinkContent
-import com.facebook.share.model.SharePhoto
-import com.facebook.share.model.SharePhotoContent
-import com.facebook.share.widget.ShareDialog
+import com.crashlytics.android.Crashlytics
+import com.google.firebase.storage.FirebaseStorage
+import com.snatik.storage.Storage
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
@@ -67,6 +62,7 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import java.io.File
+import java.io.IOException
 import java.util.*
 
 
@@ -76,7 +72,8 @@ import java.util.*
 class IssueFragment : Fragment(),
         CompanyAdapter.CompanyOnClickListener,
         IssueAdapter.IssueItemListener,
-        ConfirmDialog.ConfirmDialogListener, ComponentListener {
+        ConfirmDialog.ConfirmDialogListener,
+        ComponentListener {
 
 
     companion object {
@@ -120,14 +117,26 @@ class IssueFragment : Fragment(),
                 if (!isInitView) {
                     initViewCreated()
                 }
-                if (issueVM.isSaveIssueComplete.value == IssueState.SHOWFROM){
-                    showIssueForm()
-                    viewPager.currentItem = 1
-                    tabLayoutFilterIssue.setScrollPosition(1, 0f, true)
-                }else {
-                    viewPager.currentItem = 1
-                    tabLayoutFilterIssue.setScrollPosition(1, 0f, true)
-                    issueVM.updateViewState(IssueState.ALLISSUE)
+                when {
+                    issueVM.isSaveIssueComplete.value == IssueState.SHOWFROM -> {
+                        showIssueForm()
+                        viewPager.currentItem = 1
+                        tabLayoutFilterIssue.setScrollPosition(1, 0f, true)
+                    }
+                    issueVM.isSaveIssueComplete.value == IssueState.TRIGGERFROMSERVICE -> {
+
+                    }
+                    else -> {
+                        async(UI) {
+                            val data = async(CommonPool) {
+                                issueVM.sortToday(this@IssueFragment)
+                            }
+                            separateSection(data.await())
+                        }
+                        viewPager.currentItem = 1
+                        tabLayoutFilterIssue.setScrollPosition(1, 0f, true)
+                        issueVM.updateViewState(IssueState.ALLISSUE)
+                    }
                 }
             }else{
                 if (issueVM.isSaveIssueComplete.value == IssueState.SHOWFROM){
@@ -193,6 +202,11 @@ class IssueFragment : Fragment(),
                     fileAdapter.addFiles(fileList)
                 }
             }
+            KEY.EDIT_ISSUE_DETAIL ->{
+                if (resultCode == Activity.RESULT_OK && data != null){
+                    edtIssueDetail.setText(data.getStringExtra(KEY.EDIT_ISSUE_DETAIL.toString()))
+                }
+            }
         }
     }
 
@@ -202,6 +216,7 @@ class IssueFragment : Fragment(),
         tabLayoutFilterIssue.setupWithViewPager(viewPager)
         tabLayoutFilterIssue.addOnTabSelectedListener(object :TabLayout.OnTabSelectedListener{
             override fun onTabReselected(tab: TabLayout.Tab?) {
+                println("onTabReselected ${tab?.position}")
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -300,7 +315,7 @@ class IssueFragment : Fragment(),
                 issueVM.isSaveIssueComplete.value == IssueState.TRIGGERFROMSERVICE -> {
                     saveIssue()
                     contactVm.updateContact(contactVm.contact.value!!)
-                    contactVm.updateViewState(ContactState.SHOWFORM)
+                    contactVm.updateViewState(ContactState.SELECTCONTACT)
                 }
                 issueVM.isSaveIssueComplete.value == IssueState.NEWFROMCONTACT -> {
                     saveIssue()
@@ -314,7 +329,7 @@ class IssueFragment : Fragment(),
                 issueVM.isSaveIssueComplete.value == IssueState.TRIGGERFROMSERVICE -> {
                     saveIssue()
                     contactVm.updateContact(contactVm.contact.value!!)
-                    contactVm.updateViewState(ContactState.SHOWFORM)
+                    contactVm.updateViewState(ContactState.SELECTCONTACT)
                 }
                 issueVM.isSaveIssueComplete.value == IssueState.NEWFROMCONTACT -> {
                     contactVm.updateViewState(ContactState.SELECTCONTACT)
@@ -339,6 +354,12 @@ class IssueFragment : Fragment(),
 
         edtIssueDate.setOnClickListener {
             showSpinner()
+        }
+        edtIssueDetail.DisableClick()
+        edtIssueDetail.setOnClickListener {
+            val intent = Intent()
+            intent.putExtra(KEY.EDIT_ISSUE_DETAIL.toString(),edtIssueDetail.text.toString())
+            startActivityForResult(intent.setClass(activity,ActivityDetailIssue::class.java), KEY.EDIT_ISSUE_DETAIL)
         }
 
         addFile.setOnClickListener {
@@ -516,11 +537,13 @@ class IssueFragment : Fragment(),
         if (issue.pictures.isNotEmpty()){
             pictureAdapter.updatePictures(issue.pictures)
         }else{
+            pictureAdapter.clear()
             selectedPhoto.clear()
         }
         if (issue.files.isNotEmpty()){
             fileAdapter.updateFiles(issue.files)
         }else{
+            fileAdapter.clear()
             selectedFile.clear()
         }
         if (issue.status == "รอทำ"){
@@ -548,8 +571,8 @@ class IssueFragment : Fragment(),
         selectedFile.clear()
         issueVM.updateCompany(Model.Contact())
         issueVM.currentIssueId = ""
-        pictureAdapter.pictures.clear()
-        fileAdapter.files.clear()
+        pictureAdapter.clear()
+        fileAdapter.clear()
     }
 
     override fun onClickCompany(contact: Model.Contact) {
@@ -648,15 +671,15 @@ class IssueFragment : Fragment(),
     }
 
     fun saveIssue(){
-        val data = Model.Issue(issueVM.currentIssueId,edtProcess.text.toString()
-                ,"",edtIssue.text.toString()
-                ,edtIssueDetail.text.toString()
-                ,Utils.getDateStringWithDate(selectedDate)
-                ,pictureAdapter.pictures,fileAdapter.files)
-        async(UI) {
-            issueVM.saveIssue(data).await()
+        if (validateInput()) {
+            val data = Model.Issue(issueVM.currentIssueId, edtProcess.text.toString()
+                    , "", edtIssue.text.toString()
+                    , edtIssueDetail.text.toString()
+                    , Utils.getDateStringWithDate(selectedDate)
+                    , pictureAdapter.pictures, fileAdapter.files)
+            issueVM.saveIssue(data)
+            loading.show(fragmentManager, LoadingDialog.TAG)
         }
-        loading.show(fragmentManager, LoadingDialog.TAG)
     }
 
     fun validateInput() : Boolean{
@@ -664,10 +687,12 @@ class IssueFragment : Fragment(),
             edtCompany.error = "กรุณาเลือกบริษัท"
             return false
         }
+        /*
         if(TextUtils.isEmpty(edtIssue.text)){
             edtIssue.error = "กรุณากรอกข้อมูล ประเด็น"
             return false
         }
+        */
         return true
     }
 
@@ -685,15 +710,33 @@ class IssueFragment : Fragment(),
     }
 
     fun showConfirmDialog(issue:String?,company:String?){
-        val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบประเด็น $issue \nจาก $company ใช่หรือไหม","แจ้งเตือน",true)
+        val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบประเด็น $issue \nจาก ${company?.lines()?.first()} ใช่หรือไหม","แจ้งเตือน",true)
         confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
         confirmDialog.customListener(this)
         confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
     }
 
     override fun onClickConfirm() {
-        issueVM.currentIssue.value?.let {
-            issueVM.deleteIssue(it)
+        when {
+            issueVM.isSaveIssueComplete.value == IssueState.TRIGGERFROMSERVICE -> {
+                issueVM.currentIssue.value?.let {
+                    issueVM.deleteIssue(it)
+                }
+                contactVm.updateContact(contactVm.contact.value!!)
+                contactVm.updateViewState(ContactState.SELECTCONTACT)
+            }
+            issueVM.isSaveIssueComplete.value == IssueState.NEWFROMCONTACT -> {
+                issueVM.currentIssue.value?.let {
+                    issueVM.deleteIssue(it)
+                }
+                contactVm.updateViewState(ContactState.SELECTCONTACT)
+            }
+            else -> {
+                issueVM.currentIssue.value?.let {
+                    issueVM.deleteIssue(it)
+                }
+                clearFormIssue()
+            }
         }
     }
 
@@ -704,45 +747,14 @@ class IssueFragment : Fragment(),
         if (isDeleteOrShare) {
             fileAdapter.remove(position)
         }else {
-            val f = File(file.local_path)
-            val intentShareFile = Intent(Intent.ACTION_SEND)
-            val fileWithinMyDir = File(file.local_path)
-            if (fileWithinMyDir.exists()) {
-                intentShareFile.type = "text/*"
-                intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://${file.local_path}"))
-                intentShareFile.putExtra(Intent.EXTRA_SUBJECT, "MyApp File Share: " + f.name)
-                intentShareFile.putExtra(Intent.EXTRA_TEXT, "MyApp File Share: " + f.name)
-
-                this.startActivity(Intent.createChooser(intentShareFile, f.name))
-            }
-
+            openFile(file)
         }
     }
     override fun OnPictureClick(picture: Model.Content,isDeleteOrShare:Boolean, position: Int) {
         if (isDeleteOrShare) {
             pictureAdapter.remove(position)
         }else{
-            val intent = Intent()
-            intent.putExtra("path",picture.local_path)
-            activity?.startActivity(intent.setClass(activity,ActivityImageViewer::class.java))
-            /*
-            Glide.with(activity!!)
-                    .asBitmap()
-                    .load(File(picture.local_path))
-                    .into(object : SimpleTarget<Bitmap>() {
-                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                            val photo = SharePhoto.Builder()
-                                    .setBitmap(resource)
-                                    .build()
-                            val content = SharePhotoContent.Builder()
-                                    .addPhoto(photo)
-                                    .build()
-                            if (ShareDialog.canShow(ShareLinkContent::class.java)) {
-                                ShareDialog.show(activity,content)
-                            }
-                        }
-                    })
-                    */
+            openPicture(picture)
         }
     }
     fun initContentAdapter(){
@@ -760,7 +772,75 @@ class IssueFragment : Fragment(),
         }
     }
 
+    fun openFile(path: Model.Content){
+        val f = File(path.local_path)
+        val fileWithinMyDir = File(path.local_path)
+        if (fileWithinMyDir.exists()) {
+            val intent = Intent(Intent.ACTION_VIEW)
+            val mimeType = MimeTypeMap.getSingleton()
+                    .getMimeTypeFromExtension(MimeTypeMap
+                            .getFileExtensionFromUrl(f.path))
+            intent.setDataAndType(Uri.fromFile(f), mimeType)
+            this.startActivity(Intent.createChooser(intent, "Open file with"))
+        }else{
+            downloadInLocalFile(path.cloud_url,true)
+        }
+    }
 
+    fun openPicture(picture: Model.Content){
+        val fileWithinMyDir = File(picture.local_path)
+        if (fileWithinMyDir.exists()) {
+            val intent = Intent()
+            intent.putExtra("path",picture.local_path)
+            activity?.startActivity(intent.setClass(activity,ActivityImageViewer::class.java))
+        }else{
+            downloadInLocalFile(picture.cloud_url,false)
+        }
+    }
+
+    fun downloadInLocalFile(path: String,isFile:Boolean) {
+        val stor = Storage(context)
+        val externalPath = stor.externalStorageDirectory
+        val newDir = externalPath + File.separator + Prefer.getUUID(this.context!!)
+        stor.createDirectory(newDir)
+
+        val storageRef = FirebaseStorage.getInstance().reference
+        val content = storageRef.child(path)
+
+        val file = File(newDir, content.name)
+        try {
+            file.createNewFile()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        val fileDownloadTask = content.getFile(file)
+
+        loading.show(fragmentManager,LoadingDialog.TAG)
+        fileDownloadTask.addOnSuccessListener {
+            loading.dismiss()
+            println("DownloadFileSuccess"+file.absolutePath)
+
+            if (isFile) {
+                val intent = Intent(Intent.ACTION_VIEW)
+                val mimeType = MimeTypeMap.getSingleton()
+                        .getMimeTypeFromExtension(MimeTypeMap
+                                .getFileExtensionFromUrl(file.path))
+                intent.setDataAndType(Uri.fromFile(file), mimeType)
+                this.startActivity(Intent.createChooser(intent, "Open file with"))
+            }else{
+                val intent = Intent()
+                intent.putExtra("path",file.path)
+                activity?.startActivity(intent.setClass(activity,ActivityImageViewer::class.java))
+            }
+        }.addOnFailureListener { exception ->
+            loading.dismiss()
+            Crashlytics.log(exception.message)
+        }.addOnProgressListener { taskSnapshot ->
+            val progress = (100 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount)
+            println("onDownloadProgress $progress")
+        }
+    }
 
 
 

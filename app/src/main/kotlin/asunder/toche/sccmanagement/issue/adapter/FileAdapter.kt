@@ -40,6 +40,11 @@ class FileAdapter(var listener: ComponentListener): RecyclerView.Adapter<FileAda
         notifyDataSetChanged()
     }
 
+    fun clear(){
+        files.clear()
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_file,parent,false)
         return FileHolder(view)

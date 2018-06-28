@@ -18,6 +18,7 @@
         android:layout_height="match_parent"
         android:layout_weight="4"
         android:gravity="center"
+        android:lines="1"
         android:maxLines="1"
         android:textSize="12sp" />
 
@@ -57,13 +58,12 @@
         android:maxLines="1"
         android:textSize="10sp" />
 
-    <android.support.v7.widget.AppCompatImageView
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
         android:id="@+id/txtNote"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="5"
+        android:layout_weight="4"
         android:gravity="center"
         android:maxLines="1"
-        android:textSize="12sp"
-        app:tint="@color/tw__composer_red" />
+        android:textSize="10sp" />
 </LinearLayout>
