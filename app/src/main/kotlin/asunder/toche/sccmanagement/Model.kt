@@ -127,5 +127,10 @@ object Model{
     data class MasterGroup(var groupDate:MutableList<String> = mutableListOf(),
                            var groupCompany:MutableList<String> = mutableListOf(),
                            var resultMap:MutableMap<String,SectionedRecyclerViewAdapter> = mutableMapOf())
+    data class MasterData(val contactUser: ContactUser = ContactUser(),
+                          val issueUser: IssueUser = IssueUser(),
+                          val productUser: ProductUser = ProductUser(),
+                          val transactionUser: TransactionUser = TransactionUser(),
+                          val create_date:String)
 
 }

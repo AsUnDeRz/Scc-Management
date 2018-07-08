@@ -14,4 +14,5 @@ object KEY{
     const val EDIT_ISSUE_DETAIL = 1995
     const val UPDATE="update"
     const val DELETE="delete"
+    const val PAPERDB = "paperdb"
 }

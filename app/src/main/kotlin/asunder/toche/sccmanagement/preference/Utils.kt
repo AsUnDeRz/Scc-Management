@@ -4,12 +4,22 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Typeface
+import android.os.Environment
+import android.util.Log
 import android.widget.Filter
 import asunder.toche.sccmanagement.Model
+import com.crashlytics.android.Crashlytics
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.snatik.storage.Storage
+import io.paperdb.Paper
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import com.google.gson.GsonBuilder
+import com.google.gson.Gson
+import java.io.FileReader
+import java.io.FileWriter
 
 
 /**
@@ -24,6 +34,11 @@ object Utils{
             is ContextWrapper -> scanForActivity(cont.baseContext)
             else -> null
         }
+    }
+
+    fun getCurrentDateForBackupFile():String{
+        val fmtOut = SimpleDateFormat("yyyyMMdd_HH:mm:ss", Locale("th","TH"))
+        return fmtOut.format(Date())
     }
 
     fun getCurrentDateShort() :String{
@@ -260,5 +275,88 @@ object Utils{
 
         }.filter(query)
     }
+
+
+    fun getPath(context: Context):String{
+        val externalPath = Environment.getExternalStorageDirectory().absolutePath
+        return externalPath + File.separator + Prefer.getUUID(context)
+    }
+
+    fun exportDB(context: Context){
+        createFileDB(context)
+        val path = getPath(context)
+        val masterData = Model.MasterData(
+                Paper.book().read(ROOT.CONTACTS),
+                Paper.book().read(ROOT.ISSUE),
+                Paper.book().read(ROOT.PRODUCTS),
+                Paper.book().read(ROOT.TRANSACTIONS),
+                Utils.getCurrentDateString()
+        )
+        FileWriter(File(path + File.separator + "master.json")).use { write ->
+                val gson = GsonBuilder().create()
+                gson.toJson(masterData,write)
+        }
+
+    }
+    fun importDB(context: Context){
+        val path = getPath(context)
+        Paper.book().destroy()
+        val gson = GsonBuilder().setPrettyPrinting().create()
+        val mData = gson.fromJson(FileReader(File(path+File.separator+"master.json")),
+                Model.MasterData::class.java)
+        println(gson.toJson(mData))
+        if (mData != null) {
+            Paper.book().write(ROOT.CONTACTS, mData.contactUser)
+            Paper.book().write(ROOT.ISSUE, mData.issueUser)
+            Paper.book().write(ROOT.PRODUCTS, mData.productUser)
+            Paper.book().write(ROOT.TRANSACTIONS, mData.transactionUser)
+
+            val firebase : DatabaseReference = FirebaseDatabase.getInstance().reference
+            val childUpdates = HashMap<String,Any>()
+            mData.contactUser.contacts.forEach {
+                childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.CONTACTS}/${it.id}"] = it
+            }
+            mData.issueUser.issues.forEach {
+                childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.ISSUE}/${it.id}"] = it
+            }
+            mData.productUser.products.forEach {
+                childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.PRODUCTS}/${it.id}"] = it
+            }
+            mData.transactionUser.transactions.forEach {
+                childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.TRANSACTIONS}/${it.id}"] = it
+            }
+
+            if (mData.contactUser.contacts.isEmpty()){
+                childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.CONTACTS}"] = mData.contactUser
+            }
+            if (mData.issueUser.issues.isEmpty()){
+                childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.ISSUE}"] = mData.issueUser
+            }
+            if (mData.productUser.products.isEmpty()) {
+                childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.PRODUCTS}"] = mData.productUser
+            }
+            if (mData.transactionUser.transactions.isEmpty()){
+                childUpdates["${ROOT.USERS}/${Prefer.getUUID(context)}/${ROOT.TRANSACTIONS}"] = mData.transactionUser
+            }
+
+            firebase.updateChildren(childUpdates) { databaseError, _ ->
+                if (databaseError != null) {
+                    Crashlytics.log(databaseError.message)
+                    System.out.println("Data could not be saved " + databaseError.message)
+                } else {
+                    System.out.println("Restore data successfully.")
+                }
+            }
+        }
+    }
+
+    fun createFileDB(context: Context) {
+        val stor = Storage(context)
+        val newDir = getPath(context)
+        stor.createDirectory(newDir)
+    }
+
+
+
 
 }
