@@ -40,6 +40,7 @@ import asunder.toche.sccmanagement.issue.IssueState
 import asunder.toche.sccmanagement.issue.IssueViewModel
 import asunder.toche.sccmanagement.main.ControlViewModel
 import asunder.toche.sccmanagement.preference.KEY
+import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
@@ -378,14 +379,16 @@ class ContactFragment  :
         when (requestCode) {
             KEY.NEW_ADDRESS -> if (resultCode == Activity.RESULT_OK && data != null){
                 //update address
-                addressAdapter.addAddress(data.getParcelableExtra(ROOT.ADDRESS))
+                val address = data.getParcelableExtra<Model.Address>(ROOT.ADDRESS)
+                addressAdapter.addAddress(address)
                 contactScrollView.fullScroll(ScrollView.FOCUS_DOWN)
             }
             KEY.EDIT_ADDRESS -> if (resultCode == Activity.RESULT_OK && data != null){
                 if (data.hasExtra(KEY.DELETE)){
                     addressAdapter.remove(data.getIntExtra(ROOT.POSITION,0))
                 }else{
-                    addressAdapter.updateAddress(data.getParcelableExtra(ROOT.ADDRESS),
+                    val address = data.getParcelableExtra<Model.Address>(ROOT.ADDRESS)
+                    addressAdapter.updateAddress(address,
                             data.getIntExtra(ROOT.POSITION,0))
                 }
             }
@@ -749,5 +752,7 @@ class ContactFragment  :
 
     override fun onClickCancel() {
     }
+
+
 
 }

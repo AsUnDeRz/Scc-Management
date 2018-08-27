@@ -25,6 +25,6 @@ class EdtThin  : EditText {
 
     private fun applyFont(context: Context) {
         val customFont = Typeface.createFromAsset(context.assets, "fonts/set_thin.ttf")
-        typeface = customFont
+        //typeface = customFont
     }
 }

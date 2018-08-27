@@ -14,7 +14,7 @@ android {
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
         versionCode 1
-        versionName "1.1.7"
+        versionName "1.1.8"
         testInstrumentationRunner "android.support.menu_drawer.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -133,6 +133,8 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'com.afollestad.material-dialogs:commons:0.9.6.0'
     implementation 'org.zeroturnaround:zt-zip:1.13'
+    implementation 'com.bignerdranch.android:recyclerview-multiselect:0.2'
+
 
 
 

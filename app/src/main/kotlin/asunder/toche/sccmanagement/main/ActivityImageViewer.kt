@@ -3,7 +3,9 @@ package asunder.toche.sccmanagement.main
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Base64
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.service.ImagesService
 import au.com.jtribe.shelly.Shelly
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
@@ -26,10 +28,13 @@ class ActivityImageViewer: AppCompatActivity() {
         println(intent.getStringExtra("path"))
         //mBigImage.setProgressIndicator(ProgressPieIndicator())
         //mBigImage.setInitScaleType(BigImageView.INIT_SCALE_TYPE_CENTER_INSIDE)
+        //                    .load(File(pathLocal))
+
         if (intent.hasExtra("path")){
             println("intent has path")
             pathLocal = intent.getStringExtra("path")
             Glide.with(this)
+                    .asBitmap()
                     .load(File(pathLocal))
                     .into(mBigImage)
         }else{

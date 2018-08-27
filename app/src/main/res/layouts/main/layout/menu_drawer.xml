@@ -80,7 +80,8 @@
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:text="@string/admin"
         android:textAllCaps="false"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:visibility="gone" />
 
     <asunder.toche.sccmanagement.custom.button.BtnThin
         android:id="@+id/btnLogout"
@@ -91,7 +92,8 @@
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:text="@string/logout"
         android:textAllCaps="false"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:visibility="gone" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
         android:id="@+id/txtAccount"

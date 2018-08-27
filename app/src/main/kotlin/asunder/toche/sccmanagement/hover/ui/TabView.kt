@@ -70,7 +70,7 @@ class TabView : View {
         mTextPaint.style = Paint.Style.FILL
         mTextPaint.setARGB(255, 255, 255, 255)
         mTextPaint.textSize = mSizeInPx * 0.7f // just scale this down a bit
-        mTextPaint.typeface = customFont
+        //mTextPaint.typeface = customFont
         mRect = Rect()
     }
 

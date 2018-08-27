@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.main.ActivitySelectExport
 import asunder.toche.sccmanagement.preference.KEY
 import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
@@ -108,8 +109,21 @@ class ActivitySetting: AppCompatActivity(),
         }
 
         btnExportData.setOnClickListener {
-            showSelecterFoler()
+            showSelecterFolder()
 
+        }
+
+        btnExportContact.setOnClickListener {
+            //showSelecterFolder()
+            val intent = Intent()
+            intent.putExtra(ROOT.EXPORT,ROOT.CONTACTS)
+            startActivity(intent.setClass(this,ActivitySelectExport::class.java))
+        }
+
+        btnExportProduct.setOnClickListener {
+            val intent = Intent()
+            intent.putExtra(ROOT.EXPORT,ROOT.PRODUCTS)
+            startActivity(intent.setClass(this,ActivitySelectExport::class.java))
         }
 
         btnImportData.setOnClickListener {
@@ -163,7 +177,7 @@ class ActivitySetting: AppCompatActivity(),
         loading.dismiss()
     }
 
-    fun showSelecterFoler() {
+    fun showSelecterFolder() {
         FolderChooserDialog.Builder(this)
                 .cancelButton(R.string.cancel)
                 .chooseButton(R.string.select_folder)  // changes label of the choose button

@@ -32,7 +32,8 @@ class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>,val listen
 
 
     fun updateMediumList(newData : MutableList<Model.MediumRate>){
-        mediumList = newData
+        mediumList.clear()
+        mediumList.addAll(newData)
         //mediumList.sortByDescending { Utils.getDateWithString(it.date).time }
         sortData()
         notifyDataSetChanged()
@@ -71,7 +72,7 @@ class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>,val listen
     }
 
     override fun getItemCount(): Int {
-        return if(mediumList.size >= 5) 5 else mediumList.size
+        return  mediumList.size
     }
 
     override fun onBindViewHolder(holder: MediumRateHolder, position: Int) {

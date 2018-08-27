@@ -103,12 +103,42 @@
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:gravity="left|center_vertical"
         android:paddingStart="48dp"
-        android:text="ส่งออกไฟล์สำรองข้อมูล"
+        android:text="ส่งออกไฟล์สำรองข้อมูลทั้งหมด"
         android:textAllCaps="false"
         android:textColor="@color/colorDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtMedium17" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnExportContact"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="@android:color/transparent"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:gravity="left|center_vertical"
+        android:paddingStart="48dp"
+        android:text="ส่งออกไฟล์สำรองข้อมูลเฉพาะผู้ติดต่อ"
+        android:textAllCaps="false"
+        android:textColor="@color/colorDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnExportData" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnExportProduct"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="@android:color/transparent"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:gravity="left|center_vertical"
+        android:paddingStart="48dp"
+        android:text="ส่งออกไฟล์สำรองข้อมูลเฉพาะสินค้า"
+        android:textAllCaps="false"
+        android:textColor="@color/colorDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnExportContact" />
 
     <asunder.toche.sccmanagement.custom.button.BtnMedium
         android:id="@+id/btnImportData"
@@ -123,5 +153,5 @@
         android:textColor="@color/colorDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnExportData" />
+        app:layout_constraintTop_toBottomOf="@+id/btnExportProduct" />
 </android.support.constraint.ConstraintLayout>

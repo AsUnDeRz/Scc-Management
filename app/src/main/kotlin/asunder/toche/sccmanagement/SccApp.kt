@@ -12,7 +12,10 @@ import io.paperdb.Paper
 import org.greenrobot.eventbus.EventBus
 import android.os.StrictMode
 import android.os.Build
-
+import android.os.Bundle
+import android.support.annotation.NonNull
+import android.support.annotation.Nullable
+import asunder.toche.sccmanagement.service.ImagesService
 
 
 /**
@@ -25,6 +28,7 @@ class SccApp : Application(){
         Paper.init(this)
         FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         setupTheme()
+        //ImagesService.initService()
         //BigImageViewer.initialize(GlideImageLoader.with(this))
 
         if (Build.VERSION.SDK_INT >= 24) {
@@ -35,6 +39,7 @@ class SccApp : Application(){
                 e.printStackTrace()
             }
         }
+
     }
 
     override fun attachBaseContext(base: Context?) {

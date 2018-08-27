@@ -40,7 +40,7 @@ class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolea
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product_new,parent,false)
         return ProductHolder(view)
     }
 
@@ -63,12 +63,12 @@ class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolea
         val txtPriceMedium = itemView?.findViewById<TxtMedium>(R.id.txtPriceMedium)
         val txtVat = itemView?.findViewById<TxtMedium>(R.id.txtVat)
         val txtDate = itemView?.findViewById<TxtMedium>(R.id.txtDate)
-        val swipeView = itemView?.findViewById<SwipeActionView>(R.id.swipeProduct)
+        //val swipeView = itemView?.findViewById<SwipeActionView>(R.id.swipeProduct)
 
 
         fun bind(product:Model.Product,listener: ProductListener){
-            val btnEdt = swipeView?.findViewById<BtnMedium>(R.id.btnEdit)
-            val btnDelete = swipeView?.findViewById<BtnMedium>(R.id.btnDelete)
+           // val btnEdt = swipeView?.findViewById<BtnMedium>(R.id.btnEdit)
+            //val btnDelete = swipeView?.findViewById<BtnMedium>(R.id.btnDelete)
             txtProdct?.text = product.product_name
             if (product.medium_rate.isNotEmpty()){
                 txtPriceMedium?.text = checkDecimal(product.medium_rate[0].price)
@@ -77,9 +77,13 @@ class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolea
                 }else{
                     txtVat?.text = "B"
                 }
+            }else{
+                txtPriceMedium?.text = ""
+                txtVat?.text = ""
             }
 
             txtDate?.text = product.date.substring(0,10)
+            /*
             swipeView?.swipeGestureListener = object : SwipeGestureListener {
                 override fun onSwipedLeft(swipeActionView: SwipeActionView): Boolean {
                     btnDelete?.setOnClickListener {
@@ -98,6 +102,7 @@ class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolea
             swipeView?.setOnClickListener {
                 System.out.println("SwipeView OnClickListener")
             }
+            */
 
 
             itemView.setOnClickListener {
@@ -115,6 +120,9 @@ class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolea
                 }else{
                     txtVat?.text = "B"
                 }
+            }else{
+                txtPriceMedium?.text = ""
+                txtVat?.text = ""
             }
             txtDate?.text = product.date.substring(0,10)
             itemView.setOnClickListener {

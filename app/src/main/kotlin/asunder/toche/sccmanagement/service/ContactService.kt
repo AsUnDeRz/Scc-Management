@@ -30,6 +30,7 @@ class ContactService(var listener:ContactCallBack){
     }
 
     fun pushNewContact(contact: Model.Contact)  {
+        /*
         val keyAuth = firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.CONTACTS}").push().key
         contact.id = keyAuth!!
         Log.d(TAG,"PushNewContact with $contact")
@@ -43,10 +44,13 @@ class ContactService(var listener:ContactCallBack){
                 System.out.println("Data Contact,Managemnt saved successfully.")
             }
         }
+        */
+        contact.id = UUID.randomUUID().toString()
         pushNewContactToDb(updateContactFromDb(contact,getContactInDb()))
     }
 
     fun updateContact(contact: Model.Contact){
+        /*
         val childUpdates = HashMap<String,Any>()
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.CONTACTS}/${contact.id}"] = contact
         Log.d(TAG,"UpdateContact with $contact")
@@ -60,11 +64,13 @@ class ContactService(var listener:ContactCallBack){
                 listener.onSuccess()
             }
         }
+        */
         pushNewContactToDb(updateContactFromDb(contact,getContactInDb()))
 
     }
 
     fun deleteContact(contact : Model.Contact){
+        /*
         firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.CONTACTS}/${contact.id}").removeValue { databaseError, _ ->
             if (databaseError != null) {
                 Crashlytics.log(databaseError.message)
@@ -75,6 +81,7 @@ class ContactService(var listener:ContactCallBack){
                 listener.onDeleteSuccess()
             }
         }
+        */
     }
 
     fun getContactInDb() : MutableList<Model.Contact>{

@@ -35,6 +35,7 @@ import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.extension.DisableClick
+import asunder.toche.sccmanagement.custom.extension.ShowScrollBar
 import asunder.toche.sccmanagement.issue.adapter.FileAdapter
 import asunder.toche.sccmanagement.issue.adapter.IssueAdapter
 import asunder.toche.sccmanagement.issue.adapter.PictureAdapter
@@ -45,6 +46,7 @@ import asunder.toche.sccmanagement.preference.KEY
 import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
+import asunder.toche.sccmanagement.service.ImagesService
 import com.bumptech.glide.request.RequestOptions
 import com.crashlytics.android.Crashlytics
 import com.google.firebase.storage.FirebaseStorage
@@ -61,8 +63,8 @@ import kotlinx.android.synthetic.main.section_issue_info.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
-import java.io.File
-import java.io.IOException
+import java.io.*
+import java.lang.reflect.InvocationTargetException
 import java.util.*
 
 
@@ -162,6 +164,7 @@ class IssueFragment : Fragment(),
         observerTabFilterIssue()
         initFilterWithButton()
         observerIssue()
+        currentDate.text = "วันที่ปัจจุบัน : "+Utils.getCurrentDateShort()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -186,7 +189,8 @@ class IssueFragment : Fragment(),
                 if(selectedPhoto.size > 0) {
                     val pictureList= mutableListOf<Model.Content>()
                     selectedPhoto.forEach {
-                        pictureList.add(Model.Content(it))
+                        val base64 = Utils.encodeImage(it, this.context!!)
+                        pictureList.add(Model.Content(local_path = it,cloud_url = base64))
                     }
                     pictureAdapter.addPictures(pictureList)
                 }
@@ -353,7 +357,8 @@ class IssueFragment : Fragment(),
         }
 
         edtIssueDate.setOnClickListener {
-            showSpinner()
+            //showSpinner()
+            showDatePicker()
         }
         edtIssueDetail.DisableClick()
         edtIssueDetail.setOnClickListener {
@@ -382,6 +387,8 @@ class IssueFragment : Fragment(),
             contactVm.updateContact(issueVM.companyReference.value!!)
             contactVm.updateViewState(ContactState.TRIGGERFROMISSUE)
         }
+
+        edtIssueDetail.ShowScrollBar()
 
     }
     fun initLayoutInput(){
@@ -489,6 +496,23 @@ class IssueFragment : Fragment(),
         adapter.setContact(issueVM.getContact())
     }
 
+    fun showDatePicker(){
+        val c = Calendar.getInstance()
+        c.time = selectedDate
+        val mount = c.get(Calendar.MONTH)
+        val dOfm = c.get(Calendar.DAY_OF_MONTH)
+        val year = c.get(Calendar.YEAR)
+        val hour = c.get(Calendar.HOUR_OF_DAY)
+        val minute = c.get(Calendar.MINUTE)
+        val datePicker = android.app.DatePickerDialog(context,
+                android.app.DatePickerDialog.OnDateSetListener { view, yearOf, monthOfYear, dayOfMonth ->
+                    val dateSelect = Calendar.getInstance()
+                    dateSelect.set(yearOf,monthOfYear,dayOfMonth,0,0,0)
+                    selectedDate = dateSelect.time
+                    edtIssueDate.setText(Utils.getDateStringWithDate(selectedDate).substring(0,10))
+                },year,mount,dOfm)
+        datePicker.show()
+    }
     fun showSpinner(){
 
         val c = Calendar.getInstance()
@@ -678,7 +702,7 @@ class IssueFragment : Fragment(),
                     , Utils.getDateStringWithDate(selectedDate)
                     , pictureAdapter.pictures, fileAdapter.files)
             issueVM.saveIssue(data)
-            loading.show(fragmentManager, LoadingDialog.TAG)
+            //loading.show(fragmentManager, LoadingDialog.TAG)
         }
     }
 
@@ -788,6 +812,7 @@ class IssueFragment : Fragment(),
     }
 
     fun openPicture(picture: Model.Content){
+        /*
         val fileWithinMyDir = File(picture.local_path)
         if (fileWithinMyDir.exists()) {
             val intent = Intent()
@@ -796,6 +821,12 @@ class IssueFragment : Fragment(),
         }else{
             downloadInLocalFile(picture.cloud_url,false)
         }
+        */
+
+        // convert byte[] to File
+        val intent = Intent()
+        intent.putExtra("path",picture.local_path)
+        activity?.startActivity(intent.setClass(activity,ActivityImageViewer::class.java))
     }
 
     fun downloadInLocalFile(path: String,isFile:Boolean) {

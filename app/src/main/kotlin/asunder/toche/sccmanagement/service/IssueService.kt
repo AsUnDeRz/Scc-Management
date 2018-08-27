@@ -15,7 +15,7 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
-import java.util.HashMap
+import java.util.*
 
 /**
  *Created by ToCHe on 9/3/2018 AD.
@@ -34,6 +34,7 @@ class IssueService(var listener : IssueCallBack){
 
 
     fun pushNewIssue(issue: Model.Issue){
+        /*
         val keyAuth = firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.ISSUE}").push().key
         issue.id = keyAuth!!
         Log.d(TAG,"PushNewIssue with $issue")
@@ -47,12 +48,15 @@ class IssueService(var listener : IssueCallBack){
                 System.out.println("Data Issue  saved successfully.")
             }
         }
+        */
+        issue.id = UUID.randomUUID().toString()
         pushNewIssueToDb(updateIssueFromDb(issue,getIssueInDb()))
 
 
     }
 
     fun updateIssue(Issue: Model.Issue){
+        /*
         val childUpdates = HashMap<String,Any>()
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.ISSUE}/${Issue.id}"] = Issue
         firebase.updateChildren(childUpdates) { databaseError, _ ->
@@ -63,11 +67,13 @@ class IssueService(var listener : IssueCallBack){
                 System.out.println("Data Update Issue successfully.")
             }
         }
+        */
         pushNewIssueToDb(updateIssueFromDb(Issue,getIssueInDb()))
 
     }
 
     fun deleteIssue(Issue : Model.Issue){
+        /*
         firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.ISSUE}/${Issue.id}")
                 .removeValue { databaseError, _ ->
                     if (databaseError != null) {
@@ -77,6 +83,7 @@ class IssueService(var listener : IssueCallBack){
                         System.out.println("Data deleted successfully $Issue.")
                     }
                 }
+                */
     }
 
     fun getIssueInDb() : MutableList<Model.Issue>{

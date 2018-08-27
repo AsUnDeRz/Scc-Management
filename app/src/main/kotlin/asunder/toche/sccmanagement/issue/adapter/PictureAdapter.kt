@@ -9,6 +9,7 @@ import android.widget.ImageView
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.issue.ComponentListener
+import asunder.toche.sccmanagement.service.ImagesService
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_image_viewer.*
@@ -31,6 +32,12 @@ class PictureAdapter(var listener: ComponentListener): RecyclerView.Adapter<Pict
 
     fun addPictures(data:MutableList<Model.Content>){
         pictures.addAll(data)
+        /*
+        data.forEach {
+            it.local_path = ImagesService.addImage(it.cloud_url)
+        }
+        ImagesService.saveToDB()
+        */
         notifyDataSetChanged()
     }
 
@@ -40,6 +47,7 @@ class PictureAdapter(var listener: ComponentListener): RecyclerView.Adapter<Pict
     }
 
     fun remove(position: Int){
+        //ImagesService.deleteImage(pictures[position].local_path)
         pictures.removeAt(position)
         notifyDataSetChanged()
     }
@@ -101,6 +109,7 @@ class PictureAdapter(var listener: ComponentListener): RecyclerView.Adapter<Pict
                                 }
                     println()
                 }
+
             }
         }
     }

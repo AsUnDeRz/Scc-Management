@@ -47,6 +47,7 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
                         }
                     }
                 }
+
                 if(data.pictures.isNotEmpty()){
                     data.pictures.forEach {
                         val imgPath = Uri.fromFile(File(it.local_path))
@@ -60,6 +61,7 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
                         }
                     }
                 }
+
             }
             job.await()
             System.out.println("SaveProduct  $data")

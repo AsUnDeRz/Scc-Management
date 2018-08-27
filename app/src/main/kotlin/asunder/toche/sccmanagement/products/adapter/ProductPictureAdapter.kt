@@ -17,6 +17,7 @@ import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.products.ComponentListener
+import asunder.toche.sccmanagement.service.ImagesService
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
@@ -38,6 +39,12 @@ class ProductPictureAdapter(var listener: ComponentListener): RecyclerView.Adapt
 
     fun addPictures(data:MutableList<Model.ContentForProduct>){
         pictures.addAll(data)
+        /*
+        data.forEach {
+            it.local_path = ImagesService.addImage(it.cloud_url)
+        }
+        ImagesService.saveToDB()
+        */
         notifyDataSetChanged()
     }
 
@@ -47,6 +54,7 @@ class ProductPictureAdapter(var listener: ComponentListener): RecyclerView.Adapt
     }
 
     fun remove(position: Int){
+        //ImagesService.deleteImage(pictures[position].local_path)
         pictures.removeAt(position)
         notifyDataSetChanged()
     }

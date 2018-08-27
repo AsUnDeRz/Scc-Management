@@ -16,39 +16,41 @@ import android.support.v7.widget.Toolbar
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
-import android.view.View
 import asunder.toche.sccmanagement.BuildConfig
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
-import asunder.toche.sccmanagement.auth.ActivityLogin
-import asunder.toche.sccmanagement.auth.ActivityManagement
 import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
+import asunder.toche.sccmanagement.custom.FileEnDecryptManager
+import asunder.toche.sccmanagement.custom.TriggerImage
+import asunder.toche.sccmanagement.custom.TriggerProduct
 import asunder.toche.sccmanagement.custom.TriggerUpdate
 import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.hover.FloatingViewService
-import asunder.toche.sccmanagement.hover.HoverService
 import asunder.toche.sccmanagement.issue.IssueState
 import asunder.toche.sccmanagement.issue.IssueViewModel
+import asunder.toche.sccmanagement.preference.Contextor
 import asunder.toche.sccmanagement.preference.KEY
-import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.products.ProductState
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
-import asunder.toche.sccmanagement.service.ManageUserService
 import asunder.toche.sccmanagement.settings.ActivitySetting
 import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
 import com.bumptech.glide.Glide
-import com.google.firebase.auth.FirebaseAuth
+import com.snatik.storage.Storage
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.menu_drawer.*
+import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import javax.crypto.Cipher
 
 class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDialogListener{
 
@@ -75,6 +77,7 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Contextor.getInstance().init(this)
         controlViewModel = ViewModelProviders.of(this).get(ControlViewModel::class.java)
         contactVM = ViewModelProviders.of(this).get(ContactViewModel::class.java)
         productVM = ViewModelProviders.of(this).get(ProductViewModel::class.java)
@@ -94,7 +97,6 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
             selectContact(contact)
         }
         addContentListener()
-
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -199,19 +201,12 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     }
 
     fun setOnClickMenu(){
-        val btns = arrayOf(btnContact,btnIssue,btnProduct,btnTransaction,btnAdmin,btnLogout,btnSetting)
-        val isAdmin = intent.extras.getBoolean(ROOT.ADMIN)
-        if (isAdmin){
-            btnAdmin.visibility = View.VISIBLE
-        }else{
-            btnAdmin.visibility = View.GONE
-        }
+        val btns = arrayOf(btnContact,btnIssue,btnProduct,btnTransaction,btnSetting)
         for (button in btns){
             button.setOnClickListener {
                 when (button) {
                     btnContact -> {
                         drawerLayout.closeDrawers()
-                        btnAdmin.visibility = View.GONE
                         pager.currentItem = 0
                     }
                     btnIssue -> {
@@ -225,16 +220,6 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
                     btnTransaction -> {
                         drawerLayout.closeDrawers()
                         pager.currentItem = 3
-                    }
-                    btnAdmin -> {
-                        startActivity(Intent().setClass(this@ActivityMain,
-                                ActivityManagement::class.java))
-                    }
-                    btnLogout -> {
-                        ManageUserService().signOut()
-                        startActivity(Intent().setClass(this@ActivityMain,
-                                ActivityLogin::class.java))
-                        finish()
                     }
                     btnSetting -> {
                         startActivityForResult(Intent().setClass(this@ActivityMain,
@@ -402,9 +387,9 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
         super.onResume()
         isActivityResume = true
         async(UI) {
-            async {
-                openFloatingView()
-            }.await()
+            withContext(DefaultDispatcher) {
+            openFloatingView()
+            }
         }
     }
 
@@ -426,14 +411,36 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     }
 
     override fun onClickConfirm() {
+        /*
+        val key = "This is a secret"
+        val storage = Storage(applicationContext)
+        val files = storage.getNestedFiles(Utils.getPath(this))
+        async{
+            files.forEach {
+                FileEnDecryptManager.getInstance().fileProcessor(Cipher.ENCRYPT_MODE, key,it,it)
+            }
+        }
+        */
+
+
         openFloatingView()
         val setIntent = Intent(Intent.ACTION_MAIN)
         setIntent.addCategory(Intent.CATEGORY_HOME)
         setIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(setIntent)
+
+
     }
 
     override fun onClickCancel() {
+        /*
+        val key = "This is a secret"
+        val storage = Storage(applicationContext)
+        val files = storage.getNestedFiles(Utils.getPath(this))
+        files.forEach {
+                FileEnDecryptManager.getInstance().fileProcessor(Cipher.DECRYPT_MODE, key,it,it)
+        }
+        */
 
     }
 
@@ -507,5 +514,37 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     fun openFloatingView(){
         startService(Intent(this, FloatingViewService::class.java))
     }
+
+    public override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    public override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+        val key = "This is a secret"
+        val storage = Storage(applicationContext)
+        val files = storage.getNestedFiles(Utils.getPath(this))
+        async{
+            files.forEach {
+                FileEnDecryptManager.getInstance().fileProcessor(Cipher.ENCRYPT_MODE, key,it,it)
+            }
+        }
+
+
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public fun onTriggerImage(trigger : TriggerImage) {
+        val stickyEvent = EventBus.getDefault().getStickyEvent(TriggerImage::class.java)
+        if (stickyEvent != null) {
+            EventBus.getDefault().removeStickyEvent(stickyEvent)
+        }
+        contactVM.updateBase64(trigger.base64)
+
+    }
+
+
 
 }

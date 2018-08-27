@@ -1,20 +1,25 @@
 package asunder.toche.sccmanagement.main
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.provider.Settings.Secure
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
+import android.telephony.TelephonyManager
 import android.view.Window
 import android.view.WindowManager
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.auth.ActivityLogin
+import asunder.toche.sccmanagement.custom.FileEnDecryptManager
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
+import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.service.ManageUserService
 import com.google.firebase.auth.FirebaseAuth
 import com.karumi.dexter.Dexter
@@ -22,7 +27,10 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.snatik.storage.Storage
 import io.mattcarroll.hover.overlay.OverlayPermission
+import javax.crypto.Cipher
+
 
 /**
  *Created by ToCHe on 14/3/2018 AD.
@@ -44,8 +52,6 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_landing)
-        authManager = ManageUserService()
-        fetchAdmin()
         loading.show(supportFragmentManager, LoadingDialog.TAG)
         if (!mPermissionsRequested && !OverlayPermission.hasRuntimePermissionToDrawOverlay(this)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -58,6 +64,14 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
         }else{
             requestPermission()
         }
+
+        val key = "This is a secret"
+        val storage = Storage(applicationContext)
+        val files = storage.getNestedFiles(Utils.getPath(this))
+        files.forEach {
+            FileEnDecryptManager.getInstance().fileProcessor(Cipher.DECRYPT_MODE, key,it,it)
+        }
+
     }
 
     override fun onDestroy() {
@@ -95,10 +109,26 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
     fun postDelayed(){
         runnable = Runnable({})
         runnable = Runnable{
-            setupPreference()
+            //setupPreference()
+            moveToMain()
+            checkUDID()
         }
-        handler.postDelayed(runnable,1000)
+        handler.postDelayed(runnable,2000)
 
+    }
+
+    @SuppressLint("MissingPermission")
+    fun checkUDID(){
+        val deviceId: String
+        val mTelephony = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        deviceId = if (mTelephony.deviceId != null) {
+            mTelephony.deviceId
+        } else {
+            Secure.getString(
+                    applicationContext.contentResolver,
+                    Secure.ANDROID_ID)
+        }
+        Prefer.saveUUID(deviceId,this)
     }
 
     fun setupPreference(){
@@ -107,7 +137,7 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
 
         val user = authManager.mAuth.currentUser
         if(user != null){
-            Prefer.saveUUID(user.uid,this)
+            //Prefer.saveUUID(user.uid,this)
             //Prefer.saveUUID("gf08q0kR0yPQFBdW4wr3QElBL9i1",this)
             authManager.checkLogin(user.uid,this)
         }else{
@@ -121,7 +151,7 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
     override fun currentStatus(userAuth: Model.UserAuth) {
         when(userAuth.status_user){
             ROOT.APPROVE ->{
-                Prefer.saveUUID(userAuth.uid,this)
+                //Prefer.saveUUID(userAuth.uid,this)
                 authManager.synceDatabase(userAuth.uid,object : ManageUserService.SyncData{
                     override fun syncSuccess() {
                         val intent = Intent()
@@ -134,7 +164,7 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
                 })
             }
             ROOT.ADMIN ->{
-                Prefer.saveUUID(userAuth.uid,this)
+                //Prefer.saveUUID(userAuth.uid,this)
                 authManager.synceDatabase(userAuth.uid,object : ManageUserService.SyncData{
                     override fun syncSuccess() {
                         val intent = Intent()
@@ -154,6 +184,13 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
 
     fun moveToLoginActivity(){
         startActivity(Intent().setClass(this, ActivityLogin::class.java))
+        finish()
+        loading.dismiss()
+        overridePendingTransition( R.anim.fade_in, R.anim.fade_out )
+    }
+
+    fun moveToMain(){
+        startActivity(Intent().setClass(this, ActivityMain::class.java))
         finish()
         loading.dismiss()
         overridePendingTransition( R.anim.fade_in, R.anim.fade_out )

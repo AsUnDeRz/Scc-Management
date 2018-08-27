@@ -27,7 +27,7 @@ object Model{
     @Parcelize
     data class Address(val address_type:String = "",
                        val address_factory:String = "",
-                       var url_img_map:String = "",
+                       var images_id:String = "",
                        var path_img_map:String ="",
                        val map_longitude:String = "",
                        val map_latitude:String ="",
@@ -63,7 +63,7 @@ object Model{
                        val pack_size:String = "",
                        val desc:String = "",
                        val date:String ="",
-                       val medium_rate:MutableList<MediumRate> = ArrayList(),
+                       val medium_rate:MutableList<MediumRate> = mutableListOf(),
                        val types:MutableList<String> = mutableListOf(),
                        var pictures:MutableList<ContentForProduct> = mutableListOf(),
                        var files:MutableList<ContentForProduct> = mutableListOf()) : Parcelable
@@ -132,5 +132,9 @@ object Model{
                           val productUser: ProductUser = ProductUser(),
                           val transactionUser: TransactionUser = TransactionUser(),
                           val create_date:String)
+
+    data class MasterImage(val images:MutableList<ImageScc> = mutableListOf())
+    data class ImageScc(val id:String="",
+                     val base64:String="")
 
 }

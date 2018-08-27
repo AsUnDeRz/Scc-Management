@@ -16,14 +16,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ScrollView
-import android.widget.Toast
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.custom.TriggerProduct
 import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
+import asunder.toche.sccmanagement.custom.extension.SetHeight
 import asunder.toche.sccmanagement.custom.extension.ShowKeyboard
+import asunder.toche.sccmanagement.custom.extension.ShowScrollBar
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.main.ActivityImageViewer
 import asunder.toche.sccmanagement.main.ControlViewModel
@@ -266,6 +267,8 @@ class ProductsFragment : Fragment(),
             setHasFixedSize(true)
             adapter = mediumRateAdapter
         }
+        rvMediumPrice.ShowScrollBar()
+
 
         edtProductName.setOnClickListener {
             updateStateInput(CurrentInputState.PROD_NAME)
@@ -275,6 +278,7 @@ class ProductsFragment : Fragment(),
             updateStateInput(CurrentInputState.PROD_DESC)
             showLayoutInput()
         }
+        edtProductDetail.ShowScrollBar()
         edtImportFrom.setOnClickListener {
             updateStateInput(CurrentInputState.PROD_IMPORT)
             showLayoutInput()
@@ -347,7 +351,8 @@ class ProductsFragment : Fragment(),
         }
 
         edtPriceDate.setOnClickListener {
-            showSpinner()
+            //showSpinner()
+            showDatePicker()
         }
     }
 
@@ -396,6 +401,24 @@ class ProductsFragment : Fragment(),
         }else{
             radioGroup.check(rdbNoVat.id)
         }
+    }
+
+    fun showDatePicker(){
+        val c = Calendar.getInstance()
+        c.time = selectedDate
+        val mount = c.get(Calendar.MONTH)
+        val dOfm = c.get(Calendar.DAY_OF_MONTH)
+        val year = c.get(Calendar.YEAR)
+        val hour = c.get(Calendar.HOUR_OF_DAY)
+        val minute = c.get(Calendar.MINUTE)
+        val datePicker = android.app.DatePickerDialog(context,
+                android.app.DatePickerDialog.OnDateSetListener { view, yearOf, monthOfYear, dayOfMonth ->
+                    val dateSelect = Calendar.getInstance()
+                    dateSelect.set(yearOf,monthOfYear,dayOfMonth,0,0,0)
+                    selectedDate = dateSelect.time
+                    edtPriceDate.setText(Utils.getDateStringWithDate(selectedDate).substring(0,10))
+        },year,mount,dOfm)
+        datePicker.show()
     }
 
     fun showSpinner(){
@@ -486,6 +509,7 @@ class ProductsFragment : Fragment(),
             mediumRateAdapter.addMediumList(mediumRate)
         }
         productViewModel.updateMediumRateList(mediumRateAdapter.mediumList)
+        rvMediumPrice.SetHeight(mediumRateAdapter.mediumList.size)
     }
 
     fun deleteMediumPriceRate(){
@@ -493,6 +517,8 @@ class ProductsFragment : Fragment(),
             mediumRateAdapter.deleteMedium(productViewModel.mediumPosition)
         }
         productViewModel.updateMediumRateList(mediumRateAdapter.mediumList)
+        rvMediumPrice.SetHeight(mediumRateAdapter.mediumList.size)
+
     }
     fun clearMediumPriceRate(){
         edtPrice.setText("")
@@ -538,6 +564,7 @@ class ProductsFragment : Fragment(),
             fileAdapter.updateFiles(mutableListOf())
             fileAdapter.updateTypeList(mutableListOf())
         }
+        rvMediumPrice.SetHeight(mediumRateAdapter.mediumList.size)
 
     }
 
@@ -657,7 +684,8 @@ class ProductsFragment : Fragment(),
                 if(selectedPhoto.size > 0) {
                     val pictureList= mutableListOf<Model.ContentForProduct>()
                     selectedPhoto.forEach {
-                        pictureList.add(Model.ContentForProduct(local_path = it))
+                        val base64 = Utils.encodeImage(it, this.context!!)
+                        pictureList.add(Model.ContentForProduct(local_path = it,cloud_url = base64))
                     }
                     pictureAdapter.addPictures(pictureList)
                 }
@@ -736,6 +764,7 @@ class ProductsFragment : Fragment(),
     }
 
     fun openPicture(picture: Model.ContentForProduct){
+        /*
         val fileWithinMyDir = File(picture.local_path)
         if (fileWithinMyDir.exists()) {
             val intent = Intent()
@@ -744,6 +773,10 @@ class ProductsFragment : Fragment(),
         }else{
             downloadInLocalFile(picture.cloud_url,false)
         }
+        */
+        val intent = Intent()
+        intent.putExtra("path",picture.local_path)
+        activity?.startActivity(intent.setClass(activity,ActivityImageViewer::class.java))
     }
 
     fun downloadInLocalFile(path: String,isFile:Boolean) {

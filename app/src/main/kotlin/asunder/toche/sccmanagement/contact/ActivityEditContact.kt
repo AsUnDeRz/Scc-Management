@@ -5,16 +5,21 @@ import android.app.Activity
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Base64
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.custom.TriggerImage
+import asunder.toche.sccmanagement.custom.extension.ShowScrollBar
 import asunder.toche.sccmanagement.main.ActivityImageViewer
 import asunder.toche.sccmanagement.preference.KEY
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
+import asunder.toche.sccmanagement.service.ImagesService
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.location.LocationCallback
@@ -31,6 +36,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
 import kotlinx.android.synthetic.main.activity_edit_contact.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import java.io.File
 import java.text.MessageFormat
 import java.util.*
@@ -60,7 +67,10 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
     lateinit var currentAddress:Model.Address
     val selectedPhoto = arrayListOf<String>()
     var currentPhoto = ""
+    var base64Photo = ""
     var position = 0
+    var isEditLocation:Boolean = false
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +84,7 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
         setAction()
     }
 
+    @SuppressLint("MissingPermission")
     fun initData(contact: Model.Address){
         currentAddress = contact
         currentPhoto = contact.path_img_map
@@ -81,6 +92,7 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
         edtFactoryAddress.setText(contact.address_factory)
         val image = File(contact.path_img_map)
         Glide.with(this)
+                .asBitmap()
                 .load(image)
                 .into(imgMap)
         if(contact.map_latitude != "" && contact.map_longitude != ""
@@ -89,18 +101,25 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
             location?.latitude = contact.map_latitude.toDouble()
             location?.longitude = contact.map_longitude.toDouble()
             handleNewLocation(location!!)
+            map.isMyLocationEnabled = false
+            isEditLocation = false
         }else{
             //Toast.makeText(this,"contact.map is Empty ",Toast.LENGTH_SHORT).show()
             //13.2466906,100.3766333 13.7616035,100.5202237,5.99
-            location = Location("")
-            location?.latitude = 13.7616035
-            location?.longitude = 100.5202237
-            handleNewLocation(location!!,5.99f)
+            //location = Location("")
+            //location?.latitude = 13.7616035
+            //location?.longitude = 100.5202237
+            //handleNewLocation(location!!,5.99f)
+            map.isMyLocationEnabled = true
+            isEditLocation = true
         }
     }
 
+    @SuppressLint("MissingPermission")
     fun setAction() {
         btnAddAddress.setOnClickListener {
+            //val uid = UUID.randomUUID().toString()
+            //ImagesService.addImage(Model.ImageScc(uid,base64Photo))
             if (intent.hasExtra(ROOT.POSITION)) {
                 currentAddress = Model.Address(edtTypeAddress.text.toString(), edtFactoryAddress.text.toString(),
                         "", currentPhoto,
@@ -109,7 +128,6 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
                 result.putExtra(ROOT.ADDRESS, currentAddress)
                 result.putExtra(ROOT.POSITION,intent.getIntExtra(ROOT.POSITION,0))
                 setResult(Activity.RESULT_OK, result)
-                finish()
             } else {
                 currentAddress = Model.Address(edtTypeAddress.text.toString(), edtFactoryAddress.text.toString(),
                         "", currentPhoto,
@@ -117,13 +135,16 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
                 val intent = Intent()
                 intent.putExtra(ROOT.ADDRESS, currentAddress)
                 setResult(Activity.RESULT_OK, intent)
-                finish()
             }
+            //triggerImage(base64Photo)
+            finish()
+            //ImagesService.saveToDB()
         }
         btnCancelAddress.setOnClickListener {
             finish()
         }
         btnDeleteAddress.setOnClickListener {
+           // ImagesService.deleteImage(currentAddress.images_id)
             currentAddress = Model.Address(edtTypeAddress.text.toString(), edtFactoryAddress.text.toString(),
                     "", currentPhoto,
                     "${location?.longitude}", "${location?.latitude}")
@@ -165,7 +186,7 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
                         .pickPhoto(this)
             }else{
                 val intent = Intent()
-                intent.putExtra("path",currentPhoto)
+                intent.putExtra("path",currentAddress.path_img_map)
                 startActivity(intent.setClass(this@ActivityEditContact, ActivityImageViewer::class.java))
             }
         }
@@ -193,6 +214,20 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
             intent.type = "text/plain";
             startActivity(Intent.createChooser(intent, "Share location via"))
         }
+        edtFactoryAddress.ShowScrollBar()
+
+        btnOFF.setOnClickListener {
+            it.setBackgroundColor(ContextCompat.getColor(this,R.color.Color_Red))
+            btnOn.setBackgroundColor(ContextCompat.getColor(this, R.color.Color_White))
+            map.isMyLocationEnabled = false
+            isEditLocation = false
+        }
+        btnOn.setOnClickListener {
+            it.setBackgroundColor(ContextCompat.getColor(this,R.color.Color_Red))
+            btnOFF.setBackgroundColor(ContextCompat.getColor(this, R.color.Color_White))
+            map.isMyLocationEnabled = true
+            isEditLocation = true
+        }
 
     }
 
@@ -215,6 +250,8 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
                 .setInterval(10 * 1000)        // 10 seconds, in milliseconds
                 .setFastestInterval(1 * 1000)
 
+
+
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult?) {
                 locationResult ?: return
@@ -231,7 +268,7 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
     override fun onMapReady(googlemap: GoogleMap?) {
         if(googlemap != null){
             map = googlemap
-            map.isMyLocationEnabled = true
+            map.isMyLocationEnabled = isEditLocation
             map.setOnMyLocationButtonClickListener(this)
         }
 
@@ -280,6 +317,7 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
             val path = data.getStringExtra("IMAGE")
             val image = File(path)
             currentPhoto = path
+            //base64Photo = Utils.encodeImage(path,this)
             Glide.with(this)
                     .load(image)
                     .into(imgMap)
@@ -290,6 +328,7 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
                 selectedPhoto.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA))
                 if(selectedPhoto.size > 0) {
                     currentPhoto = selectedPhoto[0]
+                    //base64Photo = Utils.encodeImage(selectedPhoto[0],this)
                     Glide.with(this)
                             .load(File(selectedPhoto[0]))
                             .into(imgMap)
@@ -302,5 +341,9 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
 
     }
 
+    @Subscribe
+    fun triggerImage(image : String){
+        EventBus.getDefault().postSticky(TriggerImage(image))
+    }
 
 }

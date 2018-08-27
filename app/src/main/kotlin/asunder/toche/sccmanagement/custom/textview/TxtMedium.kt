@@ -24,6 +24,6 @@ class TxtMedium : AppCompatTextView {
 
     private fun applyFont(context: Context) {
         val customFont = Typeface.createFromAsset(context.assets, "fonts/set_medium.ttf")
-        typeface = customFont
+        //typeface = customFont
     }
 }

@@ -26,6 +26,8 @@ object ROOT{
     const val EMAIL ="email"
     const val ADDRESS ="address"
     const val POSITION = "position"
+    const val EXPORT ="export"
+    const val IMAGESCC = "imagescc"
     val listAdmin = mutableListOf<String>()
 
     //type sale rate

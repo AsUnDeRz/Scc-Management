@@ -3,8 +3,14 @@ package asunder.toche.sccmanagement.preference
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.graphics.Typeface
+import android.media.ExifInterface
+import android.net.Uri
 import android.os.Environment
+import android.util.Base64
 import android.util.Log
 import android.widget.Filter
 import asunder.toche.sccmanagement.Model
@@ -13,13 +19,11 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.snatik.storage.Storage
 import io.paperdb.Paper
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import com.google.gson.GsonBuilder
 import com.google.gson.Gson
-import java.io.FileReader
-import java.io.FileWriter
+import java.io.*
 
 
 /**
@@ -37,31 +41,36 @@ object Utils{
     }
 
     fun getCurrentDateForBackupFile():String{
-        val fmtOut = SimpleDateFormat("yyyyMMdd_HH:mm:ss", Locale("th","TH"))
+        val fmtOut = SimpleDateFormat("yyyyMMdd_HH:mm:ss", Locale("en",""))
         return fmtOut.format(Date())
     }
 
     fun getCurrentDateShort() :String{
-        val fmtOut = SimpleDateFormat("yyyy/MM/dd", Locale("th","TH"))
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd", Locale("en",""))
         return fmtOut.format(getCurrentDate())
     }
 
     fun getCurrentDateString() : String{
-            val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale("th","TH"))
+            val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale("en",""))
             return fmtOut.format(getCurrentDate())
     }
 
     fun getDateWithString(date :String) : Date{
-        val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale("th","TH"))
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale("en",""))
         return fmtOut.parse(date)
     }
     fun getDateString(date :String) : Date{
-        val fmtOut = SimpleDateFormat("yyyy/MM/dd", Locale("th","TH"))
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd", Locale("en",""))
         return fmtOut.parse(date)
     }
 
     fun format2DigiYMD(date: String):String{
-        val fmtOut = SimpleDateFormat("yyMMdd", Locale("th","TH"))
+        val fmtOut = SimpleDateFormat("yyMMdd", Locale("en",""))
+        return fmtOut.format(getDateWithString(date))
+    }
+
+    fun format4DigiYMD(date: String):String{
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd", Locale("en",""))
         return fmtOut.format(getDateWithString(date))
     }
 
@@ -87,20 +96,22 @@ object Utils{
     }
 
     fun getDateStringWithDate(date: Date) : String{
-        val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale("th","TH"))
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale("en",""))
         return fmtOut.format(date)
     }
 
     fun getCurrentDate():Date{
         val calendar = Calendar.getInstance()
         calendar.time = Date()
-        calendar.set(Calendar.YEAR,calendar.get(Calendar.YEAR)+543)
+        calendar.set(Calendar.YEAR,calendar.get(Calendar.YEAR))
+        //calendar.set(Calendar.YEAR,calendar.get(Calendar.YEAR)+543)
         calendar.set(calendar[Calendar.YEAR],calendar[Calendar.MONTH],calendar[Calendar.DAY_OF_MONTH],0,0)
         return calendar.time
     }
 
     fun getTypeFaceMedium(context : Context):Typeface {
-        return Typeface.createFromAsset(context.assets, "fonts/set_medium.ttf")
+        //return Typeface.createFromAsset(context.assets, "fonts/set_medium.ttf")
+        return Typeface.DEFAULT
     }
 
     interface OnFindCompanyListener {
@@ -123,9 +134,8 @@ object Utils{
                     val suggestionList = mutableListOf<Model.Contact>()
                     if (!(constraint == null || constraint.isEmpty())) {
                         masterData.filterTo(suggestionList) {
-                            it.company.contains(constraint.toString()) ||
+                            it.company.contains(constraint.toString(),true) ||
                                     it.bill.contains(constraint.toString()) ||
-                                    it.contact_name.contains(constraint.toString()) ||
                                     it.contact_name.contains(constraint.toString()) ||
                                     it.numbers.any { it.data.contains(constraint.toString()) } ||
                                     it.id.contains(constraint.toString()) ||
@@ -142,7 +152,11 @@ object Utils{
                     if (results.count != 0) {
                         listener.onResults(results.values as MutableList<Model.Contact>)
                     }else{
-                        listener.onResults(masterData)
+                        if (constraint.isEmpty()){
+                            listener.onResults(masterData)
+                        }else {
+                            listener.onResults(mutableListOf())
+                        }
                     }
                 }
             }.filter(query)
@@ -285,16 +299,51 @@ object Utils{
     fun exportDB(context: Context){
         createFileDB(context)
         val path = getPath(context)
+        var contact = Paper.book().read<Model.ContactUser>(ROOT.CONTACTS)
+        var issue = Paper.book().read<Model.IssueUser>(ROOT.ISSUE)
+        var product = Paper.book().read<Model.ProductUser>(ROOT.PRODUCTS)
+        var transaction = Paper.book().read<Model.TransactionUser>(ROOT.TRANSACTIONS)
+        //var images = Paper.book().read<Model.MasterImage>(ROOT.IMAGESCC)
+
+        if (contact == null){
+            contact = Model.ContactUser()
+        }
+        if (issue == null){
+            issue = Model.IssueUser()
+        }
+        if (product == null){
+            product = Model.ProductUser()
+        }
+        if (transaction ==null){
+            transaction = Model.TransactionUser()
+        }
+
         val masterData = Model.MasterData(
-                Paper.book().read(ROOT.CONTACTS),
-                Paper.book().read(ROOT.ISSUE),
-                Paper.book().read(ROOT.PRODUCTS),
-                Paper.book().read(ROOT.TRANSACTIONS),
+                contact,
+                issue,
+                product,
+                transaction,
                 Utils.getCurrentDateString()
         )
         FileWriter(File(path + File.separator + "master.json")).use { write ->
                 val gson = GsonBuilder().create()
                 gson.toJson(masterData,write)
+        }
+
+        val masterContact = Model.MasterData(
+                contactUser = contact,
+                create_date = Utils.getCurrentDateString())
+        FileWriter(File(path+ File.separator + "contacts.json")).use {
+            val gson = GsonBuilder().create()
+            gson.toJson(masterContact,it)
+        }
+
+        val masterProduct = Model.MasterData(
+                productUser = product,
+                create_date = Utils.getCurrentDateString())
+        FileWriter(File(path+ File.separator + "products.json")).use {
+            val gson = GsonBuilder().create()
+            gson.toJson(masterProduct,it)
         }
 
     }
@@ -355,6 +404,122 @@ object Utils{
         val newDir = getPath(context)
         stor.createDirectory(newDir)
     }
+
+    fun checkTypePrice(typePrice:String):String{
+        return when(typePrice){
+            ROOT.NOVAT->{
+                "(B)"
+            }
+            ROOT.VAT ->{
+                "(A)"
+            }
+            ROOT.CASH->{
+                "(C)"
+            }
+            else ->{
+                ""
+            }
+        }
+    }
+
+    fun encodeImage(path: String,context: Context): String {
+        //val bm = getBitmap(path,context)
+        val bm =  BitmapFactory.decodeFile(path)
+        return if (bm != null) {
+            val baos = ByteArrayOutputStream()
+            bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            byteArrayToBase64(baos.toByteArray())
+        } else {
+            ""
+        }
+    }
+
+    private fun getBitmap(path: String,context: Context): Bitmap? {
+
+        val uri = Uri.fromFile(File(path))
+        var `in`: InputStream? = null
+        val cr = context.contentResolver
+        try {
+            val IMAGE_MAX_SIZE = 450000 // 1.2 MP
+            `in` = cr.openInputStream(uri)
+
+            // Decode image size
+            var o = BitmapFactory.Options()
+            o.inJustDecodeBounds = true
+            BitmapFactory.decodeStream(`in`, null, o)
+            `in`!!.close()
+
+
+            var scale = 1
+            while (o.outWidth * o.outHeight * (1 / Math.pow(scale.toDouble(), 2.0)) > IMAGE_MAX_SIZE) {
+                scale++
+            }
+
+            var b: Bitmap? = null
+            `in` = cr.openInputStream(uri)
+            if (scale > 1) {
+                scale--
+                // scale to max possible inSampleSize that still yields an image
+                // larger than target
+                o = BitmapFactory.Options()
+                o.inSampleSize = scale
+                b = BitmapFactory.decodeStream(`in`, null, o)
+
+                // resize to desired dimensions
+                val height = b!!.height
+                val width = b.width
+                //val y = Math.sqrt(IMAGE_MAX_SIZE / (width.toDouble() / height))
+                //val x = y / height * width
+
+                val scaledBitmap = Bitmap.createScaledBitmap(b, height,
+                        width, true)
+                b.recycle()
+                b = scaledBitmap
+                b = checkExif(path, b)
+                System.gc()
+            } else {
+                b = BitmapFactory.decodeStream(`in`)
+            }
+            `in`!!.close()
+            return b
+        } catch (e: IOException) {
+            return null
+        }
+
+    }
+
+    private fun checkExif(path: String, bitmap: Bitmap?): Bitmap? {
+        var bm = bitmap
+        val exif: ExifInterface
+        return try {
+            exif = ExifInterface(path)
+            val orientation = exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL)
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+                bm = rotateBitmap(bm, 90)
+            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
+                bm = rotateBitmap(bm, 180)
+            }
+            bm
+        } catch (e: IOException) {
+            e.printStackTrace()
+            bm
+        }
+
+    }
+
+    fun rotateBitmap(bitmap: Bitmap?, degrees: Int): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees.toFloat())
+        return Bitmap.createBitmap(bitmap!!, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+    fun byteArrayToBase64(byteArrayImage: ByteArray): String {
+        //"data:image/jpeg;base64,"
+        return Base64.encodeToString(byteArrayImage, Base64.DEFAULT)
+    }
+
 
 
 

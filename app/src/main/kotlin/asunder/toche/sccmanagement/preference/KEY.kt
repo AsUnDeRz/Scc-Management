@@ -15,4 +15,5 @@ object KEY{
     const val UPDATE="update"
     const val DELETE="delete"
     const val PAPERDB = "paperdb"
+    const val BASE64 = "base64"
 }

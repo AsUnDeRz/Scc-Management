@@ -34,7 +34,7 @@ class CustomTabLayout(context: Context?, attrs: AttributeSet?) : TabLayout(conte
                 val tab = this.newTab()
                 this.addTab(tab.setText(adapter.getPageTitle(i)))
                 val view = (slidingTabStrip.getChildAt(i) as ViewGroup).getChildAt(1) as AppCompatTextView
-                view.setTypeface(mTypeface, Typeface.NORMAL)
+                //view.setTypeface(mTypeface, Typeface.NORMAL)
                 view.setAllCaps(false)
                 view.textSize = if (customSize == null)
                     resources.getDimensionPixelSize(R.dimen.txt18).toFloat()

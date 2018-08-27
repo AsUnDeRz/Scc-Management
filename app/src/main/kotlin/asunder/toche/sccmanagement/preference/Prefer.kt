@@ -6,6 +6,7 @@ import android.net.Uri
 import android.preference.PreferenceManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import java.security.Key
 
 
 /**
@@ -27,6 +28,16 @@ object Prefer{
     fun getUUID(context: Context):String{
         val prefer = openFile(context)
         return prefer.getString(KEY.UUID,"")
+    }
+
+    fun saveImage(base64:String,context: Context){
+        val prefer = openFile(context)
+        prefer.edit().putString(KEY.BASE64,base64).apply()
+    }
+
+    fun getImage(context: Context):String{
+        val prefer = openFile(context)
+        return prefer.getString(KEY.BASE64,"")
     }
 
     fun saveSession(session: Uri, file: Uri,context: Context){

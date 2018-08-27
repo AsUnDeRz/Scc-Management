@@ -127,6 +127,7 @@
         <activity android:name=".issue.ActivityDetailIssue"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"/>
+        <activity android:name=".main.ActivitySelectExport" />
 
         <provider android:authorities="com.facebook.app.FacebookContentProvider1471129742927460"
             android:name="com.facebook.FacebookContentProvider"

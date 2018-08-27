@@ -13,7 +13,7 @@ import io.paperdb.Paper
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
-import java.util.HashMap
+import java.util.*
 
 /**
  *Created by ToCHe on 9/3/2018 AD.
@@ -31,6 +31,7 @@ class TransactionService(var listener:TransactionCallback){
 
 
     fun pushNewTransaction(transaction: Model.Transaction){
+        /*
         val keyAuth = firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.TRANSACTIONS}").push().key
         transaction.id = keyAuth!!
         Log.d(TAG,"PushNewTransaction with Transaction")
@@ -44,10 +45,13 @@ class TransactionService(var listener:TransactionCallback){
                 System.out.println("Data Transaction,Managemnt saved successfully.")
             }
         })
+        */
+        transaction.id = UUID.randomUUID().toString()
         pushNewTransactionToDb(updateTransactionFromDb(transaction,getTransactionInDb()))
     }
 
     fun updateTransaction(transaction: Model.Transaction){
+        /*
         val childUpdates = HashMap<String,Any>()
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.TRANSACTIONS}/${transaction.id}"] = transaction
         firebase.updateChildren(childUpdates,{ databaseError, _ ->
@@ -58,10 +62,12 @@ class TransactionService(var listener:TransactionCallback){
                 System.out.println("Data Update Transaction successfully.")
             }
         })
+        */
         pushNewTransactionToDb(updateTransactionFromDb(transaction,getTransactionInDb()))
     }
 
     fun deleteTransaction(transaction : Model.Transaction){
+        /*
         firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.TRANSACTIONS}/${transaction.id}")
                 .removeValue({ databaseError, _ ->
                     if (databaseError != null) {
@@ -73,6 +79,7 @@ class TransactionService(var listener:TransactionCallback){
                         listener.onSuccess()
                     }
                 })
+                */
     }
 
 

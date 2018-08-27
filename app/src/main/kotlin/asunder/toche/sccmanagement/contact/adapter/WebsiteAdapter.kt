@@ -83,6 +83,7 @@ class WebsiteAdapter(var listener: ComponentListener): RecyclerView.Adapter<Webs
             }else {
                 txtTitle?.text = website.type
             }
+            txtTitle.visibility = View.GONE
             edtContent?.setText(website.data)
             imageStateDelete?.isSelected = true
             imageStateDelete?.setOnClickListener {
@@ -99,7 +100,7 @@ class WebsiteAdapter(var listener: ComponentListener): RecyclerView.Adapter<Webs
             }
             imageAction?.let {
                 Glide.with(itemView.context)
-                        .load(android.R.drawable.ic_menu_manage)
+                        .load(R.drawable.icon_www)
                         .into(it)
             }
 

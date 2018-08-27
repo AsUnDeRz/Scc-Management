@@ -82,6 +82,7 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
                         }
                     }
                 }
+
                 if(data.pictures.isNotEmpty()){
                     data.pictures.forEach {
                         val imgPath = Uri.fromFile(File(it.local_path))
@@ -95,6 +96,7 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
                         }
                     }
                 }
+
                 data.company_id = companyReference.value!!.id
             }
             job.await()

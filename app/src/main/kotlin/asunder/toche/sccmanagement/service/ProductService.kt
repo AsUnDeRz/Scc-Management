@@ -12,7 +12,7 @@ import com.google.firebase.database.FirebaseDatabase
 import io.paperdb.Paper
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
-import java.util.HashMap
+import java.util.*
 
 /**
  *Created by ToCHe on 9/3/2018 AD.
@@ -30,6 +30,7 @@ class ProductService(var listener:ProductCallback){
 
 
     fun pushNewProduct(product: Model.Product){
+        /*
         val keyAuth = firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.PRODUCTS}").push().key
         product.id = keyAuth!!
         Log.d(TAG,"PushNewProduct with $product")
@@ -43,12 +44,16 @@ class ProductService(var listener:ProductCallback){
                 System.out.println("Data Product,Managemnt saved successfully.")
             }
         })
+        */
+
+        product.id = UUID.randomUUID().toString()
         pushNewProductToDb(updateProductFromDb(product,getProductsInDb()))
 
 
     }
 
     fun updateProduct(product: Model.Product){
+        /*
         val childUpdates = HashMap<String,Any>()
         childUpdates["${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.PRODUCTS}/${product.id}"] = product
         firebase.updateChildren(childUpdates,{ databaseError, _ ->
@@ -59,10 +64,12 @@ class ProductService(var listener:ProductCallback){
                 System.out.println("Data Update Product successfully.")
             }
         })
+        */
         pushNewProductToDb(updateProductFromDb(product,getProductsInDb()))
     }
 
     fun deleteProduct(product : Model.Product){
+        /*
         firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.PRODUCTS}/${product.id}")
                 .removeValue({ databaseError, _ ->
                     if (databaseError != null) {
@@ -74,6 +81,7 @@ class ProductService(var listener:ProductCallback){
                         System.out.println("Data deleted successfully.")
                     }
                 })
+                */
     }
 
     fun getProductsInDb() : MutableList<Model.Product>{

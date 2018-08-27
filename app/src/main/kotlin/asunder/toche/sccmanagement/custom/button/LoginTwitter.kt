@@ -57,7 +57,7 @@ open class LoginTwitter : Button {
         super.setTextColor(ContextCompat.getColor(context,com.twitter.sdk.android.core.R.color.tw__solid_white))
         super.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 res.getDimensionPixelSize(R.dimen.login_btn_text_size).toFloat())
-        super.setTypeface(Typeface.createFromAsset(context.assets, "fonts/set_bold.ttf"))
+        //super.setTypeface(Typeface.createFromAsset(context.assets, "fonts/set_bold.ttf"))
         super.setPadding(res.getDimensionPixelSize(R.dimen.login_btn_left_padding), 0,
                 res.getDimensionPixelSize(R.dimen.login_btn_right_padding), 0)
         super.setBackgroundResource(com.twitter.sdk.android.core.R.drawable.tw__login_btn)

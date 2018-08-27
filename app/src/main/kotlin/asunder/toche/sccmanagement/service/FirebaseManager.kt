@@ -75,6 +75,9 @@ class FirebaseManager{
     }
 
     fun pushFileToFirebase(path:String,session: String){
+        saveImage(path)
+        pushPathImageToDb(path)
+        /*
         storage.maxUploadRetryTimeMillis = 2000L
         val storageRef = storage.reference
         val file = Uri.fromFile(File(path))
@@ -98,6 +101,7 @@ class FirebaseManager{
         }.addOnPausedListener {
             System.out.println("Upload is paused")
         }
+        */
     }
 
     fun pushPathImageToDb(path: String){
@@ -114,6 +118,7 @@ class FirebaseManager{
             result.await()
             println("Delete File $pathInDevice")
         }
+        /*
         val storageRef = storage.reference
         val desertRef = storageRef.child(path)
         desertRef
@@ -127,6 +132,7 @@ class FirebaseManager{
                     System.out.println("Delete $errorCode  $errorMessage")
                     Crashlytics.log(it.message)
                 }
+                */
     }
 
     fun saveImage(path:String) {

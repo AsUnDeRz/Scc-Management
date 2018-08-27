@@ -26,6 +26,7 @@ import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.contact.ContactState
 import asunder.toche.sccmanagement.contact.adapter.CompanyAdapter
 import asunder.toche.sccmanagement.contact.viewmodel.ContactViewModel
+import asunder.toche.sccmanagement.custom.button.BtnMedium
 import asunder.toche.sccmanagement.custom.dialog.ConfirmDialog
 import asunder.toche.sccmanagement.custom.dialog.LoadingDialog
 import asunder.toche.sccmanagement.custom.edittext.EdtMedium
@@ -45,6 +46,7 @@ import asunder.toche.sccmanagement.transactions.adapter.SaleRateAdapter
 import asunder.toche.sccmanagement.transactions.pager.TransactionPager
 import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder
+import kotlinx.android.synthetic.main.bottom_sheet_company.*
 import kotlinx.android.synthetic.main.fragment_transactions.*
 import kotlinx.android.synthetic.main.fragment_transactions_add.*
 import kotlinx.android.synthetic.main.layout_price_rate.*
@@ -258,8 +260,9 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
 
         imgNewSaleRate.setOnClickListener {
             showSalePriceForm()
-            setSaleRateForm(Model.SalePrice(),saleRateAdapter.transaction)
+            //setSaleRateForm(Model.SalePrice(),saleRateAdapter.transaction.medium_price)
             //txtTitlePrice.text = "ราคาลูกค้า"
+            setSaleRateForm(Model.SalePrice(),edtMediumPrice.text.toString())
         }
 
         edtTransactionCompany.DisableClick()
@@ -316,6 +319,21 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
                         edtPriceValues.text.toString(), Utils.getDateStringWithDate(selectedDate), edtPriceNote.text.toString()))
                 clearPriceForm()
                 showTransactionForm()
+
+            when {
+                transactionVM.outState.value == TransactionState.NEWFROMCONTACT -> {
+                    saveOrUpdateTransaction()
+                    contactViewModel.updateViewState(ContactState.SELECTCONTACT)
+                    transactionVM.updateStateView(TransactionState.SHOWLIST)
+                }
+                transactionVM.outState.value == TransactionState.TRIGGERFROMSERVICE -> {
+                    saveOrUpdateTransaction()
+                    contactViewModel.updateContact(contactViewModel.contact.value!!)
+                    contactViewModel.updateViewState(ContactState.SELECTCONTACT)
+                    transactionVM.updateStateView(TransactionState.SHOWLIST)
+                }
+                else -> saveOrUpdateTransaction()
+            }
         }
         btnDeletePrice.setOnClickListener {
             deleteSaleRate()
@@ -329,7 +347,8 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         }
 
         edtPriceDate.setOnClickListener {
-            showSpinner()
+            //showSpinner()
+            showDatePicker()
         }
 
     }
@@ -381,7 +400,8 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
                         transactionVM.updateProduct(product.first())
                         edtTransactionProduct.setText(product.first().product_name.lines().first())
                         if (product.first().medium_rate.isNotEmpty()) {
-                            edtMediumPrice.setText(product.first().medium_rate.first().price)
+                            val mediumPrice = product.first().medium_rate.first()
+                            edtMediumPrice.setText(mediumPrice.price+" (${if(mediumPrice.vat) "A" else "B"})")
                         }
                     }else{
                         transactionVM.updateProduct(null)
@@ -560,6 +580,23 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         })
     }
 
+    fun showDatePicker(){
+        val c = Calendar.getInstance()
+        c.time = selectedDate
+        val mount = c.get(Calendar.MONTH)
+        val dOfm = c.get(Calendar.DAY_OF_MONTH)
+        val year = c.get(Calendar.YEAR)
+        val hour = c.get(Calendar.HOUR_OF_DAY)
+        val minute = c.get(Calendar.MINUTE)
+        val datePicker = android.app.DatePickerDialog(context,
+                android.app.DatePickerDialog.OnDateSetListener { view, yearOf, monthOfYear, dayOfMonth ->
+                    val dateSelect = Calendar.getInstance()
+                    dateSelect.set(yearOf,monthOfYear,dayOfMonth,0,0,0)
+                    selectedDate = dateSelect.time
+                    edtPriceDate.setText(Utils.getDateStringWithDate(selectedDate).substring(0,10))
+                },year,mount,dOfm)
+        datePicker.show()
+    }
 
     fun showSpinner(){
         val c = Calendar.getInstance()
@@ -609,7 +646,8 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
                 edtTransactionProduct.setText(product.product_name)
                 val price = product.medium_rate.filter { it.default }
                 if (price.isNotEmpty()) {
-                    edtMediumPrice.setText(price.first().price)
+                    val mediumPrice = price.first()
+                    edtMediumPrice.setText(mediumPrice.price+" (${if(mediumPrice.vat) "A" else "B"})")
                 }
                 transactionVM.updateProduct(product)
                 bottomSheetDialog.dismiss()
@@ -621,6 +659,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         val bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet_company, null)
         val rvFilterCompany = bottomSheetView.findViewById<RecyclerView>(R.id.rvFilterCompany)
         val txtFilter = bottomSheetView.findViewById<EdtMedium>(R.id.txtCompanyFilter)
+        val btnCancel = bottomSheetView.findViewById<BtnMedium>(R.id.btnCancel)
         bottomSheetDialog = BottomSheetDialog(context!!)
         bottomSheetDialog.setContentView(bottomSheetView)
         sheetDisableCard = BottomSheetBehavior.from(bottomSheetView.parent as View)
@@ -635,6 +674,10 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
             adapter = this@TransactionsFragment.adapter
+        }
+
+        btnCancel.setOnClickListener {
+            bottomSheetDialog.dismiss()
         }
 
         txtFilter.addTextChangedListener(object : TextWatcher {
@@ -659,6 +702,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         val bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet_company, null)
         val rvFilterCompany = bottomSheetView.findViewById<RecyclerView>(R.id.rvFilterCompany)
         val txtFilter = bottomSheetView.findViewById<EdtMedium>(R.id.txtCompanyFilter)
+        val btnCancel = bottomSheetView.findViewById<BtnMedium>(R.id.btnCancel)
         bottomSheetDialog = BottomSheetDialog(context!!)
         bottomSheetDialog.setContentView(bottomSheetView)
         sheetDisableCard = BottomSheetBehavior.from(bottomSheetView.parent as View)
@@ -673,6 +717,10 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
             adapter = this@TransactionsFragment.productAdapter
+        }
+
+        btnCancel.setOnClickListener {
+            bottomSheetDialog.dismiss()
         }
 
         txtFilter.addTextChangedListener(object : TextWatcher {
@@ -694,18 +742,20 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
 
     }
 
-    fun setSaleRateForm(salePrice: Model.SalePrice,transaction: Model.Transaction){
+    fun setSaleRateForm(salePrice: Model.SalePrice,mediumPrice: String){
         if (saleRateAdapter.saleList.size > 0){
-            edtOldPrice.setText(saleRateAdapter.saleList[0].price)
+            val saleRate = saleRateAdapter.saleList[0]
+            edtOldPrice.setText(saleRate.price+"${Utils.checkTypePrice(saleRate.vat)}")
         }else{
             edtOldPrice.setText("")
         }
         if(salePrice.date.isNotEmpty()){
-            edtPriceDate.setText(Utils.format2DigiYMD(salePrice.date))
+            edtPriceDate.setText(Utils.format4DigiYMD(salePrice.date))
+            selectedDate = Utils.getDateWithString(salePrice.date)
         }
         edtSalePrice.setText(salePrice.price)
         edtPriceNote.setText(salePrice.note)
-        edtPrice.setText(transaction.medium_price)
+        edtPrice.setText(mediumPrice)
         edtPriceValues.setText(salePrice.values)
         getSaleType(salePrice.vat)
         edtPrice.DisableClick()
@@ -755,7 +805,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
     override fun onClickSaleRate(salePrice: Model.SalePrice, position: Int,transaction: Model.Transaction) {
         transactionVM.updateSalePrice(salePrice,position)
         showSalePriceForm()
-        setSaleRateForm(salePrice,transaction)
+        setSaleRateForm(salePrice,edtMediumPrice.text.toString())
         transactionVM.updateStateView(TransactionState.SELECTSALEPRICE)
 
     }

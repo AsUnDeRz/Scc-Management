@@ -35,6 +35,8 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
     }
     val contacts : MutableLiveData<MutableList<Model.Contact>> = MutableLiveData()
     val contact : MutableLiveData<Model.Contact> = MutableLiveData()
+    val address : MutableLiveData<Model.Address> = MutableLiveData()
+    val base64 : MutableLiveData<String> = MutableLiveData()
 
 
 
@@ -43,7 +45,7 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
             val job = async(CommonPool) {
                 data.addresses.forEach{
                     val fileName = Uri.fromFile(File(it.path_img_map))
-                    it.url_img_map = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${fileName.lastPathSegment}"
+                    //it.url_img_map = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${fileName.lastPathSegment}"
                     if(it.path_img_map.isNotEmpty()){
                         firebase.pushFileToFirebase(it.path_img_map,"")
                         async(UI) {
@@ -83,7 +85,7 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
             service.deleteContact(it)
             service.deleteContactInDb(it.id)
             it.addresses.forEach {
-                firebase.deleteFile(it.url_img_map,it.path_img_map)
+                //firebase.deleteFile(it.base64_img_map,it.path_img_map)
             }
         }
 
@@ -123,6 +125,13 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
         return contact.value!!
     }
 
+    fun updateAddress(data:Model.Address){
+        address.value =  data
+    }
+
+    fun updateBase64(data:String){
+        base64.value = data
+    }
 
 
     override fun onSuccess() {

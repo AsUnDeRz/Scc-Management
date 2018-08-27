@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="false"
         android:layout_centerHorizontal="true"
-        android:layout_weight="3"
+        android:layout_weight="7"
         android:gravity="center"
         android:text="วันที่"
         android:textSize="12sp" />
@@ -27,7 +27,7 @@
             android:id="@+id/txtCircleState"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:background="@drawable/bg_circle_issue"
             android:gravity="center"

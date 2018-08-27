@@ -25,6 +25,6 @@ class TxtBold : AppCompatTextView {
 
     private fun applyFont(context: Context) {
         val customFont = Typeface.createFromAsset(context.assets, "fonts/set_bold.ttf")
-        typeface = customFont
+        //typeface = customFont
     }
 }
