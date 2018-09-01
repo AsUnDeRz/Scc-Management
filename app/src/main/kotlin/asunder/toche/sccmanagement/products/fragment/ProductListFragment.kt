@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
+import asunder.toche.sccmanagement.main.ControlViewModel
+import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.products.ProductState
 import asunder.toche.sccmanagement.products.adapter.ProductAdapter
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
@@ -22,6 +24,7 @@ class ProductListFragment : Fragment(),ProductAdapter.ProductListener{
 
     lateinit var productAdapter : ProductAdapter
     private lateinit var productViewModel: ProductViewModel
+    private lateinit var controlViewModel : ControlViewModel
 
     companion object {
         fun newInstance(): ProductListFragment = ProductListFragment()
@@ -31,6 +34,8 @@ class ProductListFragment : Fragment(),ProductAdapter.ProductListener{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         productViewModel = ViewModelProviders.of(activity!!).get(ProductViewModel::class.java)
+        controlViewModel = ViewModelProviders.of(activity!!).get(ControlViewModel::class.java)
+
     }
 
 
@@ -43,6 +48,7 @@ class ProductListFragment : Fragment(),ProductAdapter.ProductListener{
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
         observProductViewModel()
+
     }
 
     fun setupAdapter(){
@@ -61,11 +67,9 @@ class ProductListFragment : Fragment(),ProductAdapter.ProductListener{
     fun observProductViewModel(){
 
         productViewModel.products.observe(this, Observer {
-
             it?.let {
                 productAdapter.updateProduct(it)
             }
-
         })
 
         productViewModel.stateView.observe(this, Observer {
@@ -83,6 +87,14 @@ class ProductListFragment : Fragment(),ProductAdapter.ProductListener{
                 }
                 ProductState.SHOWPRODUCT ->{
 
+                }
+            }
+        })
+
+        controlViewModel.currentUI.observe(this, Observer {
+            when(it){
+                ROOT.PRODUCTS ->{
+                    setupAdapter()
                 }
             }
         })

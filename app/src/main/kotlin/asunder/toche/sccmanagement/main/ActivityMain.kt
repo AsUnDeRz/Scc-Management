@@ -30,10 +30,7 @@ import asunder.toche.sccmanagement.custom.pager.CustomViewPager
 import asunder.toche.sccmanagement.hover.FloatingViewService
 import asunder.toche.sccmanagement.issue.IssueState
 import asunder.toche.sccmanagement.issue.IssueViewModel
-import asunder.toche.sccmanagement.preference.Contextor
-import asunder.toche.sccmanagement.preference.KEY
-import asunder.toche.sccmanagement.preference.ROOT
-import asunder.toche.sccmanagement.preference.Utils
+import asunder.toche.sccmanagement.preference.*
 import asunder.toche.sccmanagement.products.ProductState
 import asunder.toche.sccmanagement.products.viewmodel.ProductViewModel
 import asunder.toche.sccmanagement.settings.ActivitySetting
@@ -41,6 +38,7 @@ import asunder.toche.sccmanagement.transactions.TransactionState
 import asunder.toche.sccmanagement.transactions.viewmodel.TransactionViewModel
 import com.bumptech.glide.Glide
 import com.snatik.storage.Storage
+import com.thefinestartist.utils.preferences.Pref
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.menu_drawer.*
 import kotlinx.coroutines.experimental.DefaultDispatcher
@@ -244,9 +242,15 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == KEY.OPEN_SETTING) {
-            triggerUpdate()
+            when(controlViewModel.currentUI.value){
+                ROOT.PRODUCTS ->{
+                    controlViewModel.updateCurrentUI(ROOT.PRODUCTS)
+                }
+                ROOT.CONTACTS ->{
+                    triggerUpdate()
+                }
+            }
         }
-
     }
 
     @Subscribe
@@ -411,18 +415,10 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     }
 
     override fun onClickConfirm() {
-        /*
-        val key = "This is a secret"
-        val storage = Storage(applicationContext)
-        val files = storage.getNestedFiles(Utils.getPath(this))
-        async{
-            files.forEach {
-                FileEnDecryptManager.getInstance().fileProcessor(Cipher.ENCRYPT_MODE, key,it,it)
-            }
+
+        if (!Prefer.isFileEncrypt(this)){
+            //Utils.encrypt(this)
         }
-        */
-
-
         openFloatingView()
         val setIntent = Intent(Intent.ACTION_MAIN)
         setIntent.addCategory(Intent.CATEGORY_HOME)
@@ -433,15 +429,9 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     }
 
     override fun onClickCancel() {
-        /*
-        val key = "This is a secret"
-        val storage = Storage(applicationContext)
-        val files = storage.getNestedFiles(Utils.getPath(this))
-        files.forEach {
-                FileEnDecryptManager.getInstance().fileProcessor(Cipher.DECRYPT_MODE, key,it,it)
+        if (Prefer.isFileEncrypt(this)){
+            Utils.decrypt(this)
         }
-        */
-
     }
 
     fun setupCurrentUser(){
@@ -518,18 +508,16 @@ class ActivityMain : AppCompatActivity(), LifecycleOwner,ConfirmDialog.ConfirmDi
     public override fun onStart() {
         super.onStart()
         EventBus.getDefault().register(this)
+        if (Prefer.isFileEncrypt(this)){
+            Utils.decrypt(this)
+        }
     }
 
     public override fun onStop() {
         super.onStop()
         EventBus.getDefault().unregister(this)
-        val key = "This is a secret"
-        val storage = Storage(applicationContext)
-        val files = storage.getNestedFiles(Utils.getPath(this))
-        async{
-            files.forEach {
-                FileEnDecryptManager.getInstance().fileProcessor(Cipher.ENCRYPT_MODE, key,it,it)
-            }
+        if (!Prefer.isFileEncrypt(this)){
+            Utils.encrypt(this)
         }
 
 

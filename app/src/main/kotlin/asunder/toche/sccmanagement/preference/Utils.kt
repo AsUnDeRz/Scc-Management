@@ -14,6 +14,7 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Filter
 import asunder.toche.sccmanagement.Model
+import asunder.toche.sccmanagement.custom.FileEnDecryptManager
 import com.crashlytics.android.Crashlytics
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -23,13 +24,24 @@ import java.text.SimpleDateFormat
 import java.util.*
 import com.google.gson.GsonBuilder
 import com.google.gson.Gson
+import com.thefinestartist.utils.preferences.Pref
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.async
+import org.zeroturnaround.zip.ZipUtil
 import java.io.*
+import javax.crypto.Cipher
 
 
 /**
  *Created by ToCHe on 9/3/2018 AD.
  */
 object Utils{
+
+    enum class StateData{
+        ALL,
+        CONTACT,
+        PRODUCT,
+    }
 
     fun scanForActivity(cont: Context?): Activity? {
         return when (cont) {
@@ -296,6 +308,89 @@ object Utils{
         return externalPath + File.separator + Prefer.getUUID(context)
     }
 
+    fun getPathSDcard(context: Context):String{
+        val sdPath = "Sc"
+        return ""
+    }
+
+
+    fun moveFileToFolderExport(path:String,newDir:String,context: Context) {
+        println(path)
+        println(newDir)
+        val stor = Storage(context)
+        stor.createDirectory(newDir)
+        val toPath = newDir+File.separator+File(path).absolutePath.substring(File(path).absolutePath.lastIndexOf(File.separator)+1)
+        val rawFile = File(path)
+        if (!rawFile.isDirectory){
+            println("copy file $path \n to $toPath")
+            stor.copy(path, toPath)
+        }else{
+            println("File already")
+        }
+    }
+
+    fun exportContact(context: Context,
+                      contacts:MutableList<Model.Contact>,
+                      folder: File){
+        createFileDB(context)
+        val stor = Storage(context)
+        val newDir = getPath(context)+File.separator+"ContactExport"
+        stor.createDirectory(newDir)
+        val masterContact = Model.MasterData(
+                contactUser = Model.ContactUser(contacts),
+                create_date = Utils.getCurrentDateString())
+        FileWriter(File(newDir+ File.separator + "contacts.json")).use {
+            val gson = GsonBuilder().create()
+            gson.toJson(masterContact,it)
+        }
+
+        async {
+            val result = async {
+                contacts.forEach {
+                    it.addresses.forEach {
+                        moveFileToFolderExport(it.path_img_map,newDir,context)
+                        println(it)
+                    }
+                }
+            }
+            result.await()
+            ZipUtil.pack(File(newDir),
+                    File("${folder.path}/backupContactSccManagement${Utils.getCurrentDateForBackupFile()}.zip"))
+        }
+    }
+
+    fun exportProduct(context: Context,
+                      products:MutableList<Model.Product>,
+                      folder:File){
+        createFileDB(context)
+        val stor = Storage(context)
+        val newDir = getPath(context)+File.separator+"ProductExport"
+        stor.createDirectory(newDir)
+        val masterProduct = Model.MasterData(
+                productUser = Model.ProductUser(products),
+                create_date = Utils.getCurrentDateString())
+        FileWriter(File(newDir+ File.separator + "products.json")).use {
+            val gson = GsonBuilder().create()
+            gson.toJson(masterProduct,it)
+        }
+
+        async {
+            val result = async {
+                products.forEach {
+                    it.pictures.forEach {
+                        moveFileToFolderExport(it.local_path,newDir,context)
+                    }
+                    it.files.forEach {
+                        moveFileToFolderExport(it.local_path,newDir,context)
+                    }
+                }
+            }
+            result.await()
+            ZipUtil.pack(File(newDir),
+                    File("${folder.path}/backupProductSccManagement${Utils.getCurrentDateForBackupFile()}.zip"))
+        }
+    }
+
     fun exportDB(context: Context){
         createFileDB(context)
         val path = getPath(context)
@@ -303,7 +398,6 @@ object Utils{
         var issue = Paper.book().read<Model.IssueUser>(ROOT.ISSUE)
         var product = Paper.book().read<Model.ProductUser>(ROOT.PRODUCTS)
         var transaction = Paper.book().read<Model.TransactionUser>(ROOT.TRANSACTIONS)
-        //var images = Paper.book().read<Model.MasterImage>(ROOT.IMAGESCC)
 
         if (contact == null){
             contact = Model.ContactUser()
@@ -329,24 +423,10 @@ object Utils{
                 val gson = GsonBuilder().create()
                 gson.toJson(masterData,write)
         }
-
-        val masterContact = Model.MasterData(
-                contactUser = contact,
-                create_date = Utils.getCurrentDateString())
-        FileWriter(File(path+ File.separator + "contacts.json")).use {
-            val gson = GsonBuilder().create()
-            gson.toJson(masterContact,it)
-        }
-
-        val masterProduct = Model.MasterData(
-                productUser = product,
-                create_date = Utils.getCurrentDateString())
-        FileWriter(File(path+ File.separator + "products.json")).use {
-            val gson = GsonBuilder().create()
-            gson.toJson(masterProduct,it)
-        }
-
     }
+
+
+
     fun importDB(context: Context){
         val path = getPath(context)
         Paper.book().destroy()
@@ -360,6 +440,7 @@ object Utils{
             Paper.book().write(ROOT.PRODUCTS, mData.productUser)
             Paper.book().write(ROOT.TRANSACTIONS, mData.transactionUser)
 
+            /*
             val firebase : DatabaseReference = FirebaseDatabase.getInstance().reference
             val childUpdates = HashMap<String,Any>()
             mData.contactUser.contacts.forEach {
@@ -396,7 +477,69 @@ object Utils{
                     System.out.println("Restore data successfully.")
                 }
             }
+            */
         }
+    }
+
+    fun importContact(context: Context){
+        createFileDB(context)
+        val stor = Storage(context)
+        val path = getPath(context)
+        val newDir = getPath(context)+File.separator+"ContactExport"
+        stor.createDirectory(newDir)
+        val gson = GsonBuilder().setPrettyPrinting().create()
+        val mData = gson.fromJson(FileReader(File(newDir+File.separator+"contacts.json")),
+                Model.MasterData::class.java)
+        println(gson.toJson(mData))
+        if (mData != null) {
+            Paper.book().write(ROOT.CONTACTS, mData.contactUser)
+        }
+        async {
+            val result = async {
+                mData.contactUser.contacts.forEach {
+                    it.addresses.forEach {
+                        moveFileToFolderExport(it.path_img_map,newDir,context)
+                        println(it)
+                    }
+                }
+            }
+            result.await()
+            if(stor.deleteDirectory(newDir)){
+                println("Delete Product Export Folder Success")
+            }
+        }
+
+    }
+    fun importProduct(context: Context){
+        createFileDB(context)
+        val stor = Storage(context)
+        val path = getPath(context)
+        val newDir = getPath(context)+File.separator+"ProductExport"
+        stor.createDirectory(newDir)
+        val gson = GsonBuilder().setPrettyPrinting().create()
+        val mData = gson.fromJson(FileReader(File(newDir+File.separator+"products.json")),
+                Model.MasterData::class.java)
+        println(gson.toJson(mData))
+        if (mData != null) {
+            Paper.book().write(ROOT.PRODUCTS, mData.productUser)
+        }
+        async {
+            val result = async {
+                mData.productUser.products.forEach {
+                    it.pictures.forEach {
+                        moveFileToFolderExport(it.local_path,newDir,context)
+                    }
+                    it.files.forEach {
+                        moveFileToFolderExport(it.local_path,newDir,context)
+                    }
+                }
+            }
+            result.await()
+            if(stor.deleteDirectory(newDir)){
+                println("Delete Product Export Folder Success")
+            }
+        }
+
     }
 
     fun createFileDB(context: Context) {
@@ -519,6 +662,49 @@ object Utils{
         //"data:image/jpeg;base64,"
         return Base64.encodeToString(byteArrayImage, Base64.DEFAULT)
     }
+
+
+    fun decrypt(context: Context){
+        val key = "This is a secret"
+        val storage = Storage(context)
+        val files = storage.getNestedFiles(Utils.getPath(context))
+        async {
+            val job = async(CommonPool){
+                files.forEach {
+                    if (it.name.contains("master.json") || it.name.contains("contacts.json") || it.name.contains("products.json")){
+
+                    }else {
+                        FileEnDecryptManager.getInstance().fileProcessor(Cipher.DECRYPT_MODE, key,it,it)
+                    }
+                }
+            }
+            job.await()
+            Prefer.saveStateFile(false,context)
+            println("Decrypt Success")
+        }
+    }
+
+    fun encrypt(context: Context){
+        val key = "This is a secret"
+        val storage = Storage(context)
+        val files = storage.getNestedFiles(Utils.getPath(context))
+        async{
+            val job = async(CommonPool){
+                files.forEach {
+                    if (it.name.contains("master.json") || it.name.contains("contacts.json") || it.name.contains("products.json")){
+
+                    }else{
+                        FileEnDecryptManager.getInstance().fileProcessor(Cipher.ENCRYPT_MODE, key,it,it)
+                    }
+
+                }
+            }
+            job.await()
+            Prefer.saveStateFile(true,context)
+            println("Encrypt Success")
+        }
+    }
+
 
 
 

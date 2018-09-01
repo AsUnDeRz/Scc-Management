@@ -76,7 +76,6 @@ class FirebaseManager{
 
     fun pushFileToFirebase(path:String,session: String){
         saveImage(path)
-        pushPathImageToDb(path)
         /*
         storage.maxUploadRetryTimeMillis = 2000L
         val storageRef = storage.reference

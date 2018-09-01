@@ -30,6 +30,7 @@ import com.onegravity.contactpicker.contact.ContactDescription
 import com.onegravity.contactpicker.contact.ContactSortOrder
 import com.onegravity.contactpicker.core.ContactPickerActivity
 import com.onegravity.contactpicker.picture.ContactPictureType
+import com.snatik.storage.Storage
 import kotlinx.android.synthetic.main.activity_settings.*
 import org.zeroturnaround.zip.ZipUtil
 import java.io.File
@@ -53,7 +54,9 @@ class ActivitySetting: AppCompatActivity(),
     val uid = "155434134123"
     private var contactUser: MutableList<Model.Contact> = mutableListOf()
     private lateinit var loading: MaterialDialog
-
+    val IMPORTALL = "import_all"
+    val IMPORTCONTACT = "import_contact"
+    val IMPORTPRODUCT = "import_product"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,8 +68,6 @@ class ActivitySetting: AppCompatActivity(),
 
 
         Utils.exportDB(this)
-
-
     }
 
     private fun checkPermission() {
@@ -127,8 +128,14 @@ class ActivitySetting: AppCompatActivity(),
         }
 
         btnImportData.setOnClickListener {
-            showSelecterFile()
+            showSelecterFile(IMPORTALL)
+        }
 
+        btnImportContact.setOnClickListener {
+            showSelecterFile(IMPORTCONTACT)
+        }
+        btnImportProduct.setOnClickListener {
+            showSelecterFile(IMPORTPRODUCT)
         }
     }
 
@@ -202,30 +209,57 @@ class ActivitySetting: AppCompatActivity(),
     override fun onFolderChooserDismissed(dialog: FolderChooserDialog) {
     }
 
-    fun showSelecterFile() {
+    fun showSelecterFile(tag:String) {
         FileChooserDialog.Builder(this)
                 .cancelButton(R.string.cancel)
                 .initialPath(Environment.getExternalStorageDirectory().path)
                 //.mimeType()
                 .extensionsFilter(".zip")
-                .tag("file-selecter")
+                .tag(tag)
                 .goUpLabel("ย้อนกลับ")
                 .show(this)
+
+
 
     }
 
     override fun onFileSelection(dialog: FileChooserDialog, file: File) {
         showDialog("กำลังนำเข้าไฟล์สำรองข้อมูล\nกรุณารอสักครู่")
-        val externalPath = Environment.getExternalStorageDirectory().absolutePath
-        val newDir = externalPath + File.separator + Prefer.getUUID(this)
-        ZipUtil.unpack(file, File(newDir))
-        Utils.importDB(this)
+        val stor = Storage(applicationContext)
+        when(dialog.tag){
+            IMPORTALL ->{
+                ZipUtil.unpack(file, File(Utils.getPath(this)))
+                Utils.importDB(this)
+            }
+            IMPORTCONTACT ->{
+                val newDir = Utils.getPath(this) +File.separator+"ContactExport"
+                stor.createDirectory(newDir)
+                ZipUtil.unpack(file, File(newDir))
+                Utils.importContact(this)
+            }
+            IMPORTPRODUCT ->{
+                val newDir = Utils.getPath(this) +File.separator+"ProductExport"
+                stor.createDirectory(newDir)
+                ZipUtil.unpack(file, File(newDir))
+                Utils.importProduct(this)
+            }
+        }
         Handler().postDelayed({
             hideDialog()
-        },2000)
-
+        },4000)
     }
 
     override fun onFileChooserDismissed(dialog: FileChooserDialog) {
+    }
+
+    /* Checks if external storage is available for read and write */
+    fun isExternalStorageWritable(): Boolean {
+        return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
+    }
+
+    /* Checks if external storage is available to at least read */
+    fun isExternalStorageReadable(): Boolean {
+        return Environment.getExternalStorageState() in
+                setOf(Environment.MEDIA_MOUNTED, Environment.MEDIA_MOUNTED_READ_ONLY)
     }
 }

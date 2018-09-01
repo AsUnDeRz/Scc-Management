@@ -85,6 +85,7 @@ class AddressAdapter(var listener : ComponentListener): RecyclerView.Adapter<Add
 
         fun bind(address: Model.Address,listener: ComponentListener){
             imageAction?.visibility = View.GONE
+            txtTitle.visibility = View.GONE
             if(address.type == "" || address.type == "เลือก"){
                 txtTitle?.text = "เลือก"
             }else {

@@ -65,13 +65,9 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
             requestPermission()
         }
 
-        val key = "This is a secret"
-        val storage = Storage(applicationContext)
-        val files = storage.getNestedFiles(Utils.getPath(this))
-        files.forEach {
-            FileEnDecryptManager.getInstance().fileProcessor(Cipher.DECRYPT_MODE, key,it,it)
+        if (Prefer.isFileEncrypt(this)){
+            Utils.decrypt(applicationContext)
         }
-
     }
 
     override fun onDestroy() {
@@ -93,7 +89,7 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
                     override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
                         if (report != null) {
                             if(!report.isAnyPermissionPermanentlyDenied) {
-                                postDelayed()
+                                checkSelectRootpath()
                             }else{
                                 finish()
                             }
@@ -128,7 +124,8 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
                     applicationContext.contentResolver,
                     Secure.ANDROID_ID)
         }
-        Prefer.saveUUID(deviceId,this)
+        val db = "saguanchai_database"
+        Prefer.saveUUID(db,this)
     }
 
     fun setupPreference(){
@@ -209,6 +206,17 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
 
     fun fetchAdmin(){
         authManager.checkAdmin()
+    }
+
+    fun checkSelectRootpath(){
+        if (Prefer.getRootPath(this) == ""){
+            postDelayed()
+
+        }else{
+            postDelayed()
+        }
+
+
     }
 
 }

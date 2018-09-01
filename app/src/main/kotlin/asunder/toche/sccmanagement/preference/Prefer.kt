@@ -40,17 +40,23 @@ object Prefer{
         return prefer.getString(KEY.BASE64,"")
     }
 
-    fun saveSession(session: Uri, file: Uri,context: Context){
+    fun saveStateFile(mode:Boolean,context: Context){
         val editor = openFile(context).edit()
-        editor.putString(KEY.SESSION_UPLOAD,session.toString())
-        editor.putString(KEY.FILE_PATH,file.toString())
+        editor.putBoolean(KEY.IS_FILE_ENCRYPT,mode)
+        //editor.putString(KEY.FILE_PATH,file.toString())
         editor.apply()
     }
-    fun getSession(context: Context) : String{
+    fun isFileEncrypt(context: Context) : Boolean{
         val prefer = openFile(context)
-        return prefer.getString(KEY.SESSION_UPLOAD,"")
+        return prefer.getBoolean(KEY.IS_FILE_ENCRYPT,false)
     }
-    fun getFile(context: Context) : String{
+
+    fun saveRootPath(context: Context,path:String){
+        val editor = openFile(context).edit()
+        editor.putString(KEY.FILE_PATH,path)
+        editor.apply()
+    }
+    fun getRootPath(context: Context) : String{
         val prefer = openFile(context)
         return prefer.getString(KEY.FILE_PATH,"")
     }

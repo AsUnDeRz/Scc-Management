@@ -144,14 +144,45 @@
         android:id="@+id/btnImportData"
         android:layout_width="0dp"
         android:layout_height="56dp"
+        android:layout_marginTop="16dp"
         android:background="@android:color/transparent"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:gravity="left|center_vertical"
         android:paddingStart="48dp"
-        android:text="นำเข้าไฟล์สำรองข้อมูล"
+        android:text="นำเข้าไฟล์สำรองข้อมูลทั้งหมด"
         android:textAllCaps="false"
         android:textColor="@color/colorDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnExportProduct" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnImportContact"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="@android:color/transparent"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:gravity="left|center_vertical"
+        android:paddingStart="48dp"
+        android:text="นำเข้าไฟล์สำรองข้อมูลเฉพาะผู้ติดต่อ"
+        android:textAllCaps="false"
+        android:textColor="@color/colorDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnImportData" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnImportProduct"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="@android:color/transparent"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:gravity="left|center_vertical"
+        android:paddingStart="48dp"
+        android:text="นำเข้าไฟล์สำรองข้อมูลเฉพาะสินค้า"
+        android:textAllCaps="false"
+        android:textColor="@color/colorDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnImportContact" />
 </android.support.constraint.ConstraintLayout>

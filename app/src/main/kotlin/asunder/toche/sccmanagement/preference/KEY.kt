@@ -16,4 +16,5 @@ object KEY{
     const val DELETE="delete"
     const val PAPERDB = "paperdb"
     const val BASE64 = "base64"
+    const val IS_FILE_ENCRYPT = "ENCRYPT"
 }
