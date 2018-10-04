@@ -22,6 +22,7 @@ import asunder.toche.sccmanagement.custom.extension.DisableClick
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_component_info.view.*
+import java.io.File
 
 /**
  *Created by ToCHe on 3/4/2018 AD.
@@ -58,6 +59,7 @@ class AddressAdapter(var listener : ComponentListener): RecyclerView.Adapter<Add
     }
 
     fun remove(position: Int){
+        File(addresses[position].path_img_map).delete()
         addresses.removeAt(position)
         notifyDataSetChanged()
     }

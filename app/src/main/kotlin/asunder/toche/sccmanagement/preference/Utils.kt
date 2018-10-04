@@ -53,36 +53,36 @@ object Utils{
     }
 
     fun getCurrentDateForBackupFile():String{
-        val fmtOut = SimpleDateFormat("yyyyMMdd_HH:mm:ss", Locale("en",""))
+        val fmtOut = SimpleDateFormat("yyyyMMdd_HH:mm:ss")
         return fmtOut.format(Date())
     }
 
     fun getCurrentDateShort() :String{
-        val fmtOut = SimpleDateFormat("yyyy/MM/dd", Locale("en",""))
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd")
         return fmtOut.format(getCurrentDate())
     }
 
     fun getCurrentDateString() : String{
-            val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale("en",""))
+            val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
             return fmtOut.format(getCurrentDate())
     }
 
     fun getDateWithString(date :String) : Date{
-        val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale("en",""))
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
         return fmtOut.parse(date)
     }
     fun getDateString(date :String) : Date{
-        val fmtOut = SimpleDateFormat("yyyy/MM/dd", Locale("en",""))
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd")
         return fmtOut.parse(date)
     }
 
     fun format2DigiYMD(date: String):String{
-        val fmtOut = SimpleDateFormat("yyMMdd", Locale("en",""))
+        val fmtOut = SimpleDateFormat("yyMMdd")
         return fmtOut.format(getDateWithString(date))
     }
 
     fun format4DigiYMD(date: String):String{
-        val fmtOut = SimpleDateFormat("yyyy/MM/dd", Locale("en",""))
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd")
         return fmtOut.format(getDateWithString(date))
     }
 
@@ -108,7 +108,7 @@ object Utils{
     }
 
     fun getDateStringWithDate(date: Date) : String{
-        val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale("en",""))
+        val fmtOut = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
         return fmtOut.format(date)
     }
 
@@ -685,6 +685,7 @@ object Utils{
     }
 
     fun encrypt(context: Context){
+        /*
         val key = "This is a secret"
         val storage = Storage(context)
         val files = storage.getNestedFiles(Utils.getPath(context))
@@ -694,7 +695,7 @@ object Utils{
                     if (it.name.contains("master.json") || it.name.contains("contacts.json") || it.name.contains("products.json")){
 
                     }else{
-                        FileEnDecryptManager.getInstance().fileProcessor(Cipher.ENCRYPT_MODE, key,it,it)
+                        //FileEnDecryptManager.getInstance().fileProcessor(Cipher.ENCRYPT_MODE, key,it,it)
                     }
 
                 }
@@ -703,6 +704,7 @@ object Utils{
             Prefer.saveStateFile(true,context)
             println("Encrypt Success")
         }
+        */
     }
 
 

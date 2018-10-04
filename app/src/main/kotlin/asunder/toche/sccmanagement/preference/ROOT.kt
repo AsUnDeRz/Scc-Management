@@ -39,4 +39,10 @@ object ROOT{
     const val HOME = "Home"
     const val Mobile ="Mobile"
     const val WORK = "Work"
+
+
+    //Last folder open
+    const val LASTFOLDERALL = "lastfolderall"
+    const val LASTFOLDERCONTACT = "lastfoldercontact"
+    const val LASTFOLDERPRODUCT = "lastfolderproduct"
 }

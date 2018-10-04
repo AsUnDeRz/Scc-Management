@@ -66,7 +66,8 @@
         android:paddingStart="8dp"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/space5"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnSetToday"
         app:layout_constraintTop_toTopOf="parent" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
@@ -117,13 +118,13 @@
         android:gravity="left"
         android:hint="กรอกข้อมูล รายละเอียดประเด็น..."
         android:imeOptions="actionDone"
+        android:overScrollMode="always"
         android:padding="8dp"
-        android:textSize="12sp"
         android:scrollHorizontally="false"
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:scrollbarStyle="insideInset"
         android:scrollbars="vertical"
-        android:overScrollMode="always"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@+id/edtIssue"
         app:layout_constraintStart_toStartOf="@+id/edtIssue"
         app:layout_constraintTop_toBottomOf="@+id/edtIssue" />
@@ -195,16 +196,30 @@
     </RelativeLayout>
 
     <asunder.toche.sccmanagement.custom.button.BtnMedium
-        android:textAllCaps="false"
         android:id="@+id/btnOpenContact"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:background="@drawable/bg_round_bold"
         android:text="ไปหน้า Contact"
+        android:textAllCaps="false"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@+id/edtProcess"
         app:layout_constraintStart_toEndOf="@+id/space"
         app:layout_constraintTop_toTopOf="@+id/edtCompany" />
+
+    <asunder.toche.sccmanagement.custom.button.BtnMedium
+        android:id="@+id/btnSetToday"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="@color/colorPrimary"
+        android:text="Today"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/edtProcess"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/edtIssueDate"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Space
         android:id="@+id/space"

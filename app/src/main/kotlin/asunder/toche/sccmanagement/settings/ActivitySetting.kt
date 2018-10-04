@@ -3,12 +3,17 @@ package asunder.toche.sccmanagement.settings
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.provider.ContactsContract
+import android.support.v4.app.ShareCompat
+import android.support.v4.content.FileProvider
+import android.support.v4.content.FileProvider.getUriForFile
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.webkit.MimeTypeMap
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.main.ActivitySelectExport
@@ -17,6 +22,7 @@ import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.service.ContactService
+import au.com.jtribe.shelly.Shelly
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.folderselector.FileChooserDialog
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog
@@ -34,6 +40,7 @@ import com.snatik.storage.Storage
 import kotlinx.android.synthetic.main.activity_settings.*
 import org.zeroturnaround.zip.ZipUtil
 import java.io.File
+import java.net.URLConnection
 
 
 /**
@@ -111,7 +118,6 @@ class ActivitySetting: AppCompatActivity(),
 
         btnExportData.setOnClickListener {
             showSelecterFolder()
-
         }
 
         btnExportContact.setOnClickListener {
@@ -185,10 +191,12 @@ class ActivitySetting: AppCompatActivity(),
     }
 
     fun showSelecterFolder() {
+
+        val initFolder = Prefer.getLastFolderType(this,ROOT.LASTFOLDERALL)
         FolderChooserDialog.Builder(this)
                 .cancelButton(R.string.cancel)
                 .chooseButton(R.string.select_folder)  // changes label of the choose button
-                .initialPath(Environment.getExternalStorageDirectory().path)  // changes initial path, defaults to external storage directory
+                .initialPath(initFolder)  // changes initial path, defaults to external storage directory
                 .tag("optional-identifier")
                 .allowNewFolder(true, R.string.newfolder)
                 .show(this)
@@ -197,12 +205,31 @@ class ActivitySetting: AppCompatActivity(),
     override fun onFolderSelection(dialog: FolderChooserDialog, folder: File) {
         showDialog("กำลังส่งออกไฟล์สำรองข้อมูล\nกรุณารอสักครู่")
         val tag = dialog.tag// gets tag set from Builder, if you use multiple dialogs
+        val resultPath = File("${folder.path}/backup${Utils.getCurrentDateForBackupFile()}.zip")
+        Prefer.saveLastFolderType(this,ROOT.LASTFOLDERALL,folder.absolutePath)
         if (tag != null){
-            ZipUtil.pack(File(Utils.getPath(this)),
-                    File("${folder.path}/backup${Utils.getCurrentDateForBackupFile()}.zip"))
+            ZipUtil.pack(File(Utils.getPath(this)),resultPath)
         }
         Handler().postDelayed({
             hideDialog()
+                // Put the Uri and MIME type in the result Intent
+            /*
+                val intentShareFile = Intent(Intent.ACTION_SEND)
+            intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(resultPath))
+            intentShareFile.setDataAndType(Uri.fromFile(resultPath), contentResolver.getType(Uri.fromFile(resultPath)))
+            startActivity(Intent.createChooser(intentShareFile, "Share File"))
+
+            val contentUri = FileProvider.getUriForFile(applicationContext, applicationContext.packageName +".fileprovider", resultPath)
+            val intentBuilder = ShareCompat.IntentBuilder.from(this).setStream(contentUri).intent
+            val shareIntent = Intent()
+            shareIntent.action = Intent.ACTION_SEND;
+            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(resultPath));
+            //shareIntent.setData(contentUri)
+            //shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intentBuilder.data = contentUri
+            intentBuilder.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            startActivityForResult(Intent.createChooser(intentBuilder, "Share images..."),1556)
+            */
         },2000)
     }
 
@@ -212,7 +239,7 @@ class ActivitySetting: AppCompatActivity(),
     fun showSelecterFile(tag:String) {
         FileChooserDialog.Builder(this)
                 .cancelButton(R.string.cancel)
-                .initialPath(Environment.getExternalStorageDirectory().path)
+                .initialPath(Environment.getExternalStorageDirectory().absolutePath)
                 //.mimeType()
                 .extensionsFilter(".zip")
                 .tag(tag)
@@ -262,4 +289,5 @@ class ActivitySetting: AppCompatActivity(),
         return Environment.getExternalStorageState() in
                 setOf(Environment.MEDIA_MOUNTED, Environment.MEDIA_MOUNTED_READ_ONLY)
     }
+
 }

@@ -124,7 +124,7 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
                     applicationContext.contentResolver,
                     Secure.ANDROID_ID)
         }
-        val db = "saguanchai_database"
+        val db = ".saguanchai_database"
         Prefer.saveUUID(db,this)
     }
 

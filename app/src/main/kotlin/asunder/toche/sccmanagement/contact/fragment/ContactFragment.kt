@@ -50,6 +50,7 @@ import kotlinx.android.synthetic.main.fragment_contact_add.*
 import kotlinx.android.synthetic.main.section_contact_info.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.io.File
 
 
 /**

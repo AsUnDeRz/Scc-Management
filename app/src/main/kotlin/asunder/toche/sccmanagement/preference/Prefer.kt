@@ -6,6 +6,7 @@ import android.net.Uri
 import android.preference.PreferenceManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.os.Environment
 import java.security.Key
 
 
@@ -73,6 +74,18 @@ object Prefer{
         return if (bitmap.width > bitmap.height) {
             90f
         } else 0f
+    }
+
+    fun saveLastFolderType(context: Context,type:String,path:String){
+        val editor = openFile(context).edit()
+        editor.putString(type,path)
+        editor.apply()
+        println("SaveLastFolder $type [$path]")
+    }
+
+    fun getLastFolderType(context: Context,type: String) : String{
+        val prefer = openFile(context)
+        return prefer.getString(type,Environment.getExternalStorageDirectory().absolutePath)
     }
 
 }

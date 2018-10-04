@@ -15,6 +15,7 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
+import java.io.File
 import java.util.*
 
 /**
@@ -72,7 +73,16 @@ class IssueService(var listener : IssueCallBack){
 
     }
 
-    fun deleteIssue(Issue : Model.Issue){
+    fun deleteIssue(issue : Model.Issue){
+
+        issue.files.forEach {
+            File(it.local_path).delete()
+        }
+
+        issue.pictures.forEach {
+            File(it.local_path).delete()
+        }
+
         /*
         firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.ISSUE}/${Issue.id}")
                 .removeValue { databaseError, _ ->
@@ -119,6 +129,7 @@ class IssueService(var listener : IssueCallBack){
                     .filter { it.id == uid }
                     .forEach {
                         currentIssue.remove(it)
+                        deleteIssue(it)
                     }
 
             pushNewIssueToDb(currentIssue)

@@ -18,7 +18,9 @@
         app:optimizeDisplay="true">
     </com.github.piasy.biv.view.BigImageView>
     -->
-    <com.github.chrisbanes.photoview.PhotoView
+
+
+    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,6 +28,7 @@
         android:id="@+id/mBigImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/btnBack"
@@ -48,7 +51,7 @@
         android:text="Share"
         android:textColor="@android:color/white"
         android:textSize="18sp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

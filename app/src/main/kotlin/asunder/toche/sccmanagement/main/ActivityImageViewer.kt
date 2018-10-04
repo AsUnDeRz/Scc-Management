@@ -8,6 +8,8 @@ import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.service.ImagesService
 import au.com.jtribe.shelly.Shelly
 import com.bumptech.glide.Glide
+import com.davemorrissey.labs.subscaleview.ImageSource
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_image_viewer.*
 import java.io.File
@@ -33,17 +35,15 @@ class ActivityImageViewer: AppCompatActivity() {
         if (intent.hasExtra("path")){
             println("intent has path")
             pathLocal = intent.getStringExtra("path")
-            Glide.with(this)
-                    .asBitmap()
-                    .load(File(pathLocal))
-                    .into(mBigImage)
+            mBigImage.orientation = SubsamplingScaleImageView.ORIENTATION_USE_EXIF
+            mBigImage.setImage(ImageSource.uri(Uri.fromFile(File(pathLocal))))
         }else{
             println("intent has url")
             storageRef.child(intent.getStringExtra("url"))
                     .downloadUrl
                     .addOnSuccessListener {
                         imageUri = it
-                        mBigImage.setImageURI(it)
+                        //mBigImage.setImageURI(it)
                     }.addOnFailureListener {
                     }
         }

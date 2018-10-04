@@ -113,13 +113,18 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
     }
 
     fun deleteProduct(product: Model.Product){
-        service.deleteProductInDb(product.id)
-        service.deleteProduct(product)
-        product.files.forEach {
-            firebase.deleteFile(it.cloud_url,it.local_path)
-        }
-        product.pictures.forEach {
-            firebase.deleteFile(it.cloud_url,it.local_path)
+        async(UI) {
+            val result = async {
+                product.files.forEach {
+                    firebase.deleteFile(it.cloud_url,it.local_path)
+                }
+                product.pictures.forEach {
+                    firebase.deleteFile(it.cloud_url,it.local_path)
+                }
+            }
+            result.await()
+            service.deleteProductInDb(product.id)
+            service.deleteProduct(product)
         }
     }
 

@@ -38,17 +38,24 @@ class IssueViewModel : ViewModel(),ContactService.ContactCallBack,
 
     fun getContact():MutableList<Model.Contact>{
         return contactService.getContactInDb()
+
     }
 
     fun deleteIssue(data: Model.Issue){
-        service.deleteIssue(data)
-        service.deleteIssueInDb(data.id)
-        data.pictures.forEach {
-            firebase.deleteFile(it.cloud_url,it.local_path)
+        async(UI) {
+            val result = async {
+                data.pictures.forEach {
+                    firebase.deleteFile(it.cloud_url,it.local_path)
+                }
+                data.files.forEach {
+                    firebase.deleteFile(it.cloud_url,it.local_path)
+                }
+            }
+            result.await()
+            service.deleteIssue(data)
+            service.deleteIssueInDb(data.id)
         }
-        data.files.forEach {
-            firebase.deleteFile(it.cloud_url,it.local_path)
-        }
+
 
     }
 

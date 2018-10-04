@@ -354,6 +354,11 @@ class ProductsFragment : Fragment(),
             //showSpinner()
             showDatePicker()
         }
+
+        btnSetToday.setOnClickListener {
+            selectedDate = Utils.getCurrentDate()
+            edtPriceDate.setText(Utils.getCurrentDateShort())
+        }
     }
 
     fun showProductList(){
@@ -707,6 +712,7 @@ class ProductsFragment : Fragment(),
     override fun OnFileClick(file: Model.ContentForProduct, isDeleteOrShare: Boolean, position: Int) {
         if (isDeleteOrShare) {
             fileAdapter.remove(position)
+            File(file.local_path).delete()
         }else {
            openFile(file)
         }
@@ -717,6 +723,7 @@ class ProductsFragment : Fragment(),
     override fun OnPictureClick(picture: Model.ContentForProduct, isDeleteOrShare: Boolean, position: Int) {
         if (isDeleteOrShare) {
             pictureAdapter.remove(position)
+            File(picture.local_path).delete()
         }else{
             openPicture(picture)
         }

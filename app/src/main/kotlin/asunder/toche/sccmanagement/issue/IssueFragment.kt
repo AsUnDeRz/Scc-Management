@@ -3,6 +3,7 @@ package asunder.toche.sccmanagement.issue
 import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -116,6 +117,10 @@ class IssueFragment : Fragment(),
     fun initControllState(){
         controlViewModel.currentUI.observe(this, Observer {
             if (it == ROOT.ISSUE){
+                issueVM.loadIssue()
+                currentDate?.let {
+                    it.text = "วันที่ปัจจุบัน : "+Utils.getCurrentDateShort()
+                }
                 if (!isInitView) {
                     initViewCreated()
                 }
@@ -164,7 +169,6 @@ class IssueFragment : Fragment(),
         observerTabFilterIssue()
         initFilterWithButton()
         observerIssue()
-        currentDate.text = "วันที่ปัจจุบัน : "+Utils.getCurrentDateShort()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -177,6 +181,7 @@ class IssueFragment : Fragment(),
         inflateStubIssueAdd()
         inflateStubLayoutInput()
         initViewCreated()
+        currentDate.text = "วันที่ปัจจุบัน : "+Utils.getCurrentDateShort()
     }
 
 
@@ -201,7 +206,7 @@ class IssueFragment : Fragment(),
                 if(selectedFile.size > 0) {
                     val fileList = mutableListOf<Model.Content>()
                     selectedFile.forEach {
-                        fileList.add(Model.Content(it))
+                        fileList.add(Model.Content(local_path = it))
                     }
                     fileAdapter.addFiles(fileList)
                 }
@@ -227,46 +232,53 @@ class IssueFragment : Fragment(),
             }
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                when(tab?.position){
-                    0 ->{
-                        //all
-                        async(UI) {
-                            val data = async(CommonPool) {
-                                issueVM.sortAll(this@IssueFragment)
-                            }
-                            separateSection(data.await())
-                        }
-                    }
-                    1 ->{
-                        //today
-                        async(UI) {
-                            val data = async(CommonPool) {
-                                issueVM.sortToday(this@IssueFragment)
-                            }
-                            separateSection(data.await())
-                        }
-                    }
-                    2 ->{
-                        //tomorrow
-                        async(UI) {
-                            val data = async(CommonPool) {
-                                issueVM.sortTomorrow(this@IssueFragment)
-                            }
-                            separateSection(data.await())
-                        }
-                    }
-                    3 ->{
-                        //yesterday
-                        async(UI) {
-                            val data = async(CommonPool) {
-                                issueVM.sortYesterday(this@IssueFragment)
-                            }
-                            separateSection(data.await())
-                        }
-                    }
+                tab?.let {
+                    updateIssueWithPositionButton(it.position)
                 }
             }
         })
+    }
+
+
+    fun updateIssueWithPositionButton(position: Int){
+        when(position){
+            0 ->{
+                //all
+                async(UI) {
+                    val data = async(CommonPool) {
+                        issueVM.sortAll(this@IssueFragment)
+                    }
+                    separateSection(data.await())
+                }
+            }
+            1 ->{
+                //today
+                async(UI) {
+                    val data = async(CommonPool) {
+                        issueVM.sortToday(this@IssueFragment)
+                    }
+                    separateSection(data.await())
+                }
+            }
+            2 ->{
+                //tomorrow
+                async(UI) {
+                    val data = async(CommonPool) {
+                        issueVM.sortTomorrow(this@IssueFragment)
+                    }
+                    separateSection(data.await())
+                }
+            }
+            3 ->{
+                //yesterday
+                async(UI) {
+                    val data = async(CommonPool) {
+                        issueVM.sortYesterday(this@IssueFragment)
+                    }
+                    separateSection(data.await())
+                }
+            }
+        }
     }
 
     fun separateSection(sectionIssueAdapter : SectionedRecyclerViewAdapter){
@@ -389,6 +401,11 @@ class IssueFragment : Fragment(),
         }
 
         edtIssueDetail.ShowScrollBar()
+
+        btnSetToday.setOnClickListener {
+            selectedDate = Utils.getCurrentDate()
+            edtIssueDate.setText(Utils.getCurrentDateShort())
+        }
 
     }
     fun initLayoutInput(){
@@ -769,6 +786,7 @@ class IssueFragment : Fragment(),
 
     override fun OnFileClick(file: Model.Content,isDeleteOrShare:Boolean, position: Int) {
         if (isDeleteOrShare) {
+            File(file.local_path).delete()
             fileAdapter.remove(position)
         }else {
             openFile(file)
@@ -776,6 +794,7 @@ class IssueFragment : Fragment(),
     }
     override fun OnPictureClick(picture: Model.Content,isDeleteOrShare:Boolean, position: Int) {
         if (isDeleteOrShare) {
+            File(picture.local_path).delete()
             pictureAdapter.remove(position)
         }else{
             openPicture(picture)
@@ -870,6 +889,16 @@ class IssueFragment : Fragment(),
         }.addOnProgressListener { taskSnapshot ->
             val progress = (100 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount)
             println("onDownloadProgress $progress")
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        currentDate?.let {
+            it.text = "วันที่ปัจจุบัน : "+Utils.getCurrentDateShort()
+        }
+        viewPager?.let {
+            updateIssueWithPositionButton(it.currentItem)
         }
     }
 

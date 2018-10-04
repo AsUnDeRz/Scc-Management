@@ -270,6 +270,19 @@
                     app:layout_constraintStart_toEndOf="@+id/space4"
                     app:layout_constraintTop_toBottomOf="@+id/txtMedium10" />
 
+                <asunder.toche.sccmanagement.custom.button.BtnMedium
+                    android:id="@+id/btnSetToday"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorPrimary"
+                    android:text="Today"
+                    android:textColor="@android:color/white"
+                    android:textSize="10sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/edtPriceDate"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/edtPriceDate"
+                    app:layout_constraintTop_toTopOf="@+id/edtPriceDate" />
+
                 <asunder.toche.sccmanagement.custom.textview.TxtMedium
                     android:id="@+id/txtMedium11"
                     android:layout_width="wrap_content"

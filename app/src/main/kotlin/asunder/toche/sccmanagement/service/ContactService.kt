@@ -13,6 +13,7 @@ import io.paperdb.Paper
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
+import java.io.File
 import java.util.*
 
 /**
@@ -70,6 +71,10 @@ class ContactService(var listener:ContactCallBack){
     }
 
     fun deleteContact(contact : Model.Contact){
+
+        contact.addresses.forEach {
+            File(it.path_img_map).delete()
+        }
         /*
         firebase.child("${ROOT.USERS}/${Prefer.getUUID(context!!)}/${ROOT.CONTACTS}/${contact.id}").removeValue { databaseError, _ ->
             if (databaseError != null) {

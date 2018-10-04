@@ -350,6 +350,10 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
             //showSpinner()
             showDatePicker()
         }
+        btnSetToday.setOnClickListener {
+            edtPriceDate.setText(Utils.getCurrentDateShort())
+            selectedDate = Utils.getCurrentDate()
+        }
 
     }
 

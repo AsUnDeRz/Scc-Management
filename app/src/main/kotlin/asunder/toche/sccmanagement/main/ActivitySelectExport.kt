@@ -15,6 +15,7 @@ import asunder.toche.sccmanagement.preference.Utils
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.folderselector.FileChooserDialog
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog
+import com.thefinestartist.utils.preferences.Pref
 import io.paperdb.Paper
 import kotlinx.android.synthetic.main.activity_select_export.*
 import org.zeroturnaround.zip.ZipUtil
@@ -146,10 +147,16 @@ class ActivitySelectExport :
     }
 
     fun showSelecterFolder() {
+        val initPath = if (isExpoertContact){
+            Prefer.getLastFolderType(this,ROOT.LASTFOLDERCONTACT)
+        }else{
+            Prefer.getLastFolderType(this,ROOT.LASTFOLDERPRODUCT)
+        }
+
         FolderChooserDialog.Builder(this)
                 .cancelButton(R.string.cancel)
                 .chooseButton(R.string.select_folder)  // changes label of the choose button
-                .initialPath(Environment.getExternalStorageDirectory().path)  // changes initial path, defaults to external storage directory
+                .initialPath(initPath)  // changes initial path, defaults to external storage directory
                 .tag("optional-identifier")
                 .allowNewFolder(true, R.string.newfolder)
                 .show(this)
@@ -162,12 +169,13 @@ class ActivitySelectExport :
             if (isExpoertContact){
                 if (selectDataAdapter.contacts.isNotEmpty()) {
                     Utils.exportContact(this, selectDataAdapter.contacts,folder)
+                    Prefer.saveLastFolderType(this,ROOT.LASTFOLDERCONTACT,folder.absolutePath)
                 }
             }else{
                 if (selectDataAdapter.products.isNotEmpty()){
                     Utils.exportProduct(this,selectDataAdapter.products,folder)
+                    Prefer.saveLastFolderType(this,ROOT.LASTFOLDERPRODUCT,folder.absolutePath)
                 }
-
             }
         }
         Handler().postDelayed({

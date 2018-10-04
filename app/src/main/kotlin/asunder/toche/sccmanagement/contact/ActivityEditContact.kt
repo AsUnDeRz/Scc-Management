@@ -186,7 +186,7 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
                         .pickPhoto(this)
             }else{
                 val intent = Intent()
-                intent.putExtra("path",currentAddress.path_img_map)
+                intent.putExtra("path",currentPhoto)
                 startActivity(intent.setClass(this@ActivityEditContact, ActivityImageViewer::class.java))
             }
         }
