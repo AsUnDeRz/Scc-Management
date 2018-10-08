@@ -262,7 +262,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
             showSalePriceForm()
             //setSaleRateForm(Model.SalePrice(),saleRateAdapter.transaction.medium_price)
             //txtTitlePrice.text = "ราคาลูกค้า"
-            setSaleRateForm(Model.SalePrice(),edtMediumPrice.text.toString())
+            setSaleRateForm(Model.SalePrice(),edtMediumPrice.text.toString(),txtPriceNoVat.text.toString())
         }
 
         edtTransactionCompany.DisableClick()
@@ -388,6 +388,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
     fun clearPriceForm(){
         edtPriceDate.setText(Utils.getCurrentDateShort())
         edtPrice.setText("")
+        edtPriceNoVat.setText("")
         edtPriceValues.setText("")
         edtPriceNote.setText("")
         rdbVat.isChecked = true
@@ -405,12 +406,14 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
                         edtTransactionProduct.setText(product.first().product_name.lines().first())
                         if (product.first().medium_rate.isNotEmpty()) {
                             val mediumPrice = product.first().medium_rate.first()
-                            edtMediumPrice.setText(mediumPrice.price+" (${if(mediumPrice.vat) "A" else "B"})")
+                            edtMediumPrice.setText(mediumPrice.price)
+                            txtPriceNoVat.setText(mediumPrice.priceNoVat)
                         }
                     }else{
                         transactionVM.updateProduct(null)
                         edtTransactionProduct.setText(transaction.product_name.lines().first())
                         edtMediumPrice.setText(transaction.medium_price)
+                        txtPriceNoVat.setText(transaction.medium_price)
                     }
                 }
             }
@@ -435,6 +438,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         edtTransactionProduct.setText("")
         edtTransactionNote.setText("")
         edtMediumPrice.setText("")
+        txtPriceNoVat.setText("")
         saleRateAdapter.updateSalePrice(Model.Transaction())
         transactionVM.transactionId = ""
         selectedDate = Utils.getCurrentDate()
@@ -453,6 +457,15 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         }else{
             edtMediumPrice.text.toString()
         }
+        val mediumPriceNoVat = if (transactionVM.product.value !=null){
+            if (transactionVM.product.value!!.medium_rate.isNotEmpty()){
+                transactionVM.product.value!!.medium_rate.first().priceNoVat
+            }else{
+                txtPriceNoVat.text.toString()
+            }
+        }else{
+            txtPriceNoVat.text.toString()
+        }
 
         if (transactionVM.product.value != null) {
             if(validateTransaction()) {
@@ -464,7 +477,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
                         ,mediumRate
                         ,Utils.getCurrentDateString()
                         ,edtTransactionNote.text.toString()
-                        ,saleRateAdapter.saleList)
+                        ,saleRateAdapter.saleList,mediumPriceNoVat)
 
 
                 transactionVM.saveTransaction(data)
@@ -554,6 +567,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
                     edtTransactionProduct.setText("")
                     edtTransactionNote.setText("")
                     edtMediumPrice.setText("")
+                    txtPriceNoVat.setText("")
                     saleRateAdapter.updateSalePrice(Model.Transaction())
                     transactionVM.transactionId = ""
                     selectedDate = Utils.getCurrentDate()
@@ -651,7 +665,8 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
                 val price = product.medium_rate.filter { it.default }
                 if (price.isNotEmpty()) {
                     val mediumPrice = price.first()
-                    edtMediumPrice.setText(mediumPrice.price+" (${if(mediumPrice.vat) "A" else "B"})")
+                    edtMediumPrice.setText(mediumPrice.price)
+                    txtPriceNoVat.setText(mediumPrice.priceNoVat)
                 }
                 transactionVM.updateProduct(product)
                 bottomSheetDialog.dismiss()
@@ -746,7 +761,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
 
     }
 
-    fun setSaleRateForm(salePrice: Model.SalePrice,mediumPrice: String){
+    fun setSaleRateForm(salePrice: Model.SalePrice,mediumPrice: String,mediumPriceNoVat:String){
         if (saleRateAdapter.saleList.size > 0){
             val saleRate = saleRateAdapter.saleList[0]
             edtOldPrice.setText(saleRate.price+"${Utils.checkTypePrice(saleRate.vat)}")
@@ -760,6 +775,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         edtSalePrice.setText(salePrice.price)
         edtPriceNote.setText(salePrice.note)
         edtPrice.setText(mediumPrice)
+        edtPriceNoVat.setText(mediumPriceNoVat)
         edtPriceValues.setText(salePrice.values)
         getSaleType(salePrice.vat)
         edtPrice.DisableClick()
@@ -809,7 +825,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
     override fun onClickSaleRate(salePrice: Model.SalePrice, position: Int,transaction: Model.Transaction) {
         transactionVM.updateSalePrice(salePrice,position)
         showSalePriceForm()
-        setSaleRateForm(salePrice,edtMediumPrice.text.toString())
+        setSaleRateForm(salePrice,edtMediumPrice.text.toString(),txtPriceNoVat.text.toString())
         transactionVM.updateStateView(TransactionState.SELECTSALEPRICE)
 
     }

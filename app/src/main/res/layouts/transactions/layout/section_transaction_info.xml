@@ -69,10 +69,11 @@
         android:id="@+id/edtMediumPrice"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/bg_round_table"
         android:focusable="false"
-        android:hint="ราคากลาง"
+        android:gravity="center"
+        android:hint="ราคากลาง A"
         android:inputType="text"
         android:maxLines="1"
         android:paddingStart="8dp"
@@ -90,12 +91,12 @@
         app:layout_constraintTop_toTopOf="@+id/edtMediumPrice" />
 
     <asunder.toche.sccmanagement.custom.textview.TxtMedium
-        android:id="@+id/titleMediumRate"
+        android:id="@+id/txtPriceNoVat"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:background="@drawable/bg_round_table"
         android:gravity="center"
-        android:text="ราคากลาง"
+        android:hint="ราคากลาง B"
         app:layout_constraintEnd_toEndOf="@+id/btnOpenHistory"
         app:layout_constraintStart_toEndOf="@+id/view2"
         app:layout_constraintTop_toTopOf="@+id/edtMediumPrice" />
@@ -109,6 +110,32 @@
         android:text="ราคาลูกค้า"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtMediumPrice" />
+
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+        android:id="@+id/txtMedium22"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="ราคากลาง Vat(A)"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toStartOf="@+id/btnOpenHistory"
+        app:layout_constraintStart_toStartOf="@+id/edtTransactionProduct"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+        android:id="@+id/txtMedium23"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="ราคากลาง No Vat(B)"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="@+id/btnOpenHistory"
+        app:layout_constraintStart_toEndOf="@+id/view"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <ImageView
         android:id="@+id/imgNewSaleRate"

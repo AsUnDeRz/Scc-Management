@@ -83,14 +83,14 @@ class MediumRateAdapter(var mediumList: MutableList<Model.MediumRate>,val listen
     inner class MediumRateHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
 
         private val txtMediumPrice = itemView?.findViewById<TxtMedium>(R.id.txtMediumPrice)
-        private val txtMediumVat = itemView?.findViewById<TxtMedium>(R.id.txtMediumVat)
+        private val txtMediumPriceNoVat = itemView?.findViewById<TxtMedium>(R.id.txtMediumPriceNoVat)
         private val txtMediumDate = itemView?.findViewById<TxtMedium>(R.id.txtMediumDate)
         private val txtMediumNote = itemView?.findViewById<TxtMedium>(R.id.txtMediumNote)
 
         fun bind(mediumRate: Model.MediumRate){
             txtMediumPrice?.text = mediumRate.price
             txtMediumDate?.text = Utils.format2DigiYMD(mediumRate.date)
-            txtMediumVat?.text = if(mediumRate.vat) "A" else "B"
+            txtMediumPriceNoVat?.text = mediumRate.priceNoVat
             txtMediumNote?.text = mediumRate.note
 
             itemView?.setOnClickListener {

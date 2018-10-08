@@ -335,9 +335,9 @@ class ProductsFragment : Fragment(),
 
         btnAddPrice.setOnClickListener {
             if(validateMediumRate()) {
-                addMediumPriceRate(Model.MediumRate(edtPrice.text.toString(), rdbVat.isChecked,
+                addMediumPriceRate(Model.MediumRate(edtPrice.text.toString(), false,
                         Utils.getDateStringWithDate(selectedDate), edtPriceNote.text.toString(),
-                        true))
+                        true,edtPriceNoVat.text.toString()))
                 clearMediumPriceRate()
                 showProductForm()
             }else{
@@ -394,18 +394,21 @@ class ProductsFragment : Fragment(),
         edtPriceDate.setText(Utils.getCurrentDateShort())
         //txtValues.visibility = View.GONE
         //edtPriceValues.visibility = View.GONE
-        rdbCash.visibility = View.GONE
+        //rdbCash.visibility = View.GONE
     }
 
     fun setMediumPriceForm(mediumRate: Model.MediumRate){
         edtPriceDate.setText(mediumRate.date.substring(0,10))
         edtPrice.setText(mediumRate.price)
+        edtPriceNoVat.setText(mediumRate.priceNoVat)
         edtPriceNote.setText(mediumRate.note)
+        /*
         if (mediumRate.vat){
             radioGroup.check(rdbVat.id)
         }else{
             radioGroup.check(rdbNoVat.id)
         }
+        */
     }
 
     fun showDatePicker(){
@@ -529,14 +532,15 @@ class ProductsFragment : Fragment(),
         edtPrice.setText("")
         edtPriceDate.setText(Utils.getCurrentDateShort())
         edtPriceNote.setText("")
-        rdbVat.isChecked = true
+        edtPriceNoVat.setText("")
+        //rdbVat.isChecked = true
         selectedDate = Utils.getCurrentDate()
     }
 
     fun validateMediumRate():Boolean {
         if(TextUtils.isEmpty(edtPrice.text)){
-            edtPrice.error = "กรุณากรอกราคากลาง"
-            return false
+            //edtPrice.error = "กรุณากรอกราคากลาง"
+            //return false
         }
         if(TextUtils.isEmpty(edtPriceDate.text)){
             edtPriceDate.error = "กรุณาเลือกวันที่"
@@ -689,8 +693,8 @@ class ProductsFragment : Fragment(),
                 if(selectedPhoto.size > 0) {
                     val pictureList= mutableListOf<Model.ContentForProduct>()
                     selectedPhoto.forEach {
-                        val base64 = Utils.encodeImage(it, this.context!!)
-                        pictureList.add(Model.ContentForProduct(local_path = it,cloud_url = base64))
+                        productViewModel.firebase.pushFileToFirebase(it,"")
+                        pictureList.add(Model.ContentForProduct(local_path = productViewModel.firebase.getPathClone(it)))
                     }
                     pictureAdapter.addPictures(pictureList)
                 }
@@ -701,7 +705,8 @@ class ProductsFragment : Fragment(),
                 if(selectedFile.size > 0) {
                     val fileList = mutableListOf<Model.ContentForProduct>()
                     selectedFile.forEach {
-                        fileList.add(Model.ContentForProduct(local_path = it))
+                        productViewModel.firebase.pushFileToFirebase(it,"")
+                        fileList.add(Model.ContentForProduct(local_path = productViewModel.firebase.getPathClone(it)))
                     }
                     fileAdapter.addFiles(fileList)
                 }

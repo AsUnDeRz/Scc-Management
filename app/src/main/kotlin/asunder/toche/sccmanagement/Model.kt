@@ -80,7 +80,8 @@ object Model{
                           val vat:Boolean = false,
                           val date:String = "",
                           val note:String = "",
-                          var default:Boolean = false) : Parcelable
+                          var default:Boolean = false,
+                          var priceNoVat:String = "") : Parcelable
 
 
     @SuppressLint("ParcelCreator")
@@ -93,7 +94,8 @@ object Model{
                            var medium_price:String = "",
                            var date:String = "",
                            val desc:String = "",
-                           val sale_price:MutableList<SalePrice> = ArrayList()) : Parcelable
+                           val sale_price:MutableList<SalePrice> = ArrayList(),
+                           var medium_price_novat:String = "") : Parcelable
 
 
     @SuppressLint("ParcelCreator")

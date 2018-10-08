@@ -20,7 +20,7 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
     private val txtSaleValues = itemView.findViewById<TxtThin>(R.id.txtSaleValues)
     private val txtSaleDate = itemView.findViewById<TxtThin>(R.id.txtSaleDate)
     private val txtMediumPrice = itemView.findViewById<TxtThin>(R.id.txtMediumPrice)
-    private val txtMediumVat = itemView.findViewById<TxtThin>(R.id.txtMediumVat)
+    private val txtMediumPriceNoVat = itemView.findViewById<TxtThin>(R.id.txtMediumPriceNoVat)
     private val txtMediumDate = itemView.findViewById<TxtThin>(R.id.txtMediumDate)
     private val txtNote = itemView.findViewById<TxtThin>(R.id.txtNote)
 
@@ -52,11 +52,7 @@ class HistoryTransactionHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
 
         if(transaction.medium_price.isNotEmpty()) {
             if (product.medium_rate.isNotEmpty()) {
-                if (product.medium_rate[0].vat) {
-                    txtMediumVat.text = "A"
-                } else {
-                    txtMediumVat.text = "B"
-                }
+                txtMediumPriceNoVat.text = product.medium_rate[0].priceNoVat
                 txtMediumPrice.text = product.medium_rate[0].price
                 txtMediumDate.text = Utils.format2DigiYMD(product.medium_rate[0].date)
             }

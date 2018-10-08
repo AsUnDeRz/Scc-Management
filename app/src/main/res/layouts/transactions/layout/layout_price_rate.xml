@@ -79,15 +79,98 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
+                    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+                        android:id="@+id/edtPriceNoVat"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_round_table"
+                        android:digits="0123456789."
+                        android:hint="XXXX.XX"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="8dp"
+                        android:visibility="visible"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/center_root_price"
+                        app:layout_constraintTop_toBottomOf="@+id/txtTitlePrice" />
+
                     <asunder.toche.sccmanagement.custom.textview.TxtMedium
-                        android:id="@+id/txtOldPrice"
+                        android:id="@+id/txtSalePrice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="ราคาเก่า"
+                        android:text="ราคากลาง No Vat(B)"
                         android:visibility="visible"
-                        app:layout_constraintStart_toStartOf="@+id/edtOldPrice"
+                        app:layout_constraintStart_toStartOf="@+id/edtPriceNoVat"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+                        android:id="@+id/center_root_price"
+                        android:layout_width="1dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/bg_round_table"
+                        android:digits="0123456789."
+                        android:focusable="false"
+                        android:hint="XXXX.XX"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="8dp"
+                        android:visibility="visible"
+                        app:layout_constraintEnd_toStartOf="@+id/edtPriceNoVat"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/edtPrice"
+                        app:layout_constraintTop_toBottomOf="@+id/txtTitlePrice" />
+
+                    <asunder.toche.sccmanagement.custom.textview.TxtMedium
+                        android:id="@+id/txtTitlePrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="ราคากลาง Vat(A)"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <asunder.toche.sccmanagement.custom.edittext.EdtMedium
+                        android:id="@+id/edtPrice"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_round_table"
+                        android:digits="0123456789."
+                        android:hint="XXXX.XX"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="8dp"
+                        app:layout_constraintEnd_toStartOf="@+id/center_root_price"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txtTitlePrice" />
+
+                </android.support.constraint.ConstraintLayout>
+
+                <asunder.toche.sccmanagement.custom.textview.TxtMedium
+                    android:id="@+id/txtMedium8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="VAT / NO VAT"
+                    app:layout_constraintStart_toStartOf="@+id/root_price"
+                    app:layout_constraintTop_toBottomOf="@+id/root_transaction_price" />
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/root_transaction_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="48dp"
+                    android:layout_marginEnd="48dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/root_price">
 
                     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
                         android:id="@+id/edtSalePrice"
@@ -103,7 +186,7 @@
                         android:visibility="visible"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/edtOldPrice"
+                        app:layout_constraintStart_toEndOf="@+id/center_root_tran"
                         app:layout_constraintTop_toBottomOf="@+id/txtTitlePrice" />
 
                     <asunder.toche.sccmanagement.custom.textview.TxtMedium
@@ -117,12 +200,12 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-                        android:id="@+id/edtOldPrice"
-                        android:layout_width="0dp"
+                        android:id="@+id/center_root_tran"
+                        android:layout_width="1dp"
                         android:layout_height="48dp"
-                        android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
                         android:background="@drawable/bg_round_table"
                         android:digits="0123456789."
                         android:focusable="false"
@@ -133,7 +216,7 @@
                         android:visibility="visible"
                         app:layout_constraintEnd_toStartOf="@+id/edtSalePrice"
                         app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/edtPrice"
+                        app:layout_constraintStart_toEndOf="@+id/edtOldPrice"
                         app:layout_constraintTop_toBottomOf="@+id/txtTitlePrice" />
 
                     <asunder.toche.sccmanagement.custom.textview.TxtMedium
@@ -141,12 +224,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="ราคากลาง"
+                        android:text="ราคาเก่า"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <asunder.toche.sccmanagement.custom.edittext.EdtMedium
-                        android:id="@+id/edtPrice"
+                        android:id="@+id/edtOldPrice"
                         android:layout_width="0dp"
                         android:layout_height="48dp"
                         android:layout_marginTop="8dp"
@@ -156,33 +239,24 @@
                         android:inputType="number"
                         android:maxLines="1"
                         android:paddingStart="8dp"
-                        app:layout_constraintEnd_toStartOf="@+id/edtOldPrice"
+                        app:layout_constraintEnd_toStartOf="@+id/center_root_tran"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/txtTitlePrice" />
 
                 </android.support.constraint.ConstraintLayout>
 
-                <asunder.toche.sccmanagement.custom.textview.TxtMedium
-                    android:id="@+id/txtMedium8"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="VAT / NO VAT"
-                    app:layout_constraintStart_toStartOf="@+id/root_price"
-                    app:layout_constraintTop_toBottomOf="@+id/root_price" />
-
                 <RadioGroup
                     android:id="@+id/radioGroup"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="48dp"
                     android:layout_marginStart="48dp"
                     android:layout_marginTop="48dp"
+                    android:layout_marginEnd="48dp"
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/root_price">
+                    app:layout_constraintTop_toBottomOf="@+id/root_transaction_price">
 
                     <android.support.v7.widget.AppCompatRadioButton
                         android:id="@+id/rdbVat"

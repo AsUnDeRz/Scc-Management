@@ -49,10 +49,9 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
-
         <asunder.toche.sccmanagement.custom.textview.TxtMedium
             android:id="@+id/textView10"
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="48dp"
             android:background="@drawable/bg_round_table"
             android:gravity="center"
@@ -98,7 +97,7 @@
                         android:layout_weight="4"
                         android:background="@drawable/bg_round_table"
                         android:gravity="center"
-                        android:text="ราคา"
+                        android:text="P"
                         android:textSize="12sp" />
 
                     <asunder.toche.sccmanagement.custom.textview.TxtMedium
@@ -117,10 +116,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_toEndOf="@+id/textView23"
-                        android:layout_weight="4"
+                        android:layout_weight="4.5"
                         android:background="@drawable/bg_round_table"
                         android:gravity="center"
-                        android:text="จำนวน"
+                        android:text="Q"
                         android:textSize="12sp" />
 
                     <asunder.toche.sccmanagement.custom.textview.TxtMedium
@@ -164,20 +163,20 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_alignParentStart="false"
-                        android:layout_weight="3"
+                        android:layout_weight="3.5"
                         android:background="@drawable/bg_round_table"
                         android:gravity="center"
-                        android:text="ราคา"
+                        android:text="A"
                         android:textSize="12sp" />
 
                     <asunder.toche.sccmanagement.custom.textview.TxtMedium
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_toEndOf="@+id/textView22"
-                        android:layout_weight="4"
+                        android:layout_weight="3.5"
                         android:background="@drawable/bg_round_table"
                         android:gravity="center"
-                        android:text="VAT"
+                        android:text="B"
                         android:textSize="10sp" />
 
                     <asunder.toche.sccmanagement.custom.textview.TxtMedium

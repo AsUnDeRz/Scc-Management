@@ -37,11 +37,11 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
                 if(data.files.isNotEmpty()){
                     data.files.forEach {
                         val filePath = Uri.fromFile(File(it.local_path))
-                        it.cloud_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${filePath.lastPathSegment}"
+                        //it.cloud_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${filePath.lastPathSegment}"
                         firebase.pushFileToFirebase(it.local_path,"")
                         async(UI) {
                             val result = async {
-                                it.local_path = firebase.getPathClone(it.local_path)
+                                //it.local_path = firebase.getPathClone(it.local_path)
                             }
                             result.await()
                         }
@@ -52,10 +52,10 @@ class ProductViewModel : ViewModel(),ProductService.ProductCallback {
                     data.pictures.forEach {
                         val imgPath = Uri.fromFile(File(it.local_path))
                         it.cloud_url = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${imgPath.lastPathSegment}"
-                        firebase.pushFileToFirebase(it.local_path, "")
+                        //firebase.pushFileToFirebase(it.local_path, "")
                         async(UI) {
                             val result = async {
-                                it.local_path = firebase.getPathClone(it.local_path)
+                                //it.local_path = firebase.getPathClone(it.local_path)
                             }
                             result.await()
                         }

@@ -60,8 +60,8 @@ class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolea
     class ProductHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
 
         val txtProdct =itemView?.findViewById<TxtMedium>(R.id.txtProduct)
-        val txtPriceMedium = itemView?.findViewById<TxtMedium>(R.id.txtPriceMedium)
-        val txtVat = itemView?.findViewById<TxtMedium>(R.id.txtVat)
+        val txtPrice = itemView?.findViewById<TxtMedium>(R.id.txtPrice)
+        val txtPriceNoVat = itemView?.findViewById<TxtMedium>(R.id.txtPriceNoVat)
         val txtDate = itemView?.findViewById<TxtMedium>(R.id.txtDate)
         //val swipeView = itemView?.findViewById<SwipeActionView>(R.id.swipeProduct)
 
@@ -71,15 +71,11 @@ class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolea
             //val btnDelete = swipeView?.findViewById<BtnMedium>(R.id.btnDelete)
             txtProdct?.text = product.product_name
             if (product.medium_rate.isNotEmpty()){
-                txtPriceMedium?.text = checkDecimal(product.medium_rate[0].price)
-                if(product.medium_rate[0].vat) {
-                    txtVat?.text = "A"
-                }else{
-                    txtVat?.text = "B"
-                }
+                txtPrice?.text = checkDecimal(product.medium_rate[0].price)
+                txtPriceNoVat?.text = checkDecimal(product.medium_rate[0].priceNoVat)
             }else{
-                txtPriceMedium?.text = ""
-                txtVat?.text = ""
+                txtPrice?.text = ""
+                txtPriceNoVat?.text = ""
             }
 
             txtDate?.text = product.date.substring(0,10)
@@ -113,16 +109,11 @@ class ProductAdapter(var products:MutableList<Model.Product>,var editAble:Boolea
         fun bind(product: Model.Product,listener:ProductOnClickListener){
             txtProdct?.text = product.product_name
             if (product.medium_rate.isNotEmpty()){
-                txtPriceMedium?.text = checkDecimal(product.medium_rate[0].price)
-
-                if(product.medium_rate[0].vat) {
-                    txtVat?.text = "A"
-                }else{
-                    txtVat?.text = "B"
-                }
+                txtPrice?.text = checkDecimal(product.medium_rate[0].price)
+                txtPriceNoVat?.text = checkDecimal(product.medium_rate[0].priceNoVat)
             }else{
-                txtPriceMedium?.text = ""
-                txtVat?.text = ""
+                txtPrice?.text = ""
+                txtPriceNoVat?.text = ""
             }
             txtDate?.text = product.date.substring(0,10)
             itemView.setOnClickListener {
