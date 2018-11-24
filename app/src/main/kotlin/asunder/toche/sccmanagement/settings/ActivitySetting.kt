@@ -38,8 +38,11 @@ import com.onegravity.contactpicker.core.ContactPickerActivity
 import com.onegravity.contactpicker.picture.ContactPictureType
 import com.snatik.storage.Storage
 import kotlinx.android.synthetic.main.activity_settings.*
+import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.android.UI
 import org.zeroturnaround.zip.ZipUtil
 import java.io.File
+import java.lang.Exception
 import java.net.URLConnection
 
 
@@ -203,34 +206,23 @@ class ActivitySetting: AppCompatActivity(),
     }
 
     override fun onFolderSelection(dialog: FolderChooserDialog, folder: File) {
-        showDialog("กำลังส่งออกไฟล์สำรองข้อมูล\nกรุณารอสักครู่")
+        runOnUiThread {
+            showDialog("กำลังส่งออกไฟล์สำรองข้อมูล\nกรุณารอสักครู่")
+        }
         val tag = dialog.tag// gets tag set from Builder, if you use multiple dialogs
         val resultPath = File("${folder.path}/backup${Utils.getCurrentDateForBackupFile()}.zip")
         Prefer.saveLastFolderType(this,ROOT.LASTFOLDERALL,folder.absolutePath)
-        if (tag != null){
-            ZipUtil.pack(File(Utils.getPath(this)),resultPath)
+        GlobalScope.launch(Dispatchers.IO){
+            val result = GlobalScope.launch(Dispatchers.Default) {
+                if (tag != null){
+                    ZipUtil.pack(File(Utils.getPath(this@ActivitySetting)),resultPath)
+                }
+            }
+            result.join()
+            runOnUiThread {
+                hideDialog()
+            }
         }
-        Handler().postDelayed({
-            hideDialog()
-                // Put the Uri and MIME type in the result Intent
-            /*
-                val intentShareFile = Intent(Intent.ACTION_SEND)
-            intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(resultPath))
-            intentShareFile.setDataAndType(Uri.fromFile(resultPath), contentResolver.getType(Uri.fromFile(resultPath)))
-            startActivity(Intent.createChooser(intentShareFile, "Share File"))
-
-            val contentUri = FileProvider.getUriForFile(applicationContext, applicationContext.packageName +".fileprovider", resultPath)
-            val intentBuilder = ShareCompat.IntentBuilder.from(this).setStream(contentUri).intent
-            val shareIntent = Intent()
-            shareIntent.action = Intent.ACTION_SEND;
-            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(resultPath));
-            //shareIntent.setData(contentUri)
-            //shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            intentBuilder.data = contentUri
-            intentBuilder.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            startActivityForResult(Intent.createChooser(intentBuilder, "Share images..."),1556)
-            */
-        },2000)
     }
 
     override fun onFolderChooserDismissed(dialog: FolderChooserDialog) {
@@ -251,29 +243,36 @@ class ActivitySetting: AppCompatActivity(),
     }
 
     override fun onFileSelection(dialog: FileChooserDialog, file: File) {
-        showDialog("กำลังนำเข้าไฟล์สำรองข้อมูล\nกรุณารอสักครู่")
         val stor = Storage(applicationContext)
-        when(dialog.tag){
-            IMPORTALL ->{
-                ZipUtil.unpack(file, File(Utils.getPath(this)))
-                Utils.importDB(this)
+        runOnUiThread {
+            showDialog("กำลังนำเข้าไฟล์สำรองข้อมูล\nกรุณารอสักครู่")
+        }
+        GlobalScope.launch(Dispatchers.IO){
+            val result = GlobalScope.launch(Dispatchers.Default){
+                when(dialog.tag){
+                    IMPORTALL ->{
+                        ZipUtil.unpack(file, File(Utils.getPath(this@ActivitySetting)))
+                        Utils.importDB(this@ActivitySetting)
+                    }
+                    IMPORTCONTACT ->{
+                        val newDir = Utils.getPath(this@ActivitySetting) +File.separator+"ContactExport"
+                        stor.createDirectory(newDir)
+                        ZipUtil.unpack(file, File(newDir))
+                        Utils.importContact(this@ActivitySetting)
+                    }
+                    IMPORTPRODUCT ->{
+                        val newDir = Utils.getPath(this@ActivitySetting) +File.separator+"ProductExport"
+                        stor.createDirectory(newDir)
+                        ZipUtil.unpack(file, File(newDir))
+                        Utils.importProduct(this@ActivitySetting)
+                    }
+                }
             }
-            IMPORTCONTACT ->{
-                val newDir = Utils.getPath(this) +File.separator+"ContactExport"
-                stor.createDirectory(newDir)
-                ZipUtil.unpack(file, File(newDir))
-                Utils.importContact(this)
-            }
-            IMPORTPRODUCT ->{
-                val newDir = Utils.getPath(this) +File.separator+"ProductExport"
-                stor.createDirectory(newDir)
-                ZipUtil.unpack(file, File(newDir))
-                Utils.importProduct(this)
+            result.join()
+            runOnUiThread {
+                hideDialog()
             }
         }
-        Handler().postDelayed({
-            hideDialog()
-        },4000)
     }
 
     override fun onFileChooserDismissed(dialog: FileChooserDialog) {
@@ -288,6 +287,30 @@ class ActivitySetting: AppCompatActivity(),
     fun isExternalStorageReadable(): Boolean {
         return Environment.getExternalStorageState() in
                 setOf(Environment.MEDIA_MOUNTED, Environment.MEDIA_MOUNTED_READ_ONLY)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val stor = Storage(this)
+        val newDir = Utils.getPath(this) +File.separator+"ContactExport"
+        val productDir = Utils.getPath(this) +File.separator+"ProductExport"
+
+        try {
+            if (File(newDir).delete()){
+                println("Delete Contact Export Folder Success")
+            }
+            if(stor.deleteDirectory(newDir)){
+                println("Delete Contact Export Folder Success")
+            }
+            if (File(productDir).delete()){
+                println("Delete Product Export Folder Success")
+            }
+            if(stor.deleteDirectory(productDir)){
+                println("Delete Product Export Folder Success")
+            }
+        }catch (e: Exception){
+            println(e.message)
+        }
     }
 
 }

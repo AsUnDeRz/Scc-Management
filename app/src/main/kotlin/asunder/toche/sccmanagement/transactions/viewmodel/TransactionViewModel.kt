@@ -101,7 +101,7 @@ class TransactionViewModel : ViewModel(),
                             val item = products.filter { it.id == transacModel.product_id }
                             if(item.isNotEmpty()) {
                                 Log.d(TAG,"Map product with transaction [${item.first().product_name}]")
-                                //mapProduct[transacModel.id] = item.first()
+                                mapProduct[transacModel.id] = item.first()
                             }
                         }
                         val compName = companys.first { it.id == compId }
@@ -109,7 +109,7 @@ class TransactionViewModel : ViewModel(),
                         sectionAdapter.addSection(
                                 SectionTransactionAdapter(compName.company,
                                         transaction.toMutableList(),
-                                        //mapProduct,
+                                        mapProduct,
                                         listener))
                         mapSection[sectionDate] = sectionAdapter
                     }

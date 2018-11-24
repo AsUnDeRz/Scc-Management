@@ -1,6 +1,5 @@
 package asunder.toche.sccmanagement.transactions.adapter
 
-import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import asunder.toche.sccmanagement.Model
@@ -9,7 +8,6 @@ import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.transactions.TransactionListener
-import com.bumptech.glide.Glide
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters
 import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection
 
@@ -54,8 +52,10 @@ class SectionTransactionAdapter() : StatelessSection(SectionParameters.builder()
 
     override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val itemHolder = holder as ItemHolder
-        //itemHolder.bind(transactions[position], products[transactions[position].id]!!, listener)
-        itemHolder.bind(transactions[position],listener)
+        products[transactions[position].id]?.let {
+            itemHolder.bind(transactions[position],it,listener)
+        }
+        //itemHolder.bind(transactions[position],listener)
     }
 
     override fun getHeaderViewHolder(view: View): RecyclerView.ViewHolder {
@@ -79,7 +79,7 @@ class SectionTransactionAdapter() : StatelessSection(SectionParameters.builder()
         val txtNote = itemView.findViewById<TxtMedium>(R.id.txtNote)
 
         fun bind(data: Model.Transaction,product:Model.Product,listener: TransactionListener){
-            txtCompany.text = product.product_name
+            txtCompany.text = product.product_name?.lines()?.first()
             txtDate.text = Utils.format2DigiYMD(data.date)
             if (data.sale_price.isNotEmpty()) {
                 txtVat.text = getSaleType(data.sale_price[0].vat)

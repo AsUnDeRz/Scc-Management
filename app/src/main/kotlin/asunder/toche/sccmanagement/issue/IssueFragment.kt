@@ -786,16 +786,34 @@ class IssueFragment : Fragment(),
 
     override fun OnFileClick(file: Model.Content,isDeleteOrShare:Boolean, position: Int) {
         if (isDeleteOrShare) {
-            File(file.local_path).delete()
-            fileAdapter.remove(position)
+            val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบข้อมูลไฟล์ ใช่หรือไหม","แจ้งเตือน",true)
+            confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+            confirmDialog.customListener(object  : ConfirmDialog.ConfirmDialogListener{
+                override fun onClickConfirm() {
+                    File(file.local_path).delete()
+                    fileAdapter.remove(position)
+                }
+                override fun onClickCancel() {
+                }
+            })
+            confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
         }else {
             openFile(file)
         }
     }
     override fun OnPictureClick(picture: Model.Content,isDeleteOrShare:Boolean, position: Int) {
         if (isDeleteOrShare) {
-            File(picture.local_path).delete()
-            pictureAdapter.remove(position)
+            val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบข้อมูลรูปภาพ ใช่หรือไหม","แจ้งเตือน",true)
+            confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+            confirmDialog.customListener(object  : ConfirmDialog.ConfirmDialogListener{
+                override fun onClickConfirm() {
+                    File(picture.local_path).delete()
+                    pictureAdapter.remove(position)
+                }
+                override fun onClickCancel() {
+                }
+            })
+            confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
         }else{
             openPicture(picture)
         }

@@ -2,7 +2,9 @@ package asunder.toche.sccmanagement.main
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import asunder.toche.sccmanagement.R
@@ -48,14 +50,22 @@ class ActivityMap : AppCompatActivity(),
     @SuppressLint("MissingPermission")
     override fun onMapReady(googlemap: GoogleMap?) {
         if(googlemap != null){
-            map = googlemap
-            map.isMyLocationEnabled = true
-            map.setOnMyLocationButtonClickListener(this)
+            if(isLocationEnabled(this)) {
+                map = googlemap
+                map.isMyLocationEnabled = true
+                map.setOnMyLocationButtonClickListener(this)
+            }
         }
     }
 
     override fun onMyLocationButtonClick(): Boolean {
         return false
+    }
+
+    private fun isLocationEnabled(mContext: Context): Boolean {
+        val lm = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || lm.isProviderEnabled(
+                LocationManager.NETWORK_PROVIDER)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

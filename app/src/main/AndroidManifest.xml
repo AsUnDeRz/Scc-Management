@@ -17,9 +17,6 @@
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
-
-
-
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true"/>
@@ -129,7 +126,10 @@
         <activity android:name=".issue.ActivityDetailIssue"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"/>
-        <activity android:name=".main.ActivitySelectExport" />
+        <activity android:name=".main.ActivitySelectExport"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ActivityConfirmPin"
+            android:screenOrientation="portrait"/>
 
         <provider android:authorities="com.facebook.app.FacebookContentProvider1471129742927460"
             android:name="com.facebook.FacebookContentProvider"

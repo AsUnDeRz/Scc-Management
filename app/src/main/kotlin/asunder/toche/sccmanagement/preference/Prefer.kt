@@ -88,4 +88,15 @@ object Prefer{
         return prefer.getString(type,Environment.getExternalStorageDirectory().absolutePath)
     }
 
+    fun isConfirmPin(context: Context):Boolean{
+        val prefer = openFile(context)
+        return prefer.getBoolean(KEY.PIN,false)
+    }
+
+    fun setConfirmPin(context: Context){
+        val editor = openFile(context).edit()
+        editor.putBoolean(KEY.PIN,true)
+        editor.apply()
+
+    }
 }

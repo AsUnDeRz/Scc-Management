@@ -43,11 +43,11 @@
         android:id="@+id/txtSaleNote"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="1.2"
         android:gravity="left|center"
         android:maxLines="1"
-        android:paddingEnd="4dp"
         android:paddingStart="4dp"
+        android:paddingEnd="4dp"
         android:textSize="12sp" />
 
 </LinearLayout>

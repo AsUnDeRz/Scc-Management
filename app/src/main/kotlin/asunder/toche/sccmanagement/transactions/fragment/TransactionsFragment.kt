@@ -225,20 +225,30 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         }
 
         btnDeleteTransaction.setOnClickListener {
-            when {
-                transactionVM.outState.value == TransactionState.NEWFROMCONTACT -> {
-                    transactionVM.deleteTransaction()
-                    contactViewModel.updateViewState(ContactState.SELECTCONTACT)
-                    transactionVM.updateStateView(TransactionState.SHOWLIST)
+            val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบข้อมูลรายการซื้อ/ขาย ใช่หรือไหม","แจ้งเตือน",true)
+            confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+            confirmDialog.customListener(object  : ConfirmDialog.ConfirmDialogListener{
+                override fun onClickConfirm() {
+                    when {
+                        transactionVM.outState.value == TransactionState.NEWFROMCONTACT -> {
+                            transactionVM.deleteTransaction()
+                            contactViewModel.updateViewState(ContactState.SELECTCONTACT)
+                            transactionVM.updateStateView(TransactionState.SHOWLIST)
+                        }
+                        transactionVM.outState.value == TransactionState.TRIGGERFROMSERVICE-> {
+                            transactionVM.deleteTransaction()
+                            contactViewModel.updateContact(contactViewModel.contact.value!!)
+                            contactViewModel.updateViewState(ContactState.SELECTCONTACT)
+                            transactionVM.updateStateView(TransactionState.SHOWLIST)
+                        }
+                        else -> transactionVM.deleteTransaction()
+                    }
                 }
-                transactionVM.outState.value == TransactionState.TRIGGERFROMSERVICE-> {
-                    transactionVM.deleteTransaction()
-                    contactViewModel.updateContact(contactViewModel.contact.value!!)
-                    contactViewModel.updateViewState(ContactState.SELECTCONTACT)
-                    transactionVM.updateStateView(TransactionState.SHOWLIST)
+                override fun onClickCancel() {
                 }
-                else -> transactionVM.deleteTransaction()
-            }
+            })
+            confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
+
         }
 
         btnAddTransaction.setOnClickListener {
@@ -336,9 +346,18 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
             }
         }
         btnDeletePrice.setOnClickListener {
-            deleteSaleRate()
-            clearSaleRate()
-            showTransactionForm()
+            val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบข้อมูลราคาลูกค้า ใช่หรือไหม","แจ้งเตือน",true)
+            confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+            confirmDialog.customListener(object  : ConfirmDialog.ConfirmDialogListener{
+                override fun onClickConfirm() {
+                    deleteSaleRate()
+                    clearSaleRate()
+                    showTransactionForm()
+                }
+                override fun onClickCancel() {
+                }
+            })
+            confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
         }
 
         btnCancelPrice.setOnClickListener {
@@ -381,6 +400,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         rootTransactionForm.visibility = View.GONE
         rootLayoutPriceForm.visibility = View.VISIBLE
         edtPrice.DisableClick()
+        edtPriceNoVat.DisableClick()
         clearPriceForm()
 
     }
@@ -779,6 +799,7 @@ class TransactionsFragment : Fragment(), SaleRateAdapter.SaleRateListener {
         edtPriceValues.setText(salePrice.values)
         getSaleType(salePrice.vat)
         edtPrice.DisableClick()
+        edtOldPrice.DisableClick()
     }
 
     fun getSaleType(typePrice:String){

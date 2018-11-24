@@ -25,10 +25,10 @@ import java.util.*
 import com.google.gson.GsonBuilder
 import com.google.gson.Gson
 import com.thefinestartist.utils.preferences.Pref
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.*
 import org.zeroturnaround.zip.ZipUtil
 import java.io.*
+import java.lang.Exception
 import javax.crypto.Cipher
 
 
@@ -329,39 +329,51 @@ object Utils{
         }
     }
 
+    fun moveFileExportToFolder(path:String,newDir:String,context: Context){
+        val stor = Storage(context)
+        val rawFile = File(path)
+        val toPath = newDir+File.separator+File(path).absolutePath.substring(File(path).absolutePath.lastIndexOf(File.separator)+1)
+        if (!rawFile.isDirectory){
+            println("copy file $toPath \n to $path")
+            stor.copy(toPath, path)
+        }else{
+            println("File already")
+        }
+
+    }
+
     fun exportContact(context: Context,
                       contacts:MutableList<Model.Contact>,
-                      folder: File){
+                      folder: File) = runBlocking {
         createFileDB(context)
         val stor = Storage(context)
-        val newDir = getPath(context)+File.separator+"ContactExport"
+        val newDir = getPath(context) + File.separator + "ContactExport"
         stor.createDirectory(newDir)
         val masterContact = Model.MasterData(
                 contactUser = Model.ContactUser(contacts),
                 create_date = Utils.getCurrentDateString())
-        FileWriter(File(newDir+ File.separator + "contacts.json")).use {
+        FileWriter(File(newDir + File.separator + "contacts.json")).use {
             val gson = GsonBuilder().create()
-            gson.toJson(masterContact,it)
+            gson.toJson(masterContact, it)
         }
 
-        async {
-            val result = async {
-                contacts.forEach {
-                    it.addresses.forEach {
-                        moveFileToFolderExport(it.path_img_map,newDir,context)
-                        println(it)
-                    }
+        val result = async {
+            contacts.forEach {
+                it.addresses.forEach {
+                    moveFileToFolderExport(it.path_img_map, newDir, context)
+                    println(it)
                 }
             }
-            result.await()
-            ZipUtil.pack(File(newDir),
-                    File("${folder.path}/backupContactSccManagement${Utils.getCurrentDateForBackupFile()}.zip"))
         }
+        result.await()
+        ZipUtil.pack(File(newDir),
+                File("${folder.path}/backupContactSccManagement${Utils.getCurrentDateForBackupFile()}.zip"))
+
     }
 
     fun exportProduct(context: Context,
                       products:MutableList<Model.Product>,
-                      folder:File){
+                      folder:File) = runBlocking {
         createFileDB(context)
         val stor = Storage(context)
         val newDir = getPath(context)+File.separator+"ProductExport"
@@ -374,21 +386,21 @@ object Utils{
             gson.toJson(masterProduct,it)
         }
 
-        async {
-            val result = async {
-                products.forEach {
-                    it.pictures.forEach {
-                        moveFileToFolderExport(it.local_path,newDir,context)
-                    }
-                    it.files.forEach {
-                        moveFileToFolderExport(it.local_path,newDir,context)
+        val result = async {
+                    products.forEach {
+                        it.pictures.forEach {
+                            moveFileToFolderExport(it.local_path, newDir, context)
+                        }
+                        it.files.forEach {
+                            moveFileToFolderExport(it.local_path, newDir, context)
+                        }
                     }
                 }
-            }
-            result.await()
-            ZipUtil.pack(File(newDir),
-                    File("${folder.path}/backupProductSccManagement${Utils.getCurrentDateForBackupFile()}.zip"))
-        }
+        result.await()
+        ZipUtil.pack(File(newDir),
+                        File("${folder.path}/backupProductSccManagement${Utils.getCurrentDateForBackupFile()}.zip"))
+
+
     }
 
     fun exportDB(context: Context){
@@ -494,21 +506,15 @@ object Utils{
         if (mData != null) {
             Paper.book().write(ROOT.CONTACTS, mData.contactUser)
         }
-        async {
-            val result = async {
-                mData.contactUser.contacts.forEach {
-                    it.addresses.forEach {
-                        moveFileToFolderExport(it.path_img_map,newDir,context)
-                        println(it)
-                    }
-                }
-            }
-            result.await()
-            if(stor.deleteDirectory(newDir)){
-                println("Delete Product Export Folder Success")
+        mData.contactUser.contacts.forEach {
+            it.addresses.forEach {
+                //moveFileToFolderExport(it.path_img_map,newDir,context)
+                moveFileExportToFolder(it.path_img_map,newDir,context)
             }
         }
-
+        if(stor.deleteDirectory(newDir)){
+            println("Delete Product Export Folder Success")
+        }
     }
     fun importProduct(context: Context){
         createFileDB(context)
@@ -523,23 +529,19 @@ object Utils{
         if (mData != null) {
             Paper.book().write(ROOT.PRODUCTS, mData.productUser)
         }
-        async {
-            val result = async {
-                mData.productUser.products.forEach {
-                    it.pictures.forEach {
-                        moveFileToFolderExport(it.local_path,newDir,context)
-                    }
-                    it.files.forEach {
-                        moveFileToFolderExport(it.local_path,newDir,context)
-                    }
+        mData.productUser.products.forEach {
+                it.pictures.forEach {
+                    // moveFileToFolderExport(it.local_path,newDir,context)
+                    moveFileExportToFolder(it.local_path,newDir,context)
+                }
+                it.files.forEach {
+                    //moveFileToFolderExport(it.local_path,newDir,context)
+                    moveFileExportToFolder(it.local_path,newDir,context)
                 }
             }
-            result.await()
             if(stor.deleteDirectory(newDir)){
                 println("Delete Product Export Folder Success")
             }
-        }
-
     }
 
     fun createFileDB(context: Context) {
@@ -706,10 +708,5 @@ object Utils{
         }
         */
     }
-
-
-
-
-
 
 }

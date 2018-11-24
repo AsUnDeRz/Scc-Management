@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity
 import android.telephony.TelephonyManager
 import android.view.Window
 import android.view.WindowManager
+import asunder.toche.sccmanagement.ActivityConfirmPin
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
 import asunder.toche.sccmanagement.auth.ActivityLogin
@@ -22,6 +23,7 @@ import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
 import asunder.toche.sccmanagement.service.ManageUserService
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.GsonBuilder
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -29,6 +31,10 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.snatik.storage.Storage
 import io.mattcarroll.hover.overlay.OverlayPermission
+import io.paperdb.Paper
+import java.io.File
+import java.io.FileReader
+import java.lang.Exception
 import javax.crypto.Cipher
 
 
@@ -76,6 +82,7 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
     }
 
     fun requestPermission(){
+        checkFolder()
         Dexter.withActivity(this)
                 .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -89,6 +96,7 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
                     override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
                         if (report != null) {
                             if(!report.isAnyPermissionPermanentlyDenied) {
+
                                 checkSelectRootpath()
                             }else{
                                 finish()
@@ -187,10 +195,17 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
     }
 
     fun moveToMain(){
-        startActivity(Intent().setClass(this, ActivityMain::class.java))
-        finish()
-        loading.dismiss()
-        overridePendingTransition( R.anim.fade_in, R.anim.fade_out )
+        if (Prefer.isConfirmPin(this)){
+            startActivity(Intent().setClass(this, ActivityMain::class.java))
+            finish()
+            loading.dismiss()
+            overridePendingTransition( R.anim.fade_in, R.anim.fade_out )
+        }else{
+            startActivity(Intent().setClass(this, ActivityConfirmPin::class.java))
+            finish()
+            loading.dismiss()
+            overridePendingTransition( R.anim.fade_in, R.anim.fade_out )
+        }
     }
 
 
@@ -215,8 +230,29 @@ class ActivityLanding : AppCompatActivity(), ManageUserService.Sign{
         }else{
             postDelayed()
         }
+    }
 
+    fun checkFolder(){
+        val stor = Storage(this)
+        val newDir = Utils.getPath(this) +File.separator+"ContactExport"
+        val productDir = Utils.getPath(this) +File.separator+"ProductExport"
 
+        try {
+            if (File(newDir).delete()){
+                println("Delete Contact Export Folder Success")
+            }
+            if(stor.deleteDirectory(newDir)){
+                println("Delete Contact Export Folder Success")
+            }
+            if (File(productDir).delete()){
+                println("Delete Product Export Folder Success")
+            }
+            if(stor.deleteDirectory(productDir)){
+                println("Delete Product Export Folder Success")
+            }
+        }catch (e: Exception){
+            println(e.message)
+        }
     }
 
 }

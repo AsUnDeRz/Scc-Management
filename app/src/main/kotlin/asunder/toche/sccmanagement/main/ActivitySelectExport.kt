@@ -5,6 +5,8 @@ import android.os.Environment
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import asunder.toche.sccmanagement.Model
 import asunder.toche.sccmanagement.R
@@ -12,12 +14,18 @@ import asunder.toche.sccmanagement.custom.multiselect.ComponentMultiSelect
 import asunder.toche.sccmanagement.preference.Prefer
 import asunder.toche.sccmanagement.preference.ROOT
 import asunder.toche.sccmanagement.preference.Utils
+import asunder.toche.sccmanagement.service.ContactService
+import asunder.toche.sccmanagement.service.ProductService
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.folderselector.FileChooserDialog
 import com.afollestad.materialdialogs.folderselector.FolderChooserDialog
+import com.bumptech.glide.Glide
 import com.thefinestartist.utils.preferences.Pref
 import io.paperdb.Paper
 import kotlinx.android.synthetic.main.activity_select_export.*
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
+import kotlinx.coroutines.experimental.launch
 import org.zeroturnaround.zip.ZipUtil
 import java.io.File
 
@@ -51,6 +59,7 @@ class ActivitySelectExport :
         btnBack.setOnClickListener {
             finish()
         }
+        searchTextChanged()
     }
 
 
@@ -164,23 +173,34 @@ class ActivitySelectExport :
 
     override fun onFolderSelection(dialog: FolderChooserDialog, folder: File) {
         showDialog("กำลังส่งออกไฟล์สำรองข้อมูล\nกรุณารอสักครู่")
-        val tag = dialog.tag// gets tag set from Builder, if you use multiple dialogs
-        if (tag != null){
-            if (isExpoertContact){
-                if (selectDataAdapter.contacts.isNotEmpty()) {
-                    Utils.exportContact(this, selectDataAdapter.contacts,folder)
-                    Prefer.saveLastFolderType(this,ROOT.LASTFOLDERCONTACT,folder.absolutePath)
-                }
-            }else{
-                if (selectDataAdapter.products.isNotEmpty()){
-                    Utils.exportProduct(this,selectDataAdapter.products,folder)
-                    Prefer.saveLastFolderType(this,ROOT.LASTFOLDERPRODUCT,folder.absolutePath)
+        GlobalScope.launch(Dispatchers.IO){
+            val result = GlobalScope.launch(Dispatchers.Default) {
+                val tag = dialog.tag// gets tag set from Builder, if you use multiple dialogs
+                if (tag != null){
+                    if (isExpoertContact){
+                        if (selectDataAdapter.contacts.isNotEmpty()) {
+                            Utils.exportContact(this@ActivitySelectExport,
+                                    selectDataAdapter.getContactSelected(),folder)
+                            Prefer.saveLastFolderType(this@ActivitySelectExport,
+                                    ROOT.LASTFOLDERCONTACT,folder.absolutePath)
+                        }
+                    }else{
+                        if (selectDataAdapter.products.isNotEmpty()){
+                            Utils.exportProduct(this@ActivitySelectExport,
+                                    selectDataAdapter.getProductSelected(),folder)
+                            Prefer.saveLastFolderType(this@ActivitySelectExport,
+                                    ROOT.LASTFOLDERPRODUCT,folder.absolutePath)
+                        }
+                    }
                 }
             }
+            result.join()
+            runOnUiThread {
+                hideDialog()
+                clearSelected()
+                root_component_menu.visibility = View.GONE
+            }
         }
-        Handler().postDelayed({
-            hideDialog()
-        },2000)
     }
 
     override fun onFolderChooserDismissed(dialog: FolderChooserDialog) {
@@ -194,8 +214,72 @@ class ActivitySelectExport :
 
 
 
+    fun searchTextChanged(){
+        txtSearch.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (isExpoertContact){
+                    filterContact(s.toString())
+
+                }else{
+                    filterProduct(s.toString())
+                }
+
+                //change icon search
+                if (s.isNullOrEmpty()){
+                    Glide.with(this@ActivitySelectExport)
+                            .load(R.drawable.ic_search_black_36dp)
+                            .into(imgSearch)
+                }else{
+                    Glide.with(this@ActivitySelectExport)
+                            .load(R.drawable.ic_close_black_24dp)
+                            .into(imgSearch)
+                    imgSearch.setOnClickListener {
+                        txtSearch.text.clear()
+                    }
+                }
+            }
+        })
+    }
 
 
+    fun filterContact(query:String){
+        Utils.findCompany(query,object :Utils.OnFindCompanyListener{
+            override fun onResults(results: MutableList<Model.Contact>) {
+                selectDataAdapter.updateContactData(results)
+            }
+        },ContactService(object : ContactService.ContactCallBack{
+            override fun onSuccess() {
+
+            }
+
+            override fun onFail() {
+            }
+
+            override fun onDeleteSuccess() {
+            }
+        }).getContactInDb())
+    }
+
+    fun filterProduct(query:String){
+        Utils.findProduct(query,object : Utils.OnFindProductListener{
+            override fun onResults(results: MutableList<Model.Product>) {
+                selectDataAdapter.updateProductData(results)
+            }
+        },ProductService(object : ProductService.ProductCallback{
+            override fun onSuccess() {
+
+            }
+
+            override fun onFail() {
+            }
+        }).getProductsInDb())
+    }
 
 
 

@@ -2,8 +2,10 @@ package asunder.toche.sccmanagement.contact
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -60,7 +62,7 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
         return true
     }
 
-    private lateinit var map: GoogleMap
+    var map: GoogleMap? = null
     var location: Location? = null
     private lateinit var mLocationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
@@ -101,7 +103,7 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
             location?.latitude = contact.map_latitude.toDouble()
             location?.longitude = contact.map_longitude.toDouble()
             handleNewLocation(location!!)
-            map.isMyLocationEnabled = false
+            map?.isMyLocationEnabled = false
             isEditLocation = false
         }else{
             //Toast.makeText(this,"contact.map is Empty ",Toast.LENGTH_SHORT).show()
@@ -110,7 +112,7 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
             //location?.latitude = 13.7616035
             //location?.longitude = 100.5202237
             //handleNewLocation(location!!,5.99f)
-            map.isMyLocationEnabled = true
+            map?.isMyLocationEnabled = true
             isEditLocation = true
         }
     }
@@ -219,16 +221,19 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
         btnOFF.setOnClickListener {
             it.setBackgroundColor(ContextCompat.getColor(this,R.color.Color_Red))
             btnOn.setBackgroundColor(ContextCompat.getColor(this, R.color.Color_White))
-            map.isMyLocationEnabled = false
-            isEditLocation = false
+            if(isLocationEnabled(this)) {
+                map?.isMyLocationEnabled = false
+                isEditLocation = false
+            }
         }
         btnOn.setOnClickListener {
-            it.setBackgroundColor(ContextCompat.getColor(this,R.color.Color_Red))
+            it.setBackgroundColor(ContextCompat.getColor(this, R.color.Color_Red))
             btnOFF.setBackgroundColor(ContextCompat.getColor(this, R.color.Color_White))
-            map.isMyLocationEnabled = true
-            isEditLocation = true
+            if (isLocationEnabled(this)) {
+                map?.isMyLocationEnabled = true
+                isEditLocation = true
+            }
         }
-
     }
 
     private fun getLatitude(location: Location): String {
@@ -267,9 +272,11 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
     @SuppressLint("MissingPermission")
     override fun onMapReady(googlemap: GoogleMap?) {
         if(googlemap != null){
-            map = googlemap
-            map.isMyLocationEnabled = isEditLocation
-            map.setOnMyLocationButtonClickListener(this)
+            if(isLocationEnabled(this)) {
+                map = googlemap
+                map?.isMyLocationEnabled = isEditLocation
+                map?.setOnMyLocationButtonClickListener(this)
+            }
         }
 
 
@@ -280,6 +287,12 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
         }else{
             currentAddress = Model.Address()
         }
+    }
+
+    private fun isLocationEnabled(mContext: Context): Boolean {
+        val lm = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || lm.isProviderEnabled(
+                LocationManager.NETWORK_PROVIDER)
     }
     fun clearAddress(){
         currentAddress = Model.Address()
@@ -293,8 +306,8 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
                 .apply(options)
                 .into(imgMap)
         val cameraPosition = CameraPosition.Builder().target(LatLng((-33).toDouble(), 150.0)).zoom(13F).build()
-        map.clear()
-        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        map?.clear()
+        map?.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 
     }
 
@@ -304,11 +317,11 @@ class ActivityEditContact:AppCompatActivity(), OnMapReadyCallback,
         this.location = location
         val zoomLevel = zoom ?: 14f
         val latLng = LatLng(location.latitude, location.longitude)
-        map.clear()
+        map?.clear()
         val current = MarkerOptions()
                 .position(latLng)
-        map.addMarker(current)
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel))
+        map?.addMarker(current)
+        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

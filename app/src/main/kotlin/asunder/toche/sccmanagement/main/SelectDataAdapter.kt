@@ -10,6 +10,7 @@ import asunder.toche.sccmanagement.custom.multiselect.ComponentMultiSelect
 import asunder.toche.sccmanagement.custom.multiselect.SelectHolder
 import asunder.toche.sccmanagement.custom.textview.TxtMedium
 import com.bignerdranch.android.multiselector.MultiSelector
+import com.onegravity.contactpicker.contact.Contact
 
 /**
  *Created by ToCHe on 14/8/2018 AD.
@@ -31,6 +32,22 @@ class SelectDataAdapter(val listener: ComponentMultiSelect):
         contacts.clear()
         contacts.addAll(data)
         notifyDataSetChanged()
+    }
+
+    fun getContactSelected() : MutableList<Model.Contact>{
+        val contactSelectedList = mutableListOf<Model.Contact>()
+        mMultiSelector.selectedPositions.forEach {
+            contactSelectedList.add(contacts[it])
+        }
+        return contactSelectedList
+    }
+
+    fun getProductSelected() : MutableList<Model.Product>{
+        val productSelectedList = mutableListOf<Model.Product>()
+        mMultiSelector.selectedPositions.forEach {
+            productSelectedList.add(products[it])
+        }
+        return productSelectedList
     }
 
     fun addContact(data:Model.Contact){

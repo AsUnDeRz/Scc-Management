@@ -13,6 +13,7 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 import java.io.File
 import kotlin.properties.Delegates
 
@@ -40,20 +41,15 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
 
 
 
-    fun saveContact(data:Model.Contact) = async(UI){
+    fun saveContact(data:Model.Contact) = runBlocking{
         try {
-            val job = async(CommonPool) {
+            val job = async {
                 data.addresses.forEach{
                     val fileName = Uri.fromFile(File(it.path_img_map))
                     //it.url_img_map = "${ROOT.IMAGES}/${Prefer.getUUID(firebase.context!!)}/${fileName.lastPathSegment}"
                     if(it.path_img_map.isNotEmpty()){
                         firebase.pushFileToFirebase(it.path_img_map,"")
-                        async(UI) {
-                            val result = async {
-                                it.path_img_map = firebase.getPathClone(it.path_img_map)
-                            }
-                            result.await()
-                        }
+                        it.path_img_map = firebase.getPathClone(it.path_img_map)
                     }
                 }
             }
@@ -137,6 +133,12 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
     override fun onSuccess() {
         updateViewState(ContactState.SAVED)
         loadContacts()
+        val result = contacts.value?.find {
+            it.id == contact.value?.id
+        }
+        result?.let {
+            updateContact(it)
+        }
 
     }
 

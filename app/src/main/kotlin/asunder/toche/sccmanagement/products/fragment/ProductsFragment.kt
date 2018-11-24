@@ -345,9 +345,18 @@ class ProductsFragment : Fragment(),
             }
         }
         btnDeletePrice.setOnClickListener {
-            deleteMediumPriceRate()
-            clearMediumPriceRate()
-            showProductForm()
+            val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบข้อมูลราคากลาง ใช่หรือไหม","แจ้งเตือน",true)
+            confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+            confirmDialog.customListener(object  : ConfirmDialog.ConfirmDialogListener{
+                override fun onClickConfirm() {
+                    deleteMediumPriceRate()
+                    clearMediumPriceRate()
+                    showProductForm()
+                }
+                override fun onClickCancel() {
+                }
+            })
+            confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
         }
 
         edtPriceDate.setOnClickListener {
@@ -716,8 +725,17 @@ class ProductsFragment : Fragment(),
 
     override fun OnFileClick(file: Model.ContentForProduct, isDeleteOrShare: Boolean, position: Int) {
         if (isDeleteOrShare) {
-            fileAdapter.remove(position)
-            File(file.local_path).delete()
+            val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบข้อมูลไฟล์ ใช่หรือไหม","แจ้งเตือน",true)
+            confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+            confirmDialog.customListener(object  : ConfirmDialog.ConfirmDialogListener{
+                override fun onClickConfirm() {
+                    fileAdapter.remove(position)
+                    File(file.local_path).delete()
+                }
+                override fun onClickCancel() {
+                }
+            })
+            confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
         }else {
            openFile(file)
         }
@@ -727,8 +745,17 @@ class ProductsFragment : Fragment(),
 
     override fun OnPictureClick(picture: Model.ContentForProduct, isDeleteOrShare: Boolean, position: Int) {
         if (isDeleteOrShare) {
-            pictureAdapter.remove(position)
-            File(picture.local_path).delete()
+            val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบข้อมูลรูปภาพ ใช่หรือไหม","แจ้งเตือน",true)
+            confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+            confirmDialog.customListener(object  : ConfirmDialog.ConfirmDialogListener{
+                override fun onClickConfirm() {
+                    pictureAdapter.remove(position)
+                    File(picture.local_path).delete()
+                }
+                override fun onClickCancel() {
+                }
+            })
+            confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
         }else{
             openPicture(picture)
         }

@@ -250,9 +250,9 @@
                     android:id="@+id/radioGroup"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="48dp"
+                    android:layout_marginStart="32dp"
                     android:layout_marginTop="48dp"
-                    android:layout_marginEnd="48dp"
+                    android:layout_marginEnd="32dp"
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -340,7 +340,7 @@
                     android:inputType="text"
                     android:maxLines="1"
                     android:paddingStart="8dp"
-                    app:layout_constraintEnd_toEndOf="@+id/radioGroup"
+                    app:layout_constraintEnd_toEndOf="@+id/root_transaction_price"
                     app:layout_constraintStart_toEndOf="@+id/space4"
                     app:layout_constraintTop_toBottomOf="@+id/txtMedium10" />
 

@@ -4,6 +4,7 @@ package asunder.toche.sccmanagement.preference
  *Created by ToCHe on 6/3/2018 AD.
  */
 object KEY{
+    const val PIN = "pin"
     const val UUID = "UUxID"
     const val SESSION_UPLOAD ="session_upload"
     const val FILE_PATH = "file_path"

@@ -4,13 +4,15 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:foreground="?attr/selectableItemBackgroundBorderless">
+    android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:orientation="horizontal">
 
     <asunder.toche.sccmanagement.custom.textview.TxtThin
         android:id="@+id/txtProdName"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
         android:gravity="left"
         android:lines="1"
         android:maxLines="1"
@@ -22,6 +24,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
         android:orientation="horizontal">
 
         <RelativeLayout

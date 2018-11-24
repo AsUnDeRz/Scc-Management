@@ -402,7 +402,6 @@ class ContactFragment  :
                     , edtContactName.text.toString(), numberAdapter.numbers, emailAdapter.emails,
                     webstieAdapter.websites, addressAdapter.addresses, numberAdapter.typeList)
             contactVM.saveContact(data)
-
         }
         //loading.show(fragmentManager, LoadingDialog.TAG)
     }
@@ -623,6 +622,14 @@ class ContactFragment  :
                     rootInput.visibility = View.GONE
                     showFormContactWithOutState(contactVM.contact.value!!)
                 }
+                ContactState.SAVED ->{
+                    displayHistory()
+                    dismissFormContact()
+                }
+
+                else -> {
+                    println(it)
+                }
             }
         })
         contactVM.contacts.observe(this, Observer {
@@ -677,7 +684,16 @@ class ContactFragment  :
         if (isAction){
             callPhone(number.data)
         }else{
-            numberAdapter.remove(position)
+            val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบข้อมูลเบอร์โทรศัพท์ ใช่หรือไหม","แจ้งเตือน",true)
+            confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+            confirmDialog.customListener(object  : ConfirmDialog.ConfirmDialogListener{
+                override fun onClickConfirm() {
+                    numberAdapter.remove(position)
+                }
+                override fun onClickCancel() {
+                }
+            })
+            confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
         }
 
     }
@@ -693,7 +709,16 @@ class ContactFragment  :
             //updateInputForm("ที่อยู่",address)
             //addressAdapter.remove(position)
         }else{
-            addressAdapter.remove(position)
+            val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบข้อมูลที่อยู่ ใช่หรือไหม","แจ้งเตือน",true)
+            confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+            confirmDialog.customListener(object  : ConfirmDialog.ConfirmDialogListener{
+                override fun onClickConfirm() {
+                    addressAdapter.remove(position)
+                }
+                override fun onClickCancel() {
+                }
+            })
+            confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
         }
 
     }
@@ -702,7 +727,16 @@ class ContactFragment  :
         if(isAction){
             sendEmail(email.data)
         }else{
-            emailAdapter.remove(position)
+            val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบข้อมูลอีเมล ใช่หรือไหม","แจ้งเตือน",true)
+            confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+            confirmDialog.customListener(object  : ConfirmDialog.ConfirmDialogListener{
+                override fun onClickConfirm() {
+                    emailAdapter.remove(position)
+                }
+                override fun onClickCancel() {
+                }
+            })
+            confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
         }
     }
 
@@ -710,7 +744,16 @@ class ContactFragment  :
         if(isAction){
             openWeb(web.data)
         }else{
-            webstieAdapter.remove(position)
+                val confirmDialog = ConfirmDialog.newInstance("คุณต้องการลบข้อมูลเว็ปไซด์ ใช่หรือไหม","แจ้งเตือน",true)
+                confirmDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+                confirmDialog.customListener(object  : ConfirmDialog.ConfirmDialogListener{
+                    override fun onClickConfirm() {
+                        webstieAdapter.remove(position)
+                    }
+                    override fun onClickCancel() {
+                    }
+                })
+                confirmDialog.show(fragmentManager, ConfirmDialog::class.java.simpleName)
         }
     }
 

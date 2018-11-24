@@ -62,7 +62,7 @@
         android:id="@+id/txtNote"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="4"
+        android:layout_weight="4.5"
         android:gravity="left|center_vertical"
         android:maxLines="1"
         android:textSize="10sp" />
