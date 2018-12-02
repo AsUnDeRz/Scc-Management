@@ -13,8 +13,8 @@ android {
         applicationId "asunder.toche.sccmanagement"
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
-        versionCode 6
-        versionName "1.3.5"
+        versionCode 7
+        versionName "1.3.6"
         testInstrumentationRunner "android.support.menu_drawer.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }

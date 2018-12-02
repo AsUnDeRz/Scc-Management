@@ -15,6 +15,7 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import java.io.File
+import java.util.*
 import kotlin.properties.Delegates
 
 /**
@@ -57,6 +58,9 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
             data.id = contactId
             if (isSaveContactComplete.value != ContactState.SAVED) {
                 if (contactId == "") {
+                    val randomID = UUID.randomUUID().toString()
+                    data.id = randomID
+                    contactId = randomID
                     service.pushNewContact(data)
                 } else {
                     service.updateContact(data)
@@ -134,7 +138,7 @@ class ContactViewModel : ViewModel(),ContactService.ContactCallBack {
         updateViewState(ContactState.SAVED)
         loadContacts()
         val result = contacts.value?.find {
-            it.id == contact.value?.id
+            it.id == contactId
         }
         result?.let {
             updateContact(it)

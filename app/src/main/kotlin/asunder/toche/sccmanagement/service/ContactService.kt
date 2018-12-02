@@ -46,7 +46,6 @@ class ContactService(var listener:ContactCallBack){
             }
         }
         */
-        contact.id = UUID.randomUUID().toString()
         pushNewContactToDb(updateContactFromDb(contact,getContactInDb()))
     }
 
