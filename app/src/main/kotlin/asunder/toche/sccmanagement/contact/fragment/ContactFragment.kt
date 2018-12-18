@@ -594,6 +594,7 @@ class ContactFragment  :
                 ContactState.NEWCONTACT ->{
                     showFormContact()
                     clearModelContact()
+                    triggerContact(Model.Contact())
                 }
                 ContactState.EDITCONTACT ->{
                     showFormContactWithData(contactVM.contact.value!!)
@@ -633,10 +634,11 @@ class ContactFragment  :
             }
         })
         contactVM.contacts.observe(this, Observer {
-            if (contactVM.isSaveContactComplete.value == ContactState.SHOWFORM && controlViewModel.currentUI.value == ROOT.CONTACTS){
-                it?.let {
-                    if (it.isNotEmpty()){
-                        filterContactForm(it.first())
+            if (contactVM.isSaveContactComplete.value == ContactState.SHOWFORM
+                    && controlViewModel.currentUI.value == ROOT.CONTACTS){
+                it?.let { data ->
+                    if (data.isNotEmpty()){
+                        filterContactForm(data.first())
                     }
                 }
             }
